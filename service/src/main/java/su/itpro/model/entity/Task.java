@@ -1,6 +1,5 @@
 package su.itpro.model.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,12 +31,9 @@ public class Task {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @Column(name = "parent_id")
   private Long parentId;
-  @Column(name = "project_id")
   private UUID projectId;
   @Enumerated(value = EnumType.STRING)
-  @Column(name = "type_id")
   private Type type;
   private String title;
   @Enumerated(value = EnumType.STRING)
@@ -46,9 +42,7 @@ public class Task {
   private Priority priority;
   private UUID assigned;
   private String category;
-  @Column(name = "create_date")
   private LocalDate createDate;
-  @Column(name = "end_date")
   private LocalDate endDate;
   private Short progress;
   private String description;

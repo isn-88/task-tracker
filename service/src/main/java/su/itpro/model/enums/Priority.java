@@ -1,8 +1,10 @@
 package su.itpro.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum Priority {
   LOW("Low"),
   NORMAL("Normal"),
@@ -11,7 +13,4 @@ public enum Priority {
 
   private final String priority;
 
-  Priority(String priority) {
-    this.priority = priority;
-  }
 }

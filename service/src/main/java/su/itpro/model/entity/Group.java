@@ -2,6 +2,7 @@ package su.itpro.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
@@ -20,11 +21,11 @@ import org.hibernate.annotations.UuidGenerator;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_group")
+@Table(name = "groups")
 public class Group {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @UuidGenerator
   private UUID id;
   private String name;

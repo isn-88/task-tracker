@@ -1,5 +1,10 @@
 package su.itpro.model.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum Type {
 
   FEATURE("Feature"),
@@ -12,7 +17,4 @@ public enum Type {
 
   private final String type;
 
-  Type(String type) {
-    this.type = type;
-  }
 }

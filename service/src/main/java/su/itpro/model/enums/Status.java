@@ -1,8 +1,10 @@
 package su.itpro.model.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum Status {
   NEW("New"),
   ASSIGNED("Assigned"),
@@ -15,9 +17,5 @@ public enum Status {
   CLOSED("Closed");
 
   private final String status;
-
-  Status(String status) {
-    this.status = status;
-  }
 
 }
