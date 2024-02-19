@@ -2,13 +2,11 @@ package su.itpro.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -18,28 +16,42 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
+import su.itpro.model.enums.Gender;
 
 @Getter
 @Setter
-@ToString(exclude = "accounts")
-@AllArgsConstructor
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "groups")
-public class Group {
+public class Profile {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "account_id")
   private UUID id;
 
-  @Column(nullable = false, unique = true)
-  private String name;
+  @OneToOne
+  @PrimaryKeyJoinColumn
+  private Account account;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "group")
-  private List<Account> accounts = new ArrayList<>();
+  @Column(nullable = false)
+  private String lastname;
 
+  @Column(nullable = false)
+  private String firstname;
+
+  private String surname;
+
+  @Enumerated(value = EnumType.STRING)
+  private Gender gender;
+
+
+  public void setAccount(Account account) {
+    account.setProfile(this);
+    this.account = account;
+    this.id = account.getId();
+  }
 
   @Override
   public final boolean equals(Object o) {
@@ -60,8 +72,8 @@ public class Group {
     if (thisEffectiveClass != oEffectiveClass) {
       return false;
     }
-    Group group = (Group) o;
-    return getId() != null && Objects.equals(getId(), group.getId());
+    Profile profile = (Profile) o;
+    return getId() != null && Objects.equals(getId(), profile.getId());
   }
 
   @Override
