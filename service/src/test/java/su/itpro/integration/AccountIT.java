@@ -24,7 +24,12 @@ public class AccountIT {
 
   @BeforeAll
   static void init() {
-    sessionFactory = HibernateTestUtil.getSessionFactory();
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  static void destroy() {
+    sessionFactory.close();
   }
 
   @BeforeEach
@@ -33,8 +38,14 @@ public class AccountIT {
     session.beginTransaction();
   }
 
+  @AfterEach
+  void clean() {
+    session.getTransaction().rollback();
+    session.close();
+  }
+
   @Test
-  void testCreateAccount() {
+  void createAccount() {
     Account account = Account.builder()
         .email("test-create@email.com")
         .login("test-create")
@@ -59,7 +70,7 @@ public class AccountIT {
   }
 
   @Test
-  void testReadExistsAccount() {
+  void readExistsAccount() {
     Account account1 = Account.builder()
         .email("test-1@email.com")
         .login("test-1")
@@ -97,7 +108,7 @@ public class AccountIT {
   }
 
   @Test
-  void testReadNotExistsAccount() {
+  void readNotExistsAccount() {
     Account account = Account.builder()
         .email("test-not-exist@email.com")
         .login("test-not-exist")
@@ -119,7 +130,7 @@ public class AccountIT {
   }
 
   @Test
-  void testUpdateAccount() {
+  void updateAccount() {
     Account account = Account.builder()
         .email("test-update@email.com")
         .login("test-update")
@@ -148,7 +159,7 @@ public class AccountIT {
   }
 
   @Test
-  void testDeleteAccount() {
+  void deleteAccount() {
     Account account = Account.builder()
         .email("test-delete@email.com")
         .login("test-delete")
@@ -170,17 +181,6 @@ public class AccountIT {
     Profile actualProfileResult = session.get(Profile.class, profile.getId());
     assertThat(actualAccountResult).isNull();
     assertThat(actualProfileResult).isNull();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
   }
 
 }

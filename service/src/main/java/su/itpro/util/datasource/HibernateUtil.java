@@ -13,7 +13,7 @@ import su.itpro.model.entity.Task;
 @UtilityClass
 public class HibernateUtil {
 
-  public SessionFactory getSessionFactory() {
+  public SessionFactory buildSessionFactory() {
     Configuration configuration = buildConfiguration();
     return configuration.buildSessionFactory();
   }

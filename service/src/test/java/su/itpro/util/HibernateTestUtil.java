@@ -11,17 +11,17 @@ public class HibernateTestUtil {
 
   private static final String IMAGE_NAME = "postgres:16";
 
-  private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(IMAGE_NAME);
+  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(IMAGE_NAME);
 
   static {
-    POSTGRES.start();
+    postgres.start();
   }
 
-  public SessionFactory getSessionFactory() {
+  public SessionFactory buildSessionFactory() {
     Configuration configuration = HibernateUtil.buildConfiguration();
-    configuration.setProperty("hibernate.connection.url", POSTGRES.getJdbcUrl());
-    configuration.setProperty("hibernate.connection.username", POSTGRES.getUsername());
-    configuration.setProperty("hibernate.connection.password", POSTGRES.getPassword());
+    configuration.setProperty("hibernate.connection.url", postgres.getJdbcUrl());
+    configuration.setProperty("hibernate.connection.username", postgres.getUsername());
+    configuration.setProperty("hibernate.connection.password", postgres.getPassword());
 
     return configuration.buildSessionFactory();
   }

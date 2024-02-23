@@ -22,7 +22,12 @@ public class TaskIT {
 
   @BeforeAll
   static void init() {
-    sessionFactory = HibernateTestUtil.getSessionFactory();
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  static void destroy() {
+    sessionFactory.close();
   }
 
   @BeforeEach
@@ -31,8 +36,14 @@ public class TaskIT {
     session.beginTransaction();
   }
 
+  @AfterEach
+  void clean() {
+    session.getTransaction().rollback();
+    session.close();
+  }
+
   @Test
-  void testCreateCategory() {
+  void createCategory() {
     Task task = Task.builder()
         .title("title-create")
         .status(Status.NEW)
@@ -49,7 +60,7 @@ public class TaskIT {
   }
 
   @Test
-  void testReadExistsAccount() {
+  void readExistsAccount() {
     Task task1 = Task.builder()
         .title("title-exist-1")
         .status(Status.NEW)
@@ -73,7 +84,7 @@ public class TaskIT {
   }
 
   @Test
-  void testReadNotExistsAccount() {
+  void readNotExistsAccount() {
     Task task = Task.builder()
         .title("title-not-exist")
         .status(Status.NEW)
@@ -89,7 +100,7 @@ public class TaskIT {
   }
 
   @Test
-  void testUpdateAccount() {
+  void updateAccount() {
     Task task = Task.builder()
         .title("title-update")
         .status(Status.NEW)
@@ -108,7 +119,7 @@ public class TaskIT {
   }
 
   @Test
-  void testDeleteAccount() {
+  void deleteAccount() {
     Task task = Task.builder()
         .title("title-delete")
         .status(Status.NEW)
@@ -122,17 +133,6 @@ public class TaskIT {
 
     Task actualResult = session.get(Task.class, task.getId());
     assertThat(actualResult).isNull();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
   }
 
 }

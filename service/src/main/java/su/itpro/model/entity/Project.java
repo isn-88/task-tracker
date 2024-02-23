@@ -5,19 +5,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Objects;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.proxy.HibernateProxy;
 
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode(exclude = "tasks")
+@ToString(exclude = "tasks")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -33,34 +36,8 @@ public class Project {
 
   private String description;
 
+  @Builder.Default
+  @OneToMany(mappedBy = "project")
+  private List<Task> tasks = new ArrayList<>();
 
-  @Override
-  public final boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null) {
-      return false;
-    }
-    Class<?> oEffectiveClass = o instanceof HibernateProxy
-                               ? ((HibernateProxy) o).getHibernateLazyInitializer()
-                                   .getPersistentClass()
-                               : o.getClass();
-    Class<?> thisEffectiveClass = this instanceof HibernateProxy
-                                  ? ((HibernateProxy) this).getHibernateLazyInitializer()
-                                      .getPersistentClass()
-                                  : this.getClass();
-    if (thisEffectiveClass != oEffectiveClass) {
-      return false;
-    }
-    Project project = (Project) o;
-    return getId() != null && Objects.equals(getId(), project.getId());
-  }
-
-  @Override
-  public final int hashCode() {
-    return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer()
-        .getPersistentClass()
-        .hashCode() : getClass().hashCode();
-  }
 }

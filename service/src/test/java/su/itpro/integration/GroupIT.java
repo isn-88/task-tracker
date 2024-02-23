@@ -21,7 +21,12 @@ public class GroupIT {
 
   @BeforeAll
   static void init() {
-    sessionFactory = HibernateTestUtil.getSessionFactory();
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  static void destroy() {
+    sessionFactory.close();
   }
 
   @BeforeEach
@@ -30,8 +35,14 @@ public class GroupIT {
     session.beginTransaction();
   }
 
+  @AfterEach
+  void clean() {
+    session.getTransaction().rollback();
+    session.close();
+  }
+
   @Test
-  void testCreateCategory() {
+  void createCategory() {
     Group group = Group.builder()
         .name("test-create")
         .build();
@@ -46,7 +57,7 @@ public class GroupIT {
   }
 
   @Test
-  void testReadExistsAccount() {
+  void readExistsAccount() {
     Group group1 = Group.builder()
         .name("test-exist-1")
         .build();
@@ -66,7 +77,7 @@ public class GroupIT {
   }
 
   @Test
-  void testReadNotExistsAccount() {
+  void readNotExistsAccount() {
     Group group = Group.builder()
         .name("test-create")
         .build();
@@ -80,7 +91,7 @@ public class GroupIT {
   }
 
   @Test
-  void testUpdateAccount() {
+  void updateAccount() {
     Group group = Group.builder()
         .name("test-update")
         .build();
@@ -97,7 +108,7 @@ public class GroupIT {
   }
 
   @Test
-  void testDeleteAccount() {
+  void deleteAccount() {
     Group group = Group.builder()
         .name("test-delete")
         .build();
@@ -109,17 +120,6 @@ public class GroupIT {
 
     Group actualResult = session.get(Group.class, group.getId());
     assertThat(actualResult).isNull();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
   }
 
 }

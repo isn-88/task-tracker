@@ -21,7 +21,12 @@ public class ProjectIT {
 
   @BeforeAll
   static void init() {
-    sessionFactory = HibernateTestUtil.getSessionFactory();
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  static void destroy() {
+    sessionFactory.close();
   }
 
   @BeforeEach
@@ -30,8 +35,14 @@ public class ProjectIT {
     session.beginTransaction();
   }
 
+  @AfterEach
+  void clean() {
+    session.getTransaction().rollback();
+    session.close();
+  }
+
   @Test
-  void testCreateCategory() {
+  void createCategory() {
     Project project = Project.builder()
         .name("test-create")
         .build();
@@ -46,7 +57,7 @@ public class ProjectIT {
   }
 
   @Test
-  void testReadExistsAccount() {
+  void readExistsAccount() {
     Project project1 = Project.builder()
         .name("test-exist-1")
         .build();
@@ -66,7 +77,7 @@ public class ProjectIT {
   }
 
   @Test
-  void testReadNotExistsAccount() {
+  void readNotExistsAccount() {
     Project project = Project.builder()
         .name("test-not-exist")
         .build();
@@ -80,7 +91,7 @@ public class ProjectIT {
   }
 
   @Test
-  void testUpdateAccount() {
+  void updateAccount() {
     Project project = Project.builder()
         .name("test-update")
         .build();
@@ -97,7 +108,7 @@ public class ProjectIT {
   }
 
   @Test
-  void testDeleteAccount() {
+  void deleteAccount() {
     Project project = Project.builder()
         .name("test-delete")
         .build();
@@ -109,17 +120,6 @@ public class ProjectIT {
 
     Project actualResult = session.get(Project.class, project.getId());
     assertThat(actualResult).isNull();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
   }
 
 }

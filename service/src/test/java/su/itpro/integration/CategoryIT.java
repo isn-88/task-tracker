@@ -20,7 +20,12 @@ public class CategoryIT {
 
   @BeforeAll
   static void init() {
-    sessionFactory = HibernateTestUtil.getSessionFactory();
+    sessionFactory = HibernateTestUtil.buildSessionFactory();
+  }
+
+  @AfterAll
+  static void destroy() {
+    sessionFactory.close();
   }
 
   @BeforeEach
@@ -29,8 +34,14 @@ public class CategoryIT {
     session.beginTransaction();
   }
 
+  @AfterEach
+  void clean() {
+    session.getTransaction().rollback();
+    session.close();
+  }
+
   @Test
-  void testCreateCategory() {
+  void createCategory() {
     Category category = Category.builder()
         .name("test-create")
         .build();
@@ -45,7 +56,7 @@ public class CategoryIT {
   }
 
   @Test
-  void testReadExistsAccount() {
+  void readExistsAccount() {
     Category category1 = Category.builder()
         .name("test-read")
         .build();
@@ -65,7 +76,7 @@ public class CategoryIT {
   }
 
   @Test
-  void testReadNotExistsAccount() {
+  void readNotExistsAccount() {
     Category category = Category.builder()
         .name("test-exist")
         .build();
@@ -79,7 +90,7 @@ public class CategoryIT {
   }
 
   @Test
-  void testUpdateAccount() {
+  void updateAccount() {
     Category category = Category.builder()
         .name("test-exist")
         .build();
@@ -96,7 +107,7 @@ public class CategoryIT {
   }
 
   @Test
-  void testDeleteAccount() {
+  void deleteAccount() {
     Category category = Category.builder()
         .name("test-exist")
         .build();
@@ -108,17 +119,6 @@ public class CategoryIT {
 
     Category actualResult = session.get(Category.class, category.getId());
     assertThat(actualResult).isNull();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
   }
 
 }
