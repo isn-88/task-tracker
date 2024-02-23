@@ -1,23 +1,29 @@
 package su.itpro.model.entity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Objects;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.UuidGenerator;
+import lombok.ToString;
 import su.itpro.model.enums.Role;
 
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = {"group", "profile"})
+@ToString(exclude = {"group", "profile"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -25,41 +31,26 @@ import su.itpro.model.enums.Role;
 public class Account {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @UuidGenerator
+  @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-  private UUID groupId;
+
+  @Column(nullable = false, unique = true)
   private String email;
+
+  @Column(nullable = false, unique = true)
   private String login;
+
+  @Column(nullable = false)
   private String password;
+
+  @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
   private Role role;
 
+  @ManyToOne
+  private Group group;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Account account = (Account) o;
-    return Objects.equals(id, account.id);
-  }
+  @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+  private Profile profile;
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
-
-  @Override
-  public String toString() {
-    return "Account{" +
-           "id=" + id +
-           ", email='" + email + '\'' +
-           ", login='" + login + '\'' +
-           ", role=" + role +
-           '}';
-  }
 }

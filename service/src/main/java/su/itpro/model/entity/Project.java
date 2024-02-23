@@ -1,21 +1,26 @@
 package su.itpro.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.util.Objects;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.UuidGenerator;
 
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode(exclude = "tasks")
+@ToString(exclude = "tasks")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -23,26 +28,16 @@ import org.hibernate.annotations.UuidGenerator;
 public class Project {
 
   @Id
-  @GeneratedValue
-  @UuidGenerator
+  @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
+
+  @Column(nullable = false, unique = true)
   private String name;
+
   private String description;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Project project = (Project) o;
-    return Objects.equals(id, project.id);
-  }
+  @Builder.Default
+  @OneToMany(mappedBy = "project")
+  private List<Task> tasks = new ArrayList<>();
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
 }
