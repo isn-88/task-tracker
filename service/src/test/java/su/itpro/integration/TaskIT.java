@@ -10,8 +10,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.entity.Task;
-import su.itpro.model.enums.Priority;
-import su.itpro.model.enums.Status;
+import su.itpro.model.enums.TaskPriority;
+import su.itpro.model.enums.TaskStatus;
 import su.itpro.util.HibernateTestUtil;
 
 public class TaskIT {
@@ -46,8 +46,8 @@ public class TaskIT {
   void createCategory() {
     Task task = Task.builder()
         .title("title-create")
-        .status(Status.NEW)
-        .priority(Priority.NORMAL)
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.NORMAL)
         .build();
     session.persist(task);
     session.flush();
@@ -63,13 +63,13 @@ public class TaskIT {
   void readExistsAccount() {
     Task task1 = Task.builder()
         .title("title-exist-1")
-        .status(Status.NEW)
-        .priority(Priority.NORMAL)
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.NORMAL)
         .build();
     Task task2 = Task.builder()
         .title("title-exist-2")
-        .status(Status.NEW)
-        .priority(Priority.NORMAL)
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.NORMAL)
         .build();
     session.persist(task1);
     session.persist(task2);
@@ -87,8 +87,8 @@ public class TaskIT {
   void readNotExistsAccount() {
     Task task = Task.builder()
         .title("title-not-exist")
-        .status(Status.NEW)
-        .priority(Priority.NORMAL)
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.NORMAL)
         .build();
     session.persist(task);
     session.flush();
@@ -103,8 +103,8 @@ public class TaskIT {
   void updateAccount() {
     Task task = Task.builder()
         .title("title-update")
-        .status(Status.NEW)
-        .priority(Priority.NORMAL)
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.NORMAL)
         .build();
     session.persist(task);
     task.setTitle("updated");
@@ -122,8 +122,8 @@ public class TaskIT {
   void deleteAccount() {
     Task task = Task.builder()
         .title("title-delete")
-        .status(Status.NEW)
-        .priority(Priority.NORMAL)
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.NORMAL)
         .build();
     session.persist(task);
     session.flush();

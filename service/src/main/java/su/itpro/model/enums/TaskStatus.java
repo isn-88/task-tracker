@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Status {
+public enum TaskStatus {
   NEW("New"),
   ASSIGNED("Assigned"),
   IN_PROGRESS("In Progress"),

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Priority {
+public enum TaskPriority {
   LOW("Low"),
   NORMAL("Normal"),
   HIGH("High"),
