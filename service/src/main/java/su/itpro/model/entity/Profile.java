@@ -10,6 +10,7 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +19,8 @@ import su.itpro.model.enums.Gender;
 
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode(exclude = "account")
+@ToString(exclude = "account")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

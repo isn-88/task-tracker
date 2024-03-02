@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Type {
+public enum TaskType {
 
   FEATURE("Feature"),
   BUGFIX("Bugfix"),

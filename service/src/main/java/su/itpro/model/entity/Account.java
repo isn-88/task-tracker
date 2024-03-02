@@ -9,7 +9,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +25,8 @@ import su.itpro.model.enums.Role;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"group", "profile"})
-@ToString(exclude = {"group", "profile"})
+@EqualsAndHashCode(exclude = {"group", "profile", "tasks"})
+@ToString(exclude = {"group", "profile", "tasks"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -49,6 +52,10 @@ public class Account {
 
   @ManyToOne
   private Group group;
+
+  @Builder.Default
+  @OneToMany(mappedBy = "assigned")
+  List<Task> tasks = new ArrayList<>();
 
   @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
   private Profile profile;

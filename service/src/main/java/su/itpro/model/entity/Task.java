@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import java.time.Instant;
@@ -18,9 +19,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import su.itpro.model.enums.Priority;
-import su.itpro.model.enums.Status;
-import su.itpro.model.enums.Type;
+import su.itpro.model.enums.TaskPriority;
+import su.itpro.model.enums.TaskStatus;
+import su.itpro.model.enums.TaskType;
 
 @Getter
 @Setter
@@ -43,20 +44,21 @@ public class Task {
   private Project project;
 
   @Enumerated(value = EnumType.STRING)
-  private Type type;
+  private TaskType type;
 
   @Column(nullable = false)
   private String title;
 
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
-  private Status status;
+  private TaskStatus status;
 
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
-  private Priority priority;
+  private TaskPriority priority;
 
-  @OneToOne
+  @ManyToOne
+  @JoinColumn(name = "assigned_id")
   private Account assigned;
 
   @OneToOne

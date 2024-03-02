@@ -17,13 +17,17 @@
   <properties>
     <java-release.version>17</java-release.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <hibernate-core.version>6.4.3.Final</hibernate-core.version>
-    <postgresql.version>42.7.1</postgresql.version>
+    <!--  dependency  -->
+    <hibernate-core.version>6.4.4.Final</hibernate-core.version>
+    <querydsl.version>5.1.0</querydsl.version>
+    <jakarta.persistence-api>3.1.0</jakarta.persistence-api>
+    <postgresql.version>42.7.2</postgresql.version>
     <junit-jupiter-engine.version>5.9.1</junit-jupiter-engine.version>
     <assertj-core.version>3.25.3</assertj-core.version>
-    <testcontainers-postgresql.version>1.19.5</testcontainers-postgresql.version>
+    <testcontainers-postgresql.version>1.19.6</testcontainers-postgresql.version>
     <lombok.version>1.18.30</lombok.version>
     <slf4j-reload4j.version>2.0.1</slf4j-reload4j.version>
+    <!--  plugin  -->
     <resources-plugin.version>3.3.1</resources-plugin.version>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
@@ -44,6 +48,30 @@
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate-core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-jpamodelgen</artifactId>
+        <version>${hibernate-core.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-apt</artifactId>
+        <version>${querydsl.version}</version>
+        <classifier>jakarta</classifier>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <classifier>jakarta</classifier>
+        <version>${querydsl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>${jakarta.persistence-api}</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
