@@ -2,23 +2,23 @@ package su.itpro.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static su.itpro.model.entity.QAccount.account;
-import static su.itpro.model.entity.QGroup.group;
 import static su.itpro.model.entity.QTask.task;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
-import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.graph.GraphSemantic;
 import org.hibernate.graph.RootGraph;
+import org.hibernate.graph.SubGraph;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import su.itpro.model.dto.TaskFilterDto;
+import su.itpro.model.dao.QPredicate;
+import su.itpro.model.dto.TaskFilter;
 import su.itpro.model.entity.Account;
 import su.itpro.model.entity.Group;
 import su.itpro.model.entity.Profile;
@@ -33,6 +33,10 @@ public class TaskQuerydslIT {
   private static SessionFactory sessionFactory;
 
   private Session session;
+
+  private Task parentTask;
+
+  private List<Task> normalTasks;
 
   @BeforeAll
   static void init() {
@@ -76,6 +80,7 @@ public class TaskQuerydslIT {
     session.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
+        .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
@@ -93,7 +98,7 @@ public class TaskQuerydslIT {
     Task childTask2 = Task.builder()
         .title("child-2")
         .parent(parentTask)
-        .status(TaskStatus.ASSIGNED)
+        .status(TaskStatus.CLOSED)
         .assigned(accountWithOneTask)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -107,6 +112,8 @@ public class TaskQuerydslIT {
         .build();
     session.persist(freeTask);
 
+    this.parentTask = parentTask;
+    normalTasks = List.of(childTask1, childTask2);
     session.flush();
     session.clear();
   }
@@ -119,63 +126,49 @@ public class TaskQuerydslIT {
 
   @Test
   void findAccountsWithTaskFilter_shouldBeFindOneAccountWithOneTask() {
-    TaskPriority priority = TaskPriority.HIGH;
-    TaskFilterDto filter = TaskFilterDto.builder()
-        .statuses(List.of(TaskStatus.ASSIGNED))
-        .priorities(List.of(priority))
+    TaskFilter filter = TaskFilter.builder()
+        .parentId(parentTask.getId())
+        .statuses(List.of(TaskStatus.ASSIGNED, TaskStatus.CLOSED))
+        .priorities(List.of(TaskPriority.NORMAL))
         .build();
 
-    List<Account> actualResult = findAccountWithTasksByFilter(filter);
+    List<Task> actualResult = findAccountWithTasksByFilter(filter);
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).hasSize(1);
-    assertThat(actualResult.get(0).getProfile()).isNotNull();
-    assertThat(actualResult.get(0).getGroup()).isNotNull();
-    assertThat(actualResult.get(0).getTasks()).isNotNull();
-    assertThat(actualResult.get(0).getTasks()).hasSize(1);
-    assertThat(actualResult.get(0).getTasks().get(0).getPriority()).isEqualByComparingTo(priority);
+    assertThat(actualResult).hasSize(2);
+    assertThat(actualResult).containsExactlyInAnyOrderElementsOf(normalTasks);
   }
 
   @Test
   void findAccountsWithTaskFilter_mustBeEmpty() {
-    TaskFilterDto filter = TaskFilterDto.builder()
-        .statuses(List.of(TaskStatus.NEW))
+    TaskFilter filter = TaskFilter.builder()
+        .statuses(List.of(TaskStatus.CLOSED))
         .priorities(List.of(TaskPriority.LOW))
         .build();
 
-    List<Account> actualResult = findAccountWithTasksByFilter(filter);
+    List<Task> actualResult = findAccountWithTasksByFilter(filter);
 
     assertThat(actualResult).isEmpty();
   }
 
-  private List<Account> findAccountWithTasksByFilter(TaskFilterDto filter) {
-    List<Predicate> predicates = new ArrayList<>();
-    if (filter.parentId() != null) {
-      predicates.add(task.parent.id.eq(filter.parentId()));
-    }
-    if (filter.priorities() != null && !filter.priorities().isEmpty()) {
-      predicates.add(task.priority.in(filter.priorities()));
-    }
-    if (filter.statuses() != null && !filter.statuses().isEmpty()) {
-      predicates.add(task.status.in(filter.statuses()));
-    }
-    if (filter.types() != null && !filter.types().isEmpty()) {
-      predicates.add(task.type.in(filter.types()));
-    }
+  private List<Task> findAccountWithTasksByFilter(TaskFilter filter) {
+    Predicate predicate = QPredicate.builder()
+        .add(filter.parentId(), task.parent.id::eq)
+        .add(filter.priorities(), task.priority::in)
+        .add(filter.statuses(), task.status::in)
+        .add(filter.types(), task.type::in)
+        .buildAnd();
 
-    RootGraph<Account> accountGraph = session.createEntityGraph(Account.class);
-    accountGraph.addAttributeNodes("profile");
-    accountGraph.addAttributeNodes("group");
-    accountGraph.addAttributeNodes("tasks");
+    RootGraph<Task> taskGraph = session.createEntityGraph(Task.class);
+    taskGraph.addAttributeNodes("project", "category", "parent");
+    SubGraph<Account> accountSubgraph = taskGraph.addSubgraph("assigned", Account.class);
+    accountSubgraph.addAttributeNodes("profile", "group");
 
     return new JPAQuery<Account>(session)
-        .setHint(GraphSemantic.LOAD.getJakartaHintName(), accountGraph)
-        .select(account)
-        .from(account)
-        .leftJoin(account.profile)
-        .leftJoin(account.group, group)
-        .leftJoin(account.tasks, task)
-        .where(predicates.toArray(Predicate[]::new))
+        .setHint(GraphSemantic.FETCH.getJakartaHintName(), taskGraph)
+        .select(task)
+        .from(task)
+        .leftJoin(task.assigned, account)
+        .where(predicate)
         .fetch();
   }
 }

@@ -18,7 +18,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import su.itpro.model.dto.TaskFilterDto;
+import su.itpro.model.dto.TaskFilter;
 import su.itpro.model.entity.Account;
 import su.itpro.model.entity.Group;
 import su.itpro.model.entity.Profile;
@@ -34,6 +34,10 @@ public class TaskCriteriaIT {
   private static SessionFactory sessionFactory;
 
   private Session session;
+
+  private List<Task> normalTasks;
+
+  private List<Task> lowTasks;
 
   @BeforeAll
   static void init() {
@@ -108,6 +112,8 @@ public class TaskCriteriaIT {
         .build();
     session.persist(freeTask);
 
+    normalTasks = List.of(childTask1, childTask2);
+    lowTasks = List.of(freeTask);
     session.flush();
     session.clear();
   }
@@ -119,40 +125,34 @@ public class TaskCriteriaIT {
   }
 
   @Test
-  void findTaskWithFilter_shouldBeReturnTwoTasks() {
-    TaskPriority priority = TaskPriority.NORMAL;
-    TaskFilterDto filterDto = TaskFilterDto.builder()
+  void findTaskWithFilter_shouldBeReturnTasksWithNormalPriority() {
+    TaskPriority filterPriority = TaskPriority.NORMAL;
+    TaskFilter filterDto = TaskFilter.builder()
         .statuses(List.of(TaskStatus.ASSIGNED))
-        .priorities(List.of(priority))
+        .priorities(List.of(filterPriority))
         .build();
 
     List<Task> actualResult = findTaskByFilter(filterDto);
 
-    assertThat(actualResult).isNotEmpty();
     assertThat(actualResult).hasSize(2);
-    assertThat(actualResult.get(0).getPriority()).isEqualByComparingTo(priority);
-    assertThat(actualResult.get(0).getAssigned()).isNotNull();
-    assertThat(actualResult.get(1).getPriority()).isEqualByComparingTo(priority);
-    assertThat(actualResult.get(1).getAssigned()).isNotNull();
+    assertThat(actualResult).containsExactlyInAnyOrderElementsOf(normalTasks);
   }
 
   @Test
-  void findTaskWithFilter_shouldBeReturnOneTask() {
-    TaskPriority priority = TaskPriority.LOW;
-    TaskFilterDto filterDto = TaskFilterDto.builder()
+  void findTaskWithFilter_shouldBeReturnTasksWithLowPriority() {
+    TaskPriority filterPriority = TaskPriority.LOW;
+    TaskFilter filterDto = TaskFilter.builder()
         .statuses(List.of(TaskStatus.NEW))
-        .priorities(List.of(priority))
+        .priorities(List.of(filterPriority))
         .build();
 
     List<Task> actualResult = findTaskByFilter(filterDto);
 
-    assertThat(actualResult).isNotEmpty();
     assertThat(actualResult).hasSize(1);
-    assertThat(actualResult.get(0).getPriority()).isEqualByComparingTo(priority);
-    assertThat(actualResult.get(0).getAssigned()).isNull();
+    assertThat(actualResult).containsExactlyInAnyOrderElementsOf(lowTasks);
   }
 
-  private List<Task> findTaskByFilter(TaskFilterDto filter) {
+  private List<Task> findTaskByFilter(TaskFilter filter) {
     CriteriaBuilder cb = session.getCriteriaBuilder();
     CriteriaQuery<Task> criteria = cb.createQuery(Task.class);
     Root<Task> task = criteria.from(Task.class);
@@ -177,7 +177,7 @@ public class TaskCriteriaIT {
         .where(predicates.toArray(Predicate[]::new));
 
     return session.createQuery(criteria)
-        .setHint(GraphSemantic.LOAD.getJakartaHintName(), taskGraph)
+        .setHint(GraphSemantic.FETCH.getJakartaHintName(), taskGraph)
         .list();
   }
 }
