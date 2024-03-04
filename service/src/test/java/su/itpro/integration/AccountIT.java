@@ -1,7 +1,9 @@
 package su.itpro.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,21 +12,31 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import su.itpro.model.dto.AccountLoginDto;
 import su.itpro.model.entity.Account;
 import su.itpro.model.entity.Profile;
 import su.itpro.model.enums.Gender;
 import su.itpro.model.enums.Role;
+import su.itpro.repository.AccountRepository;
+import su.itpro.repository.ProfileRepository;
 import su.itpro.util.HibernateTestUtil;
 
 public class AccountIT {
 
   private static SessionFactory sessionFactory;
 
+  private static AccountRepository accountRepository;
+
+  private static ProfileRepository profileRepository;
+
   private Session session;
 
   @BeforeAll
   static void init() {
     sessionFactory = HibernateTestUtil.buildSessionFactory();
+    Session proxySession = HibernateTestUtil.buildProxySession(sessionFactory);
+    accountRepository = new AccountRepository(proxySession);
+    profileRepository = new ProfileRepository(proxySession);
   }
 
   @AfterAll
@@ -34,14 +46,13 @@ public class AccountIT {
 
   @BeforeEach
   void prepare() {
-    session = sessionFactory.openSession();
+    session = sessionFactory.getCurrentSession();
     session.beginTransaction();
   }
 
   @AfterEach
   void clean() {
     session.getTransaction().rollback();
-    session.close();
   }
 
   @Test
@@ -56,17 +67,16 @@ public class AccountIT {
         .lastname("Lastname")
         .firstname("Firstname")
         .build();
-    session.persist(account);
+    accountRepository.save(account);
     profile.setAccount(account);
     session.flush();
-    session.evict(account);
+    session.clear();
 
-    Account actualResult = session.get(Account.class, account.getId());
+    Optional<Account> actualResult = accountRepository.findById(account.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(account);
-    assertThat(actualResult.getProfile()).isNotNull();
-    assertThat(actualResult.getProfile().getId()).isEqualTo(actualResult.getId());
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(account);
+    assertThat(actualResult.get().getProfile()).isEqualTo(account.getProfile());
   }
 
   @Test
@@ -91,20 +101,18 @@ public class AccountIT {
         .lastname("Lastname_2")
         .firstname("Firstname_2")
         .build();
-    session.persist(account1);
-    session.persist(account2);
+    accountRepository.save(account1);
+    accountRepository.save(account2);
     profile1.setAccount(account1);
     profile2.setAccount(account2);
     session.flush();
-    session.evict(account1);
-    session.evict(account2);
+    session.clear();
 
-    Account actualResult = session.get(Account.class, account1.getId());
+    Optional<Account> actualResult = accountRepository.findById(account1.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(account1);
-    assertThat(actualResult.getProfile()).isNotNull();
-    assertThat(actualResult.getProfile().getId()).isEqualTo(actualResult.getId());
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(account1);
+    assertThat(actualResult.get().getProfile()).isEqualTo(profile1);
   }
 
   @Test
@@ -119,20 +127,20 @@ public class AccountIT {
         .lastname("Lastname")
         .firstname("Firstname")
         .build();
-    session.persist(account);
+    accountRepository.save(account);
     profile.setAccount(account);
     session.flush();
-    session.evict(account);
+    session.clear();
 
-    Account actualResult = session.get(Account.class, UUID.randomUUID());
+    Optional<Account> actualResult = accountRepository.findById(UUID.randomUUID());
 
-    assertThat(actualResult).isNull();
+    assertThat(actualResult).isEmpty();
   }
 
   @Test
   void updateAccount() {
     Account account = Account.builder()
-        .email("test-update@email.com")
+        .email("old@email.com")
         .login("test-update")
         .password("password")
         .role(Role.USER)
@@ -141,21 +149,21 @@ public class AccountIT {
         .lastname("Lastname")
         .firstname("Firstname")
         .build();
-    session.persist(account);
+    accountRepository.save(account);
     profile.setAccount(account);
     session.flush();
-    account.setEmail("updated@email.com");
+    session.clear();
+    account.setEmail("new@email.com");
     profile.setGender(Gender.MALE);
+    accountRepository.update(account);
     session.flush();
-    session.evict(account);
+    session.clear();
 
-    Account actualResult = session.get(Account.class, account.getId());
+    Optional<Account> actualResult = accountRepository.findById(account.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult.getId()).isEqualTo(account.getId());
-    assertThat(actualResult.getEmail()).isEqualTo(account.getEmail());
-    assertThat(actualResult.getProfile().getId()).isEqualTo(actualResult.getId());
-    assertThat(actualResult.getProfile().getGender()).isEqualTo(Gender.MALE);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(account);
+    assertThat(actualResult.get().getProfile()).isEqualTo(profile);
   }
 
   @Test
@@ -170,17 +178,130 @@ public class AccountIT {
         .lastname("Lastname")
         .firstname("Firstname")
         .build();
-    session.persist(account);
+    accountRepository.save(account);
     profile.setAccount(account);
     session.flush();
 
-    session.remove(account);
-    session.flush();
+    accountRepository.delete(account);
 
-    Account actualAccountResult = session.get(Account.class, account.getId());
-    Profile actualProfileResult = session.get(Profile.class, profile.getId());
-    assertThat(actualAccountResult).isNull();
-    assertThat(actualProfileResult).isNull();
+    Optional<Account> actualAccountResult = accountRepository.findById(account.getId());
+    Optional<Profile> actualProfileResult = profileRepository.findById(profile.getId());
+    assertThat(actualAccountResult).isEmpty();
+    assertThat(actualProfileResult).isEmpty();
+  }
+
+  @Test
+  void findByLogin_notFound() {
+    Account account1 = Account.builder()
+        .email("test-1@email.com")
+        .login("test-1")
+        .password("password")
+        .role(Role.USER)
+        .build();
+    Account account2 = Account.builder()
+        .email("test-2@email.com")
+        .login("test-2")
+        .password("password")
+        .role(Role.ADMIN)
+        .build();
+    accountRepository.save(account1);
+    accountRepository.save(account2);
+    session.flush();
+    session.clear();
+    AccountLoginDto loginDto = AccountLoginDto.builder()
+        .login("test")
+        .build();
+
+    Optional<Account> actualResult = accountRepository.findByLoginOrEmail(loginDto);
+
+    assertThat(actualResult).isEmpty();
+  }
+
+  @Test
+  void findByLogin_findByLoginSuccess() {
+    String login = "test-1";
+    Account account1 = Account.builder()
+        .email("test-1@email.com")
+        .login(login)
+        .password("password")
+        .role(Role.USER)
+        .build();
+    Account account2 = Account.builder()
+        .email("test-2@email.com")
+        .login("test-2")
+        .password("password")
+        .role(Role.ADMIN)
+        .build();
+    accountRepository.save(account1);
+    accountRepository.save(account2);
+    session.flush();
+    session.clear();
+    AccountLoginDto loginDto = AccountLoginDto.builder()
+        .login(login)
+        .build();
+
+    Optional<Account> actualResult = accountRepository.findByLoginOrEmail(loginDto);
+
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(account1);
+  }
+
+  @Test
+  void findByLogin_findByEmailSuccess() {
+    String email = "test-2@email.com";
+    Account account1 = Account.builder()
+        .email("test-1@email.com")
+        .login("test-1")
+        .password("password")
+        .role(Role.USER)
+        .build();
+    Account account2 = Account.builder()
+        .email(email)
+        .login("test-2")
+        .password("password")
+        .role(Role.ADMIN)
+        .build();
+    accountRepository.save(account1);
+    accountRepository.save(account2);
+    session.flush();
+    session.clear();
+    AccountLoginDto loginDto = AccountLoginDto.builder()
+        .email(email)
+        .build();
+
+    Optional<Account> actualResult = accountRepository.findByLoginOrEmail(loginDto);
+
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(account2);
+  }
+
+  @Test
+  void findByLogin_findByLoginAndEmailFiled() {
+    String login = "test-1";
+    String email = "test-2@email.com";
+    Account account1 = Account.builder()
+        .email("test-1@email.com")
+        .login(login)
+        .password("password")
+        .role(Role.USER)
+        .build();
+    Account account2 = Account.builder()
+        .email(email)
+        .login("test-2")
+        .password("password")
+        .role(Role.ADMIN)
+        .build();
+    accountRepository.save(account1);
+    accountRepository.save(account2);
+    session.flush();
+    session.clear();
+    AccountLoginDto loginDto = AccountLoginDto.builder()
+        .login(login)
+        .email(email)
+        .build();
+
+    assertThatThrownBy(() -> accountRepository.findByLoginOrEmail(loginDto))
+        .hasCauseInstanceOf(jakarta.persistence.NonUniqueResultException.class);
   }
 
 }

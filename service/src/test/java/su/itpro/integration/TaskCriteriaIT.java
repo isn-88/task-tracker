@@ -77,7 +77,6 @@ public class TaskCriteriaIT {
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
         .build();
-    accountWithTwoTasks.getTasks().add(parentTask);
     session.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
@@ -85,7 +84,6 @@ public class TaskCriteriaIT {
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
         .build();
-    accountWithTwoTasks.getTasks().add(childTask1);
     session.persist(childTask1);
 
     Account accountWithOneTask = Account.builder()
@@ -102,7 +100,6 @@ public class TaskCriteriaIT {
         .assigned(accountWithOneTask)
         .priority(TaskPriority.NORMAL)
         .build();
-    accountWithOneTask.getTasks().add(childTask2);
     session.persist(childTask2);
 
     Task freeTask = Task.builder()

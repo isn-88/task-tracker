@@ -2,6 +2,7 @@ package su.itpro.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,17 +12,22 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.entity.Group;
+import su.itpro.repository.GroupRepository;
 import su.itpro.util.HibernateTestUtil;
 
 public class GroupIT {
 
   private static SessionFactory sessionFactory;
 
+  private static GroupRepository groupRepository;
+
   private Session session;
 
   @BeforeAll
   static void init() {
     sessionFactory = HibernateTestUtil.buildSessionFactory();
+    Session proxySession = HibernateTestUtil.buildProxySession(sessionFactory);
+    groupRepository = new GroupRepository(proxySession);
   }
 
   @AfterAll
@@ -31,95 +37,94 @@ public class GroupIT {
 
   @BeforeEach
   void prepare() {
-    session = sessionFactory.openSession();
+    session = sessionFactory.getCurrentSession();
     session.beginTransaction();
   }
 
   @AfterEach
   void clean() {
     session.getTransaction().rollback();
-    session.close();
   }
 
   @Test
-  void createCategory() {
+  void createGroup() {
     Group group = Group.builder()
         .name("test-create")
         .build();
-    session.persist(group);
+    groupRepository.save(group);
     session.flush();
-    session.evict(group);
+    session.clear();
 
-    Group actualResult = session.get(Group.class, group.getId());
+    Optional<Group> actualResult = groupRepository.findById(group.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(group);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(group);
   }
 
   @Test
-  void readExistsAccount() {
+  void readExistsGroup() {
     Group group1 = Group.builder()
         .name("test-exist-1")
         .build();
     Group group2 = Group.builder()
         .name("test-exist-2")
         .build();
-    session.persist(group1);
-    session.persist(group2);
+    groupRepository.save(group1);
+    groupRepository.save(group2);
     session.flush();
-    session.evict(group1);
-    session.evict(group2);
+    session.clear();
 
-    Group actualResult = session.get(Group.class, group1.getId());
+    Optional<Group> actualResult = groupRepository.findById(group1.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(group1);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(group1);
   }
 
   @Test
-  void readNotExistsAccount() {
+  void readNotExistsGroup() {
     Group group = Group.builder()
         .name("test-create")
         .build();
-    session.persist(group);
+    groupRepository.save(group);
     session.flush();
-    session.evict(group);
+    session.clear();
 
-    Group actualResult = session.get(Group.class, UUID.randomUUID());
+    Optional<Group> actualResult = groupRepository.findById(UUID.randomUUID());
 
-    assertThat(actualResult).isNull();
+    assertThat(actualResult).isEmpty();
   }
 
   @Test
-  void updateAccount() {
+  void updateGroup() {
     Group group = Group.builder()
         .name("test-update")
         .build();
-    session.persist(group);
-    group.setName("updated");
+    groupRepository.save(group);
     session.flush();
-    session.evict(group);
+    session.clear();
+    group.setName("updated");
+    groupRepository.update(group);
+    session.flush();
+    session.clear();
 
-    Group actualResult = session.get(Group.class, group.getId());
+    Optional<Group> actualResult = groupRepository.findById(group.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult.getId()).isEqualTo(group.getId());
-    assertThat(actualResult.getName()).isEqualTo(group.getName());
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(group);
   }
 
   @Test
-  void deleteAccount() {
+  void deleteGroup() {
     Group group = Group.builder()
         .name("test-delete")
         .build();
-    session.persist(group);
+    groupRepository.save(group);
     session.flush();
 
-    session.remove(group);
-    session.flush();
+    groupRepository.delete(group);
 
-    Group actualResult = session.get(Group.class, group.getId());
-    assertThat(actualResult).isNull();
+    Optional<Group> actualResult = groupRepository.findById(group.getId());
+    assertThat(actualResult).isEmpty();
   }
 
 }

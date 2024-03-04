@@ -2,6 +2,8 @@ package su.itpro.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,17 +13,22 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.entity.Project;
+import su.itpro.repository.ProjectRepository;
 import su.itpro.util.HibernateTestUtil;
 
 public class ProjectIT {
 
   private static SessionFactory sessionFactory;
 
+  private static ProjectRepository projectRepository;
+
   private Session session;
 
   @BeforeAll
   static void init() {
     sessionFactory = HibernateTestUtil.buildSessionFactory();
+    Session proxySession = HibernateTestUtil.buildProxySession(sessionFactory);
+    projectRepository = new ProjectRepository(proxySession);
   }
 
   @AfterAll
@@ -31,95 +38,113 @@ public class ProjectIT {
 
   @BeforeEach
   void prepare() {
-    session = sessionFactory.openSession();
+    session = sessionFactory.getCurrentSession();
     session.beginTransaction();
   }
 
   @AfterEach
   void clean() {
     session.getTransaction().rollback();
-    session.close();
   }
 
   @Test
-  void createCategory() {
+  void createProject() {
     Project project = Project.builder()
         .name("test-create")
         .build();
-    session.persist(project);
+    projectRepository.save(project);
     session.flush();
-    session.evict(project);
+    session.clear();
 
-    Project actualResult = session.get(Project.class, project.getId());
+    Optional<Project> actualResult = projectRepository.findById(project.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(project);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(project);
   }
 
   @Test
-  void readExistsAccount() {
+  void readExistsProject() {
     Project project1 = Project.builder()
         .name("test-exist-1")
         .build();
     Project project2 = Project.builder()
         .name("test-exist-2")
         .build();
-    session.persist(project1);
-    session.persist(project2);
+    projectRepository.save(project1);
+    projectRepository.save(project2);
     session.flush();
-    session.evict(project1);
-    session.evict(project2);
+    session.clear();
 
-    Project actualResult = session.get(Project.class, project1.getId());
+    Optional<Project> actualResult = projectRepository.findById(project1.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(project1);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(project1);
   }
 
   @Test
-  void readNotExistsAccount() {
+  void readNotExistsProject() {
     Project project = Project.builder()
         .name("test-not-exist")
         .build();
-    session.persist(project);
+    projectRepository.save(project);
     session.flush();
-    session.evict(project);
+    session.clear();
 
-    Project actualResult = session.get(Project.class, UUID.randomUUID());
+    Optional<Project> actualResult = projectRepository.findById(UUID.randomUUID());
 
-    assertThat(actualResult).isNull();
+    assertThat(actualResult).isEmpty();
   }
 
   @Test
-  void updateAccount() {
+  void updateProject() {
     Project project = Project.builder()
         .name("test-update")
         .build();
-    session.persist(project);
-    project.setName("updated");
+    projectRepository.save(project);
     session.flush();
-    session.evict(project);
+    session.clear();
+    project.setName("updated");
+    projectRepository.update(project);
+    session.flush();
+    session.clear();
 
-    Project actualResult = session.get(Project.class, project.getId());
+    Optional<Project> actualResult = projectRepository.findById(project.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult.getId()).isEqualTo(project.getId());
-    assertThat(actualResult.getName()).isEqualTo(project.getName());
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(project);
   }
 
   @Test
-  void deleteAccount() {
+  void deleteProject() {
     Project project = Project.builder()
         .name("test-delete")
         .build();
-    session.persist(project);
+    projectRepository.save(project);
     session.flush();
 
-    session.remove(project);
+    projectRepository.delete(project);
     session.flush();
 
-    Project actualResult = session.get(Project.class, project.getId());
-    assertThat(actualResult).isNull();
+    Optional<Project> actualResult = projectRepository.findById(project.getId());
+    assertThat(actualResult).isEmpty();
   }
 
+  @Test
+  void findAllProjects() {
+    Project project1 = Project.builder()
+        .name("test-exist-1")
+        .build();
+    Project project2 = Project.builder()
+        .name("test-exist-2")
+        .build();
+    projectRepository.save(project1);
+    projectRepository.save(project2);
+    session.flush();
+    session.clear();
+
+    List<Project> actualResult = projectRepository.findAll();
+
+    assertThat(actualResult).hasSize(2);
+    assertThat(actualResult).containsExactlyInAnyOrderElementsOf(List.of(project1, project2));
+  }
 }

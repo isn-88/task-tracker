@@ -25,7 +25,7 @@ import su.itpro.model.enums.Gender;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Profile {
+public class Profile implements BaseEntity<UUID> {
 
   @Id
   @Column(name = "account_id")
