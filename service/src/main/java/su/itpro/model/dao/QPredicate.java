@@ -9,6 +9,7 @@ import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+@SuppressWarnings("AbbreviationAsWordInName")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class QPredicate {
 

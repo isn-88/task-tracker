@@ -7,14 +7,9 @@ import static su.itpro.model.entity.QTask.task;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.graph.GraphSemantic;
 import org.hibernate.graph.RootGraph;
 import org.hibernate.graph.SubGraph;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.dao.QPredicate;
@@ -26,31 +21,15 @@ import su.itpro.model.entity.Task;
 import su.itpro.model.enums.Role;
 import su.itpro.model.enums.TaskPriority;
 import su.itpro.model.enums.TaskStatus;
-import su.itpro.util.HibernateTestUtil;
 
-public class TaskQuerydslIT {
-
-  private static SessionFactory sessionFactory;
-
-  private Session session;
+public class TaskQuerydslIT extends IntegrationBase {
 
   private Task parentTask;
 
   private List<Task> normalTasks;
 
-  @BeforeAll
-  static void init() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
-  }
-
   @BeforeEach
   void prepare() {
-    session = sessionFactory.openSession();
     session.beginTransaction();
 
     Group group = Group.builder()
@@ -113,12 +92,6 @@ public class TaskQuerydslIT {
     normalTasks = List.of(childTask1, childTask2);
     session.flush();
     session.clear();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
   }
 
   @Test

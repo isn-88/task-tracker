@@ -4,12 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.dto.TaskFilter;
 import su.itpro.model.entity.Account;
@@ -22,43 +16,19 @@ import su.itpro.model.enums.TaskStatus;
 import su.itpro.repository.AccountRepository;
 import su.itpro.repository.GroupRepository;
 import su.itpro.repository.TaskRepository;
-import su.itpro.util.HibernateTestUtil;
 
-public class TaskIT {
+public class TaskIT extends IntegrationBase {
 
-  private static SessionFactory sessionFactory;
+  private final AccountRepository accountRepository;
 
-  private static AccountRepository accountRepository;
+  private final GroupRepository groupRepository;
 
-  private static GroupRepository groupRepository;
+  private final TaskRepository taskRepository;
 
-  private static TaskRepository taskRepository;
-
-  private Session session;
-
-  @BeforeAll
-  static void init() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-    Session proxySession = HibernateTestUtil.buildProxySession(sessionFactory);
-    accountRepository = new AccountRepository(proxySession);
-    groupRepository = new GroupRepository(proxySession);
-    taskRepository = new TaskRepository(proxySession);
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
-  }
-
-  @BeforeEach
-  void prepare() {
-    session = sessionFactory.getCurrentSession();
-    session.beginTransaction();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
+  public TaskIT() {
+    accountRepository = new AccountRepository(session);
+    groupRepository = new GroupRepository(session);
+    taskRepository = new TaskRepository(session);
   }
 
   @Test

@@ -6,18 +6,13 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.graph.GraphSemantic;
 import org.hibernate.graph.RootGraph;
 import org.hibernate.graph.SubGraph;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import su.itpro.model.dao.CPredicate;
 import su.itpro.model.dto.TaskFilter;
 import su.itpro.model.entity.Account;
 import su.itpro.model.entity.Group;
@@ -27,31 +22,17 @@ import su.itpro.model.entity.Task_;
 import su.itpro.model.enums.TaskPriority;
 import su.itpro.model.enums.Role;
 import su.itpro.model.enums.TaskStatus;
-import su.itpro.util.HibernateTestUtil;
 
-public class TaskCriteriaIT {
-
-  private static SessionFactory sessionFactory;
-
-  private Session session;
+public class TaskCriteriaIT extends IntegrationBase {
 
   private List<Task> normalTasks;
 
   private List<Task> lowTasks;
 
-  @BeforeAll
-  static void init() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
-  }
+  private Task parentTask;
 
   @BeforeEach
   void prepare() {
-    session = sessionFactory.openSession();
     session.beginTransaction();
 
     Group group = Group.builder()
@@ -109,22 +90,19 @@ public class TaskCriteriaIT {
         .build();
     session.persist(freeTask);
 
+    this.parentTask = parentTask;
     normalTasks = List.of(childTask1, childTask2);
     lowTasks = List.of(freeTask);
     session.flush();
     session.clear();
   }
 
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
-  }
 
   @Test
   void findTaskWithFilter_shouldBeReturnTasksWithNormalPriority() {
     TaskPriority filterPriority = TaskPriority.NORMAL;
     TaskFilter filterDto = TaskFilter.builder()
+        .parentId(parentTask.getId())
         .statuses(List.of(TaskStatus.ASSIGNED))
         .priorities(List.of(filterPriority))
         .build();
@@ -154,16 +132,11 @@ public class TaskCriteriaIT {
     CriteriaQuery<Task> criteria = cb.createQuery(Task.class);
     Root<Task> task = criteria.from(Task.class);
 
-    List<Predicate> predicates = new ArrayList<>();
-    if (filter.priorities() != null && !filter.priorities().isEmpty()) {
-      predicates.add(task.get(Task_.PRIORITY).in(filter.priorities()));
-    }
-    if (filter.statuses() != null && !filter.statuses().isEmpty()) {
-      predicates.add(task.get(Task_.STATUS).in(filter.statuses()));
-    }
-    if (filter.types() != null && !filter.types().isEmpty()) {
-      predicates.add(task.get(Task_.TYPE).in(filter.types()));
-    }
+    Predicate predicates = CPredicate.builder(cb)
+        .add(filter.priorities(), task.get(Task_.PRIORITY)::in)
+        .add(filter.statuses(), task.get(Task_.STATUS)::in)
+        .add(filter.types(), task.get(Task_.TYPE)::in)
+        .buildAnd();
 
     RootGraph<Task> taskGraph = session.createEntityGraph(Task.class);
     taskGraph.addAttributeNodes("project", "category", "parent");
@@ -171,7 +144,7 @@ public class TaskCriteriaIT {
     accountSubgraph.addAttributeNodes("profile", "group");
 
     criteria.select(task)
-        .where(predicates.toArray(Predicate[]::new));
+        .where(predicates);
 
     return session.createQuery(criteria)
         .setHint(GraphSemantic.FETCH.getJakartaHintName(), taskGraph)

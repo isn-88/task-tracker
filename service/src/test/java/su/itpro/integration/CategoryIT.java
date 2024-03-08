@@ -4,46 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Optional;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.entity.Category;
 import su.itpro.repository.CategoryRepository;
-import su.itpro.util.HibernateTestUtil;
 
-public class CategoryIT {
+public class CategoryIT extends IntegrationBase {
 
-  private static SessionFactory sessionFactory;
+  private final CategoryRepository categoryRepository;
 
-  private static CategoryRepository categoryRepository;
-
-  private Session session;
-
-  @BeforeAll
-  static void init() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-    Session proxySession = HibernateTestUtil.buildProxySession(sessionFactory);
-    categoryRepository = new CategoryRepository(proxySession);
-  }
-
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
-  }
-
-  @BeforeEach
-  void prepare() {
-    session = sessionFactory.getCurrentSession();
-    session.beginTransaction();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
+  public CategoryIT() {
+    categoryRepository = new CategoryRepository(session);
   }
 
   @Test

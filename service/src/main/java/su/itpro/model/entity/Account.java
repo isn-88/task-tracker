@@ -28,7 +28,7 @@ import su.itpro.model.enums.Role;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Account implements BaseEntity<UUID>{
+public class Account implements BaseEntity<UUID> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
