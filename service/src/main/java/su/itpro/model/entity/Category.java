@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Category {
+public class Category implements BaseEntity<Integer> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

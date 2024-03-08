@@ -2,65 +2,54 @@ package su.itpro.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import su.itpro.model.dto.TaskFilter;
+import su.itpro.model.entity.Account;
+import su.itpro.model.entity.Group;
+import su.itpro.model.entity.Profile;
 import su.itpro.model.entity.Task;
+import su.itpro.model.enums.Role;
 import su.itpro.model.enums.TaskPriority;
 import su.itpro.model.enums.TaskStatus;
-import su.itpro.util.HibernateTestUtil;
+import su.itpro.repository.AccountRepository;
+import su.itpro.repository.GroupRepository;
+import su.itpro.repository.TaskRepository;
 
-public class TaskIT {
+public class TaskIT extends IntegrationBase {
 
-  private static SessionFactory sessionFactory;
+  private final AccountRepository accountRepository;
 
-  private Session session;
+  private final GroupRepository groupRepository;
 
-  @BeforeAll
-  static void init() {
-    sessionFactory = HibernateTestUtil.buildSessionFactory();
-  }
+  private final TaskRepository taskRepository;
 
-  @AfterAll
-  static void destroy() {
-    sessionFactory.close();
-  }
-
-  @BeforeEach
-  void prepare() {
-    session = sessionFactory.openSession();
-    session.beginTransaction();
-  }
-
-  @AfterEach
-  void clean() {
-    session.getTransaction().rollback();
-    session.close();
+  public TaskIT() {
+    accountRepository = new AccountRepository(session);
+    groupRepository = new GroupRepository(session);
+    taskRepository = new TaskRepository(session);
   }
 
   @Test
-  void createCategory() {
+  void createTask() {
     Task task = Task.builder()
         .title("title-create")
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(task);
+    taskRepository.save(task);
     session.flush();
-    session.evict(task);
+    session.clear();
 
-    Task actualResult = session.get(Task.class, task.getId());
+    Optional<Task> actualResult = taskRepository.findById(task.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(task);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(task);
   }
 
   @Test
-  void readExistsAccount() {
+  void readExistsTask() {
     Task task1 = Task.builder()
         .title("title-exist-1")
         .status(TaskStatus.NEW)
@@ -71,68 +60,137 @@ public class TaskIT {
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(task1);
-    session.persist(task2);
+    taskRepository.save(task1);
+    taskRepository.save(task2);
     session.flush();
-    session.evict(task1);
-    session.evict(task2);
+    session.clear();
 
-    Task actualResult = session.get(Task.class, task1.getId());
+    Optional<Task> actualResult = taskRepository.findById(task1.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult).isEqualTo(task1);
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(task1);
   }
 
   @Test
-  void readNotExistsAccount() {
+  void readNotExistsTask() {
     Task task = Task.builder()
         .title("title-not-exist")
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(task);
+    taskRepository.save(task);
     session.flush();
-    session.evict(task);
+    session.clear();
 
-    Task actualResult = session.get(Task.class, Long.MAX_VALUE);
+    Optional<Task> actualResult = taskRepository.findById(Long.MAX_VALUE);
 
-    assertThat(actualResult).isNull();
+    assertThat(actualResult).isEmpty();
   }
 
   @Test
-  void updateAccount() {
+  void updateTask() {
     Task task = Task.builder()
         .title("title-update")
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(task);
-    task.setTitle("updated");
+    taskRepository.save(task);
     session.flush();
-    session.evict(task);
+    session.clear();
+    task.setTitle("updated");
+    taskRepository.update(task);
+    session.flush();
+    session.clear();
 
-    Task actualResult = session.get(Task.class, task.getId());
+    Optional<Task> actualResult = taskRepository.findById(task.getId());
 
-    assertThat(actualResult).isNotNull();
-    assertThat(actualResult.getId()).isEqualTo(task.getId());
-    assertThat(actualResult.getTitle()).isEqualTo(task.getTitle());
+    assertThat(actualResult).isPresent();
+    assertThat(actualResult.get()).isEqualTo(task);
   }
 
   @Test
-  void deleteAccount() {
+  void deleteTask() {
     Task task = Task.builder()
         .title("title-delete")
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(task);
+    taskRepository.save(task);
     session.flush();
 
-    session.remove(task);
+    taskRepository.delete(task);
     session.flush();
 
-    Task actualResult = session.get(Task.class, task.getId());
-    assertThat(actualResult).isNull();
+    Optional<Task> actualResult = taskRepository.findById(task.getId());
+    assertThat(actualResult).isEmpty();
+  }
+
+  @Test
+  void findTasksByFilter() {
+    Group group = Group.builder()
+        .name("General")
+        .build();
+    groupRepository.save(group);
+    Account accountWithTwoTasks = Account.builder()
+        .email("account-1@email.com")
+        .login("accountWithTwoTasks")
+        .password("password")
+        .role(Role.USER)
+        .group(group)
+        .build();
+    accountRepository.save(accountWithTwoTasks);
+    Profile profile = Profile.builder()
+        .firstname("Firstname")
+        .lastname("Lastname")
+        .build();
+    profile.setAccount(accountWithTwoTasks);
+    Task parentTask = Task.builder()
+        .title("parent-1")
+        .status(TaskStatus.ASSIGNED)
+        .assigned(accountWithTwoTasks)
+        .priority(TaskPriority.HIGH)
+        .build();
+    taskRepository.save(parentTask);
+    Task childTask1 = Task.builder()
+        .title("child-1")
+        .parent(parentTask)
+        .status(TaskStatus.ASSIGNED)
+        .assigned(accountWithTwoTasks)
+        .priority(TaskPriority.NORMAL)
+        .build();
+    taskRepository.save(childTask1);
+    Account accountWithOneTask = Account.builder()
+        .email("account-2@email.com")
+        .login("accountWithOneTask")
+        .password("password")
+        .role(Role.USER)
+        .build();
+    accountRepository.save(accountWithOneTask);
+    Task childTask2 = Task.builder()
+        .title("child-2")
+        .parent(parentTask)
+        .status(TaskStatus.CLOSED)
+        .assigned(accountWithOneTask)
+        .priority(TaskPriority.NORMAL)
+        .build();
+    taskRepository.save(childTask2);
+    Task freeTask = Task.builder()
+        .title("freeTask")
+        .status(TaskStatus.NEW)
+        .priority(TaskPriority.LOW)
+        .build();
+    taskRepository.save(freeTask);
+    session.flush();
+    session.clear();
+    TaskFilter filter = TaskFilter.builder()
+        .accountId(accountWithTwoTasks.getId())
+        .priorities(List.of(TaskPriority.HIGH))
+        .build();
+
+    List<Task> actualResult = taskRepository.findAllByFilter(filter);
+
+    assertThat(actualResult).hasSize(1);
+    assertThat(actualResult.get(0)).isEqualTo(parentTask);
   }
 
 }

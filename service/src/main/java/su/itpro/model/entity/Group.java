@@ -24,7 +24,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "groups")
-public class Group {
+public class Group implements BaseEntity<UUID> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)

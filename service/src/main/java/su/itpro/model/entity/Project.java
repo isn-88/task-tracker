@@ -25,7 +25,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Project {
+public class Project implements BaseEntity<UUID> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)

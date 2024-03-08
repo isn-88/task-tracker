@@ -28,8 +28,8 @@
     <lombok.version>1.18.30</lombok.version>
     <slf4j-reload4j.version>2.0.1</slf4j-reload4j.version>
     <!--  plugin  -->
-    <resources-plugin.version>3.3.1</resources-plugin.version>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
+    <resources-plugin.version>3.3.1</resources-plugin.version>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <jar-plugin.version>3.3.0</jar-plugin.version>
     <assembly-plugin.version>3.6.0</assembly-plugin.version>
@@ -40,6 +40,8 @@
     <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
     <clean-plugin.version>3.3.2</clean-plugin.version>
     <wrapper-plugin.version>3.2.0</wrapper-plugin.version>
+    <checkstyle-plugin.version>3.3.1</checkstyle-plugin.version>
+    <checkstyle.version>10.9.1</checkstyle.version>
   </properties>
 
   <dependencyManagement>
@@ -179,6 +181,36 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${checkstyle-plugin.version}</version>
+        <configuration>
+          <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+          <propertyExpansion>config_loc=config/checkstyle</propertyExpansion>
+          <failsOnError>true</failsOnError>
+          <consoleOutput>true</consoleOutput>
+          <linkXRef>false</linkXRef>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${checkstyle.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
