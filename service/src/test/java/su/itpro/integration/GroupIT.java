@@ -13,7 +13,7 @@ public class GroupIT extends IntegrationBase {
   private final GroupRepository groupRepository;
 
   public GroupIT() {
-    groupRepository = new GroupRepository(session);
+    groupRepository = context.getBean(GroupRepository.class);
   }
 
   @Test
@@ -22,8 +22,8 @@ public class GroupIT extends IntegrationBase {
         .name("test-create")
         .build();
     groupRepository.save(group);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Group> actualResult = groupRepository.findById(group.getId());
 
@@ -41,8 +41,8 @@ public class GroupIT extends IntegrationBase {
         .build();
     groupRepository.save(group1);
     groupRepository.save(group2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Group> actualResult = groupRepository.findById(group1.getId());
 
@@ -56,8 +56,8 @@ public class GroupIT extends IntegrationBase {
         .name("test-create")
         .build();
     groupRepository.save(group);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Group> actualResult = groupRepository.findById(UUID.randomUUID());
 
@@ -70,12 +70,12 @@ public class GroupIT extends IntegrationBase {
         .name("test-update")
         .build();
     groupRepository.save(group);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     group.setName("updated");
     groupRepository.update(group);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Group> actualResult = groupRepository.findById(group.getId());
 
@@ -89,7 +89,7 @@ public class GroupIT extends IntegrationBase {
         .name("test-delete")
         .build();
     groupRepository.save(group);
-    session.flush();
+    entityManager.flush();
 
     groupRepository.delete(group);
 

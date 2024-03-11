@@ -26,9 +26,9 @@ public class TaskIT extends IntegrationBase {
   private final TaskRepository taskRepository;
 
   public TaskIT() {
-    accountRepository = new AccountRepository(session);
-    groupRepository = new GroupRepository(session);
-    taskRepository = new TaskRepository(session);
+    accountRepository = context.getBean(AccountRepository.class);
+    groupRepository = context.getBean(GroupRepository.class);
+    taskRepository = context.getBean(TaskRepository.class);
   }
 
   @Test
@@ -39,8 +39,8 @@ public class TaskIT extends IntegrationBase {
         .priority(TaskPriority.NORMAL)
         .build();
     taskRepository.save(task);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Task> actualResult = taskRepository.findById(task.getId());
 
@@ -62,8 +62,8 @@ public class TaskIT extends IntegrationBase {
         .build();
     taskRepository.save(task1);
     taskRepository.save(task2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Task> actualResult = taskRepository.findById(task1.getId());
 
@@ -79,8 +79,8 @@ public class TaskIT extends IntegrationBase {
         .priority(TaskPriority.NORMAL)
         .build();
     taskRepository.save(task);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Task> actualResult = taskRepository.findById(Long.MAX_VALUE);
 
@@ -95,12 +95,12 @@ public class TaskIT extends IntegrationBase {
         .priority(TaskPriority.NORMAL)
         .build();
     taskRepository.save(task);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     task.setTitle("updated");
     taskRepository.update(task);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Task> actualResult = taskRepository.findById(task.getId());
 
@@ -116,10 +116,10 @@ public class TaskIT extends IntegrationBase {
         .priority(TaskPriority.NORMAL)
         .build();
     taskRepository.save(task);
-    session.flush();
+    entityManager.flush();
 
     taskRepository.delete(task);
-    session.flush();
+    entityManager.flush();
 
     Optional<Task> actualResult = taskRepository.findById(task.getId());
     assertThat(actualResult).isEmpty();
@@ -180,8 +180,8 @@ public class TaskIT extends IntegrationBase {
         .priority(TaskPriority.LOW)
         .build();
     taskRepository.save(freeTask);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     TaskFilter filter = TaskFilter.builder()
         .accountId(accountWithTwoTasks.getId())
         .priorities(List.of(TaskPriority.HIGH))

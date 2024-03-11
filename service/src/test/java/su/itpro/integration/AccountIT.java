@@ -21,8 +21,8 @@ public class AccountIT extends IntegrationBase {
   private final ProfileRepository profileRepository;
 
   public AccountIT() {
-    accountRepository = new AccountRepository(session);
-    profileRepository = new ProfileRepository(session);
+    accountRepository = context.getBean(AccountRepository.class);
+    profileRepository = context.getBean(ProfileRepository.class);
   }
 
   @Test
@@ -39,8 +39,8 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account);
     profile.setAccount(account);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Account> actualResult = accountRepository.findById(account.getId());
 
@@ -75,8 +75,8 @@ public class AccountIT extends IntegrationBase {
     accountRepository.save(account2);
     profile1.setAccount(account1);
     profile2.setAccount(account2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Account> actualResult = accountRepository.findById(account1.getId());
 
@@ -99,8 +99,8 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account);
     profile.setAccount(account);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Account> actualResult = accountRepository.findById(UUID.randomUUID());
 
@@ -121,13 +121,13 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account);
     profile.setAccount(account);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     account.setEmail("new@email.com");
     profile.setGender(Gender.MALE);
     accountRepository.update(account);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Account> actualResult = accountRepository.findById(account.getId());
 
@@ -150,7 +150,7 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account);
     profile.setAccount(account);
-    session.flush();
+    entityManager.flush();
 
     accountRepository.delete(account);
 
@@ -176,8 +176,8 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account1);
     accountRepository.save(account2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
         .login("test")
         .build();
@@ -204,8 +204,8 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account1);
     accountRepository.save(account2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
         .login(login)
         .build();
@@ -233,8 +233,8 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account1);
     accountRepository.save(account2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
         .email(email)
         .build();
@@ -263,8 +263,8 @@ public class AccountIT extends IntegrationBase {
         .build();
     accountRepository.save(account1);
     accountRepository.save(account2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
         .login(login)
         .email(email)

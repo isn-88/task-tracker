@@ -18,13 +18,14 @@
     <java-release.version>17</java-release.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!--  dependency  -->
+    <spring.version>6.1.4</spring.version>
     <hibernate-core.version>6.4.4.Final</hibernate-core.version>
     <querydsl.version>5.1.0</querydsl.version>
     <jakarta.persistence-api>3.1.0</jakarta.persistence-api>
     <postgresql.version>42.7.2</postgresql.version>
     <junit-jupiter-engine.version>5.9.1</junit-jupiter-engine.version>
     <assertj-core.version>3.25.3</assertj-core.version>
-    <testcontainers-postgresql.version>1.19.6</testcontainers-postgresql.version>
+    <testcontainers-postgresql.version>1.19.7</testcontainers-postgresql.version>
     <lombok.version>1.18.30</lombok.version>
     <slf4j-reload4j.version>2.0.1</slf4j-reload4j.version>
     <!--  plugin  -->
@@ -46,6 +47,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>

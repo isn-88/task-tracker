@@ -28,6 +28,7 @@ public abstract class BaseRepository<K extends Serializable, E extends BaseEntit
   @Override
   public void update(E entity) {
     entityManager.merge(entity);
+    entityManager.flush();
   }
 
   @Override

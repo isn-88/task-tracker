@@ -6,10 +6,10 @@ import static su.itpro.model.entity.QTask.task;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.Subgraph;
 import java.util.List;
 import org.hibernate.graph.GraphSemantic;
-import org.hibernate.graph.RootGraph;
-import org.hibernate.graph.SubGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.model.dao.QPredicate;
@@ -30,12 +30,12 @@ public class TaskQuerydslIT extends IntegrationBase {
 
   @BeforeEach
   void prepare() {
-    session.beginTransaction();
+    entityManager.getTransaction().begin();
 
     Group group = Group.builder()
         .name("General")
         .build();
-    session.persist(group);
+    entityManager.persist(group);
     Account accountWithTwoTasks = Account.builder()
         .email("account-1@email.com")
         .login("accountWithTwoTasks")
@@ -43,7 +43,7 @@ public class TaskQuerydslIT extends IntegrationBase {
         .role(Role.USER)
         .group(group)
         .build();
-    session.persist(accountWithTwoTasks);
+    entityManager.persist(accountWithTwoTasks);
     Profile profile = Profile.builder()
         .firstname("Firstname")
         .lastname("Lastname")
@@ -55,7 +55,7 @@ public class TaskQuerydslIT extends IntegrationBase {
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
         .build();
-    session.persist(parentTask);
+    entityManager.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
         .parent(parentTask)
@@ -63,7 +63,7 @@ public class TaskQuerydslIT extends IntegrationBase {
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(childTask1);
+    entityManager.persist(childTask1);
 
     Account accountWithOneTask = Account.builder()
         .email("account-2@email.com")
@@ -71,7 +71,7 @@ public class TaskQuerydslIT extends IntegrationBase {
         .password("password")
         .role(Role.USER)
         .build();
-    session.persist(accountWithOneTask);
+    entityManager.persist(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
         .parent(parentTask)
@@ -79,19 +79,19 @@ public class TaskQuerydslIT extends IntegrationBase {
         .assigned(accountWithOneTask)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(childTask2);
+    entityManager.persist(childTask2);
 
     Task freeTask = Task.builder()
         .title("freeTask")
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();
-    session.persist(freeTask);
+    entityManager.persist(freeTask);
 
     this.parentTask = parentTask;
     normalTasks = List.of(childTask1, childTask2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
   }
 
   @Test
@@ -128,12 +128,12 @@ public class TaskQuerydslIT extends IntegrationBase {
         .add(filter.types(), task.type::in)
         .buildAnd();
 
-    RootGraph<Task> taskGraph = session.createEntityGraph(Task.class);
+    EntityGraph<Task> taskGraph = entityManager.createEntityGraph(Task.class);
     taskGraph.addAttributeNodes("project", "category", "parent");
-    SubGraph<Account> accountSubgraph = taskGraph.addSubgraph("assigned", Account.class);
+    Subgraph<Account> accountSubgraph = taskGraph.addSubgraph("assigned", Account.class);
     accountSubgraph.addAttributeNodes("profile", "group");
 
-    return new JPAQuery<Account>(session)
+    return new JPAQuery<Account>(entityManager)
         .setHint(GraphSemantic.FETCH.getJakartaHintName(), taskGraph)
         .select(task)
         .from(task)

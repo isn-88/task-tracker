@@ -13,7 +13,7 @@ public class CategoryIT extends IntegrationBase {
   private final CategoryRepository categoryRepository;
 
   public CategoryIT() {
-    categoryRepository = new CategoryRepository(session);
+    categoryRepository = context.getBean(CategoryRepository.class);
   }
 
   @Test
@@ -22,8 +22,8 @@ public class CategoryIT extends IntegrationBase {
         .name("test-create")
         .build();
     categoryRepository.save(category);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Category> actualResult = categoryRepository.findById(category.getId());
 
@@ -41,8 +41,8 @@ public class CategoryIT extends IntegrationBase {
         .build();
     categoryRepository.save(category1);
     categoryRepository.save(category2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Category> actualResult = categoryRepository.findById(category1.getId());
 
@@ -56,8 +56,8 @@ public class CategoryIT extends IntegrationBase {
         .name("test-exist")
         .build();
     categoryRepository.save(category);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Category> actualResult = categoryRepository.findById(Integer.MAX_VALUE);
 
@@ -70,12 +70,12 @@ public class CategoryIT extends IntegrationBase {
         .name("test-exist")
         .build();
     categoryRepository.save(category);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     category.setName("test-updated");
     categoryRepository.update(category);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Category> actualResult = categoryRepository.findById(category.getId());
 
@@ -89,10 +89,10 @@ public class CategoryIT extends IntegrationBase {
         .name("test-exist")
         .build();
     categoryRepository.save(category);
-    session.flush();
+    entityManager.flush();
 
     categoryRepository.delete(category);
-    session.flush();
+    entityManager.flush();
 
     Optional<Category> actualResult = categoryRepository.findById(category.getId());
     assertThat(actualResult).isEmpty();
@@ -108,8 +108,8 @@ public class CategoryIT extends IntegrationBase {
         .build();
     categoryRepository.save(category1);
     categoryRepository.save(category2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     List<Category> actualResult = categoryRepository.findAll();
 

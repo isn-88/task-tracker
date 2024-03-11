@@ -14,7 +14,7 @@ public class ProjectIT extends IntegrationBase {
   private final ProjectRepository projectRepository;
 
   public ProjectIT() {
-    projectRepository = new ProjectRepository(session);
+    projectRepository = context.getBean(ProjectRepository.class);
   }
 
   @Test
@@ -23,8 +23,8 @@ public class ProjectIT extends IntegrationBase {
         .name("test-create")
         .build();
     projectRepository.save(project);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Project> actualResult = projectRepository.findById(project.getId());
 
@@ -42,8 +42,8 @@ public class ProjectIT extends IntegrationBase {
         .build();
     projectRepository.save(project1);
     projectRepository.save(project2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Project> actualResult = projectRepository.findById(project1.getId());
 
@@ -57,8 +57,8 @@ public class ProjectIT extends IntegrationBase {
         .name("test-not-exist")
         .build();
     projectRepository.save(project);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Project> actualResult = projectRepository.findById(UUID.randomUUID());
 
@@ -71,12 +71,12 @@ public class ProjectIT extends IntegrationBase {
         .name("test-update")
         .build();
     projectRepository.save(project);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
     project.setName("updated");
     projectRepository.update(project);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     Optional<Project> actualResult = projectRepository.findById(project.getId());
 
@@ -90,10 +90,10 @@ public class ProjectIT extends IntegrationBase {
         .name("test-delete")
         .build();
     projectRepository.save(project);
-    session.flush();
+    entityManager.flush();
 
     projectRepository.delete(project);
-    session.flush();
+    entityManager.flush();
 
     Optional<Project> actualResult = projectRepository.findById(project.getId());
     assertThat(actualResult).isEmpty();
@@ -109,8 +109,8 @@ public class ProjectIT extends IntegrationBase {
         .build();
     projectRepository.save(project1);
     projectRepository.save(project2);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     List<Project> actualResult = projectRepository.findAll();
 

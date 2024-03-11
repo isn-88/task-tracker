@@ -2,17 +2,17 @@ package su.itpro.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.Subgraph;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import org.hibernate.graph.GraphSemantic;
-import org.hibernate.graph.RootGraph;
-import org.hibernate.graph.SubGraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import su.itpro.model.dao.CPredicate;
+import su.itpro.model.dao.CriteriaPredicate;
 import su.itpro.model.dto.TaskFilter;
 import su.itpro.model.entity.Account;
 import su.itpro.model.entity.Group;
@@ -33,12 +33,12 @@ public class TaskCriteriaIT extends IntegrationBase {
 
   @BeforeEach
   void prepare() {
-    session.beginTransaction();
+    entityManager.getTransaction().begin();
 
     Group group = Group.builder()
         .name("General")
         .build();
-    session.persist(group);
+    entityManager.persist(group);
     Account accountWithTwoTasks = Account.builder()
         .email("account-1@email.com")
         .login("accountWithTwoTasks")
@@ -46,7 +46,7 @@ public class TaskCriteriaIT extends IntegrationBase {
         .role(Role.USER)
         .group(group)
         .build();
-    session.persist(accountWithTwoTasks);
+    entityManager.persist(accountWithTwoTasks);
     Profile profile = Profile.builder()
         .firstname("Firstname")
         .lastname("Lastname")
@@ -58,14 +58,14 @@ public class TaskCriteriaIT extends IntegrationBase {
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
         .build();
-    session.persist(parentTask);
+    entityManager.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(childTask1);
+    entityManager.persist(childTask1);
 
     Account accountWithOneTask = Account.builder()
         .email("account-2@email.com")
@@ -73,7 +73,7 @@ public class TaskCriteriaIT extends IntegrationBase {
         .password("password")
         .role(Role.USER)
         .build();
-    session.persist(accountWithOneTask);
+    entityManager.persist(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
         .parent(parentTask)
@@ -81,22 +81,21 @@ public class TaskCriteriaIT extends IntegrationBase {
         .assigned(accountWithOneTask)
         .priority(TaskPriority.NORMAL)
         .build();
-    session.persist(childTask2);
+    entityManager.persist(childTask2);
 
     Task freeTask = Task.builder()
         .title("freeTask")
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();
-    session.persist(freeTask);
+    entityManager.persist(freeTask);
 
     this.parentTask = parentTask;
-    normalTasks = List.of(childTask1, childTask2);
+    normalTasks = List.of(childTask2);
     lowTasks = List.of(freeTask);
-    session.flush();
-    session.clear();
+    entityManager.flush();
+    entityManager.clear();
   }
-
 
   @Test
   void findTaskWithFilter_shouldBeReturnTasksWithNormalPriority() {
@@ -109,16 +108,15 @@ public class TaskCriteriaIT extends IntegrationBase {
 
     List<Task> actualResult = findTaskByFilter(filterDto);
 
-    assertThat(actualResult).hasSize(2);
+    assertThat(actualResult).hasSize(1);
     assertThat(actualResult).containsExactlyInAnyOrderElementsOf(normalTasks);
   }
 
   @Test
   void findTaskWithFilter_shouldBeReturnTasksWithLowPriority() {
-    TaskPriority filterPriority = TaskPriority.LOW;
     TaskFilter filterDto = TaskFilter.builder()
         .statuses(List.of(TaskStatus.NEW))
-        .priorities(List.of(filterPriority))
+        .priorities(List.of(TaskPriority.LOW))
         .build();
 
     List<Task> actualResult = findTaskByFilter(filterDto);
@@ -128,26 +126,26 @@ public class TaskCriteriaIT extends IntegrationBase {
   }
 
   private List<Task> findTaskByFilter(TaskFilter filter) {
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<Task> criteria = cb.createQuery(Task.class);
     Root<Task> task = criteria.from(Task.class);
 
-    Predicate predicates = CPredicate.builder(cb)
+    Predicate[] predicates = CriteriaPredicate.builder()
+        .add(filter.parentId(), parentId -> cb.equal(task.get(Task_.PARENT).get(Task_.ID), parentId))
         .add(filter.priorities(), task.get(Task_.PRIORITY)::in)
         .add(filter.statuses(), task.get(Task_.STATUS)::in)
-        .add(filter.types(), task.get(Task_.TYPE)::in)
-        .buildAnd();
+        .build();
 
-    RootGraph<Task> taskGraph = session.createEntityGraph(Task.class);
+    EntityGraph<Task> taskGraph = entityManager.createEntityGraph(Task.class);
     taskGraph.addAttributeNodes("project", "category", "parent");
-    SubGraph<Account> accountSubgraph = taskGraph.addSubgraph("assigned", Account.class);
+    Subgraph<Account> accountSubgraph = taskGraph.addSubgraph("assigned", Account.class);
     accountSubgraph.addAttributeNodes("profile", "group");
 
-    criteria.select(task)
-        .where(predicates);
+    criteria.where(predicates);
+    criteria.select(task);
 
-    return session.createQuery(criteria)
+    return entityManager.createQuery(criteria)
         .setHint(GraphSemantic.FETCH.getJakartaHintName(), taskGraph)
-        .list();
+        .getResultList();
   }
 }

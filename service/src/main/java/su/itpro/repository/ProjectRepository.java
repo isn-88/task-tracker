@@ -6,8 +6,10 @@ import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Repository;
 import su.itpro.model.entity.Project;
 
+@Repository
 public class ProjectRepository extends BaseRepository<UUID, Project> {
 
   public ProjectRepository(EntityManager entityManager) {

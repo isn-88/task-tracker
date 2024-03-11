@@ -10,11 +10,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Subgraph;
 import java.util.List;
 import org.hibernate.graph.GraphSemantic;
+import org.springframework.stereotype.Repository;
 import su.itpro.model.dao.QPredicate;
 import su.itpro.model.dto.TaskFilter;
 import su.itpro.model.entity.Account;
 import su.itpro.model.entity.Task;
 
+@Repository
 public class TaskRepository extends BaseRepository<Long, Task> {
 
   public TaskRepository(EntityManager entityManager) {

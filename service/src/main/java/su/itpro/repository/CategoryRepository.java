@@ -5,8 +5,10 @@ import static su.itpro.model.entity.QCategory.category;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 import su.itpro.model.entity.Category;
 
+@Repository
 public class CategoryRepository extends BaseRepository<Integer, Category> {
 
   public CategoryRepository(EntityManager entityManager) {
