@@ -2,39 +2,43 @@ package su.itpro.tasktracker.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Group;
 import su.itpro.tasktracker.model.entity.Profile;
+import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
 import su.itpro.tasktracker.repository.AccountRepository;
 import su.itpro.tasktracker.repository.GroupRepository;
+import su.itpro.tasktracker.repository.ProjectRepository;
 import su.itpro.tasktracker.repository.TaskRepository;
 
-public class TaskIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class TaskIT extends IntegrationTestBase {
 
   private final AccountRepository accountRepository;
-
   private final GroupRepository groupRepository;
-
+  private final ProjectRepository projectRepository;
   private final TaskRepository taskRepository;
-
-  public TaskIT() {
-    accountRepository = context.getBean(AccountRepository.class);
-    groupRepository = context.getBean(GroupRepository.class);
-    taskRepository = context.getBean(TaskRepository.class);
-  }
+  private final EntityManager entityManager;
 
   @Test
   void createTask() {
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    projectRepository.save(project);
     Task task = Task.builder()
         .title("title-create")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -50,13 +54,19 @@ public class TaskIT extends IntegrationBase {
 
   @Test
   void readExistsTask() {
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    projectRepository.save(project);
     Task task1 = Task.builder()
         .title("title-exist-1")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
     Task task2 = Task.builder()
         .title("title-exist-2")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -73,8 +83,13 @@ public class TaskIT extends IntegrationBase {
 
   @Test
   void readNotExistsTask() {
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    projectRepository.save(project);
     Task task = Task.builder()
         .title("title-not-exist")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -89,8 +104,13 @@ public class TaskIT extends IntegrationBase {
 
   @Test
   void updateTask() {
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    projectRepository.save(project);
     Task task = Task.builder()
         .title("title-update")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -110,8 +130,13 @@ public class TaskIT extends IntegrationBase {
 
   @Test
   void deleteTask() {
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    projectRepository.save(project);
     Task task = Task.builder()
         .title("title-delete")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -127,6 +152,10 @@ public class TaskIT extends IntegrationBase {
 
   @Test
   void findTasksByFilter() {
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    projectRepository.save(project);
     Group group = Group.builder()
         .name("General")
         .build();
@@ -146,6 +175,7 @@ public class TaskIT extends IntegrationBase {
     profile.setAccount(accountWithTwoTasks);
     Task parentTask = Task.builder()
         .title("parent-1")
+        .project(project)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
@@ -153,6 +183,7 @@ public class TaskIT extends IntegrationBase {
     taskRepository.save(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
+        .project(project)
         .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
@@ -168,6 +199,7 @@ public class TaskIT extends IntegrationBase {
     accountRepository.save(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
+        .project(project)
         .parent(parentTask)
         .status(TaskStatus.CLOSED)
         .assigned(accountWithOneTask)
@@ -176,6 +208,7 @@ public class TaskIT extends IntegrationBase {
     taskRepository.save(childTask2);
     Task freeTask = Task.builder()
         .title("freeTask")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();

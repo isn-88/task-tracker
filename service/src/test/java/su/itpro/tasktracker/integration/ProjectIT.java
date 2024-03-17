@@ -2,20 +2,20 @@ package su.itpro.tasktracker.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.repository.ProjectRepository;
 
-public class ProjectIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class ProjectIT extends IntegrationTestBase {
 
   private final ProjectRepository projectRepository;
-
-  public ProjectIT() {
-    projectRepository = context.getBean(ProjectRepository.class);
-  }
+  private final EntityManager entityManager;
 
   @Test
   void createProject() {

@@ -2,19 +2,19 @@ package su.itpro.tasktracker.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.model.entity.Group;
 import su.itpro.tasktracker.repository.GroupRepository;
 
-public class GroupIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class GroupIT extends IntegrationTestBase {
 
   private final GroupRepository groupRepository;
-
-  public GroupIT() {
-    groupRepository = context.getBean(GroupRepository.class);
-  }
+  private final EntityManager entityManager;
 
   @Test
   void createGroup() {

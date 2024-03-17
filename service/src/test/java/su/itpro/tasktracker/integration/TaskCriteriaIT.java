@@ -3,12 +3,14 @@ package su.itpro.tasktracker.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Subgraph;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.graph.GraphSemantic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,24 +19,28 @@ import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Group;
 import su.itpro.tasktracker.model.entity.Profile;
+import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.entity.Task_;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.model.enums.TaskStatus;
 
-public class TaskCriteriaIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class TaskCriteriaIT extends IntegrationTestBase {
+
+  private final EntityManager entityManager;
 
   private List<Task> normalTasks;
-
   private List<Task> lowTasks;
-
   private Task parentTask;
 
   @BeforeEach
   void prepare() {
-    entityManager.getTransaction().begin();
-
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    entityManager.persist(project);
     Group group = Group.builder()
         .name("General")
         .build();
@@ -54,6 +60,7 @@ public class TaskCriteriaIT extends IntegrationBase {
     profile.setAccount(accountWithTwoTasks);
     Task parentTask = Task.builder()
         .title("parent-1")
+        .project(project)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
@@ -61,6 +68,7 @@ public class TaskCriteriaIT extends IntegrationBase {
     entityManager.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
+        .project(project)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
@@ -76,6 +84,7 @@ public class TaskCriteriaIT extends IntegrationBase {
     entityManager.persist(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
+        .project(project)
         .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithOneTask)
@@ -85,6 +94,7 @@ public class TaskCriteriaIT extends IntegrationBase {
 
     Task freeTask = Task.builder()
         .title("freeTask")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();
