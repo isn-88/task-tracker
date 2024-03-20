@@ -41,6 +41,7 @@ public class Task implements BaseEntity<Long> {
   private Task parent;
 
   @ManyToOne
+  @JoinColumn(nullable = false)
   private Project project;
 
   @Enumerated(value = EnumType.STRING)

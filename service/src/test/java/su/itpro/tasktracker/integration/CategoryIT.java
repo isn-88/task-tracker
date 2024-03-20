@@ -2,19 +2,19 @@ package su.itpro.tasktracker.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.model.entity.Category;
 import su.itpro.tasktracker.repository.CategoryRepository;
 
-public class CategoryIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class CategoryIT extends IntegrationTestBase {
 
   private final CategoryRepository categoryRepository;
-
-  public CategoryIT() {
-    categoryRepository = context.getBean(CategoryRepository.class);
-  }
+  private final EntityManager entityManager;
 
   @Test
   void createCategory() {

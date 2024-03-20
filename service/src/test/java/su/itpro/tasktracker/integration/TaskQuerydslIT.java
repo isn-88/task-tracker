@@ -7,8 +7,10 @@ import static su.itpro.tasktracker.model.entity.QTask.task;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.Subgraph;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.graph.GraphSemantic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,21 +19,26 @@ import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Group;
 import su.itpro.tasktracker.model.entity.Profile;
+import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
 
-public class TaskQuerydslIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class TaskQuerydslIT extends IntegrationTestBase {
+
+  private final EntityManager entityManager;
 
   private Task parentTask;
-
   private List<Task> normalTasks;
 
   @BeforeEach
   void prepare() {
-    entityManager.getTransaction().begin();
-
+    Project project = Project.builder()
+        .name("TestProject")
+        .build();
+    entityManager.persist(project);
     Group group = Group.builder()
         .name("General")
         .build();
@@ -51,6 +58,7 @@ public class TaskQuerydslIT extends IntegrationBase {
     profile.setAccount(accountWithTwoTasks);
     Task parentTask = Task.builder()
         .title("parent-1")
+        .project(project)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
@@ -58,6 +66,7 @@ public class TaskQuerydslIT extends IntegrationBase {
     entityManager.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
+        .project(project)
         .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
@@ -74,6 +83,7 @@ public class TaskQuerydslIT extends IntegrationBase {
     entityManager.persist(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
+        .project(project)
         .parent(parentTask)
         .status(TaskStatus.CLOSED)
         .assigned(accountWithOneTask)
@@ -83,6 +93,7 @@ public class TaskQuerydslIT extends IntegrationBase {
 
     Task freeTask = Task.builder()
         .title("freeTask")
+        .project(project)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();

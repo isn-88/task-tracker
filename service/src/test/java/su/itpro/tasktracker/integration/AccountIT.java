@@ -3,8 +3,10 @@ package su.itpro.tasktracker.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.model.dto.AccountLoginDto;
 import su.itpro.tasktracker.model.entity.Account;
@@ -14,16 +16,12 @@ import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.repository.AccountRepository;
 import su.itpro.tasktracker.repository.ProfileRepository;
 
-public class AccountIT extends IntegrationBase {
+@RequiredArgsConstructor
+public class AccountIT extends IntegrationTestBase {
 
   private final AccountRepository accountRepository;
-
   private final ProfileRepository profileRepository;
-
-  public AccountIT() {
-    accountRepository = context.getBean(AccountRepository.class);
-    profileRepository = context.getBean(ProfileRepository.class);
-  }
+  private final EntityManager entityManager;
 
   @Test
   void createAccount() {
