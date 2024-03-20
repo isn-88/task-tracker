@@ -7,11 +7,9 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import su.itpro.tasktracker.integration.annotation.IT;
 
 @IT
-public abstract class IntegrationTestBase {
+abstract class IntegrationTestBase {
 
-  private static final String IMAGE_NAME = "postgres:16";
-
-  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(IMAGE_NAME);
+  private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
 
   @BeforeAll
   static void startContainer() {
