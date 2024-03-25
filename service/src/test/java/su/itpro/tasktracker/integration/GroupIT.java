@@ -73,7 +73,7 @@ public class GroupIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     group.setName("updated");
-    groupRepository.update(group);
+    groupRepository.save(group);
     entityManager.flush();
     entityManager.clear();
 

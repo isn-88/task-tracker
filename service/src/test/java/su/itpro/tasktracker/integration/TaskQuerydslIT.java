@@ -24,6 +24,7 @@ import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
+import su.itpro.tasktracker.model.enums.TaskType;
 
 @RequiredArgsConstructor
 public class TaskQuerydslIT extends IntegrationTestBase {
@@ -59,6 +60,7 @@ public class TaskQuerydslIT extends IntegrationTestBase {
     Task parentTask = Task.builder()
         .title("parent-1")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
@@ -66,8 +68,9 @@ public class TaskQuerydslIT extends IntegrationTestBase {
     entityManager.persist(parentTask);
     Task childTask1 = Task.builder()
         .title("child-1")
-        .project(project)
         .parent(parentTask)
+        .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
@@ -83,8 +86,9 @@ public class TaskQuerydslIT extends IntegrationTestBase {
     entityManager.persist(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
-        .project(project)
         .parent(parentTask)
+        .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.CLOSED)
         .assigned(accountWithOneTask)
         .priority(TaskPriority.NORMAL)
@@ -94,6 +98,7 @@ public class TaskQuerydslIT extends IntegrationTestBase {
     Task freeTask = Task.builder()
         .title("freeTask")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();

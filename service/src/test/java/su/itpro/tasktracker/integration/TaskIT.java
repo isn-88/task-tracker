@@ -16,6 +16,7 @@ import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
+import su.itpro.tasktracker.model.enums.TaskType;
 import su.itpro.tasktracker.repository.AccountRepository;
 import su.itpro.tasktracker.repository.GroupRepository;
 import su.itpro.tasktracker.repository.ProjectRepository;
@@ -39,6 +40,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-create")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -61,12 +63,14 @@ public class TaskIT extends IntegrationTestBase {
     Task task1 = Task.builder()
         .title("title-exist-1")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
     Task task2 = Task.builder()
         .title("title-exist-2")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -90,6 +94,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-not-exist")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -111,6 +116,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-update")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -118,7 +124,7 @@ public class TaskIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     task.setTitle("updated");
-    taskRepository.update(task);
+    taskRepository.save(task);
     entityManager.flush();
     entityManager.clear();
 
@@ -137,6 +143,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-delete")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
         .build();
@@ -176,6 +183,7 @@ public class TaskIT extends IntegrationTestBase {
     Task parentTask = Task.builder()
         .title("parent-1")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
@@ -184,6 +192,7 @@ public class TaskIT extends IntegrationTestBase {
     Task childTask1 = Task.builder()
         .title("child-1")
         .project(project)
+        .type(TaskType.FEATURE)
         .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
         .assigned(accountWithTwoTasks)
@@ -200,6 +209,7 @@ public class TaskIT extends IntegrationTestBase {
     Task childTask2 = Task.builder()
         .title("child-2")
         .project(project)
+        .type(TaskType.FEATURE)
         .parent(parentTask)
         .status(TaskStatus.CLOSED)
         .assigned(accountWithOneTask)
@@ -209,6 +219,7 @@ public class TaskIT extends IntegrationTestBase {
     Task freeTask = Task.builder()
         .title("freeTask")
         .project(project)
+        .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.LOW)
         .build();

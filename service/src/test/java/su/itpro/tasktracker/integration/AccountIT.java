@@ -123,7 +123,7 @@ public class AccountIT extends IntegrationTestBase {
     entityManager.clear();
     account.setEmail("new@email.com");
     profile.setGender(Gender.MALE);
-    accountRepository.update(account);
+    accountRepository.save(account);
     entityManager.flush();
     entityManager.clear();
 
