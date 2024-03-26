@@ -74,7 +74,7 @@ public class ProjectIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     project.setName("updated");
-    projectRepository.update(project);
+    projectRepository.save(project);
     entityManager.flush();
     entityManager.clear();
 

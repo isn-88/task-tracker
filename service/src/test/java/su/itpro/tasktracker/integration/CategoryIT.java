@@ -73,7 +73,7 @@ public class CategoryIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     category.setName("test-updated");
-    categoryRepository.update(category);
+    categoryRepository.save(category);
     entityManager.flush();
     entityManager.clear();
 
