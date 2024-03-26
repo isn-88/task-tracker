@@ -6,6 +6,6 @@ import su.itpro.tasktracker.model.entity.Account;
 
 public interface AccountFilterRepository {
 
-  Optional<Account> findByLoginOrEmail(AccountLoginDto loginDto);
+  Optional<Account> findByFilter(AccountLoginDto loginDto);
 
 }

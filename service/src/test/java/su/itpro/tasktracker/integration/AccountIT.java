@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NonUniqueResultException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -180,7 +181,7 @@ public class AccountIT extends IntegrationTestBase {
         .login("test")
         .build();
 
-    Optional<Account> actualResult = accountRepository.findByLoginOrEmail(loginDto);
+    Optional<Account> actualResult = accountRepository.findByFilter(loginDto);
 
     assertThat(actualResult).isEmpty();
   }
@@ -208,7 +209,7 @@ public class AccountIT extends IntegrationTestBase {
         .login(login)
         .build();
 
-    Optional<Account> actualResult = accountRepository.findByLoginOrEmail(loginDto);
+    Optional<Account> actualResult = accountRepository.findByFilter(loginDto);
 
     assertThat(actualResult).isPresent();
     assertThat(actualResult.get()).isEqualTo(account1);
@@ -237,7 +238,7 @@ public class AccountIT extends IntegrationTestBase {
         .email(email)
         .build();
 
-    Optional<Account> actualResult = accountRepository.findByLoginOrEmail(loginDto);
+    Optional<Account> actualResult = accountRepository.findByFilter(loginDto);
 
     assertThat(actualResult).isPresent();
     assertThat(actualResult.get()).isEqualTo(account2);
@@ -268,8 +269,8 @@ public class AccountIT extends IntegrationTestBase {
         .email(email)
         .build();
 
-    assertThatThrownBy(() -> accountRepository.findByLoginOrEmail(loginDto))
-        .hasCauseInstanceOf(jakarta.persistence.NonUniqueResultException.class);
+    assertThatThrownBy(() -> accountRepository.findByFilter(loginDto))
+        .hasCauseInstanceOf(NonUniqueResultException.class);
   }
 
 }

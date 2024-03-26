@@ -17,7 +17,7 @@ public class AccountFilterRepositoryImpl implements AccountFilterRepository {
 
   private final EntityManager entityManager;
 
-  public Optional<Account> findByLoginOrEmail(AccountLoginDto loginDto) {
+  public Optional<Account> findByFilter(AccountLoginDto loginDto) {
     Predicate predicate = QPredicate.builder()
         .add(loginDto.login(), account.login::eq)
         .add(loginDto.email(), account.email::eq)
