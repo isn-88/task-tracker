@@ -25,7 +25,7 @@ import su.itpro.tasktracker.model.enums.TaskType;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"parent", "project", "assigned", "category"})
+@EqualsAndHashCode(exclude = {"parent", "project", "category"})
 @ToString(of = "title")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -58,9 +58,11 @@ public class Task implements BaseEntity<Long> {
   @Enumerated(value = EnumType.STRING)
   private TaskPriority priority;
 
-  @ManyToOne
-  @JoinColumn(name = "assigned_id")
-  private Account assigned;
+  @OneToOne
+  private Account assignedAccount;
+
+  @OneToOne
+  private Group assignedGroup;
 
   @OneToOne
   private Category category;

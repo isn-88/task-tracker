@@ -21,11 +21,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Category implements BaseEntity<Integer> {
+public class Category implements BaseEntity<Short> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Short id;
 
   @Column(nullable = false, unique = true)
   private String name;

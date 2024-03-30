@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Task</title>
+</head>
+
+<body>
+<div>
+  <p>Task</p>
+  <form th:action="@{/tasks/{taskId}/update(taskId=${task.id()})}" method="post" th:object="${task}">
+    <div>
+      <label for="project">Project:
+        <select name="projectId" id="project">
+          <option th:each="project : ${projects}" th:value="${project.id()}"
+                  th:selected="${project.id eq task.project().id()}"
+                  th:text="${project.name()}">Project name</option>
+        </select>
+      </label><br><br>
+    </div>
+    <div>
+      <label for="type">Type:
+        <select name="type" id="type">
+          <option th:each="type : ${types}" th:value="${type}"
+                  th:selected="${type eq task.type()}"
+                  th:text="${type}">Type</option>
+        </select>
+      </label><br><br>
+    </div>
+    <div>
+      <label for="status">Status:
+        <select name="status" id="status">
+          <option th:each="status : ${statuses}" th:value="${status}"
+                  th:selected="${status eq task.status()}"
+                  th:text="${status}">Status</option>
+        </select>
+      </label><br><br>
+    </div>
+    <div>
+      <label for="priority">Priority:
+        <select name="priority" id="priority">
+          <option th:each="priority : ${priorities}" th:value="${priority}"
+                  th:selected="${priority eq task.priority()}"
+                  th:text="${priority}">Priority</option>
+        </select>
+      </label><br><br>
+    </div>
+    <div>
+      <label for="assigned">Assigned:
+        <select name="assignedForm" id="assigned">
+          <option value="none" th:selected="${task.assigned().id() eq null}"></option>
+          <option th:each="assigned : ${allAssigned}" th:value="${assigned.type()} + ${assigned.id()}"
+                  th:selected="${assigned.id() eq task.assigned().id()
+                  and assigned.type() eq task.assigned().type()}"
+                  th:text="${assigned.name()}">Assigned</option>
+        </select>
+      </label><br><br>
+    </div>
+    <label for="title">Title:
+      <input id="title" type="text" name="title" th:value="*{title()}">
+    </label><br><br>
+    <label for="description">Description:
+      <textarea name="description" id="description" cols="80" rows="2"
+                th:text="*{description()}">
+      </textarea>
+    </label><br><br>
+    <button type="submit">Update</button><br><br>
+  </form>
+  <div>
+    <a href="/tasks">Back</a>
+  </div>
+
+</div>
+</body>
+</html>

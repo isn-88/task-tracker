@@ -1,4 +1,4 @@
-package su.itpro.tasktracker.integration;
+package su.itpro.tasktracker.integration.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import su.itpro.tasktracker.integration.IntegrationTestBase;
 import su.itpro.tasktracker.model.entity.Category;
 import su.itpro.tasktracker.repository.CategoryRepository;
 
@@ -59,7 +60,7 @@ public class CategoryIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
 
-    Optional<Category> actualResult = categoryRepository.findById(Integer.MAX_VALUE);
+    Optional<Category> actualResult = categoryRepository.findById(Short.MAX_VALUE);
 
     assertThat(actualResult).isEmpty();
   }

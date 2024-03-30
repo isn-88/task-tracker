@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -25,11 +24,11 @@ import su.itpro.tasktracker.model.enums.Gender;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Profile implements BaseEntity<UUID> {
+public class Profile implements BaseEntity<Long> {
 
   @Id
   @Column(name = "account_id")
-  private UUID id;
+  private Long id;
 
   @OneToOne
   @PrimaryKeyJoinColumn
