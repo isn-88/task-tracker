@@ -1,9 +1,17 @@
 package su.itpro.tasktracker.integration.controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.*;
-import static su.itpro.tasktracker.model.dto.TaskFilter.Fields.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.priority;
+import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.projectId;
+import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.status;
+import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.title;
+import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.type;
+import static su.itpro.tasktracker.model.dto.TaskFilter.Fields.types;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

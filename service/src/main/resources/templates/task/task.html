@@ -50,7 +50,7 @@
       <label for="assigned">Assigned:
         <select name="assignedForm" id="assigned">
           <option value="none" th:selected="${task.assigned().id() eq null}"></option>
-          <option th:each="assigned : ${allAssigned}" th:value="${assigned.type()} + ${assigned.id()}"
+          <option th:each="assigned : ${allAssigned}" th:value="|${assigned.type()}:${assigned.id()}|"
                   th:selected="${assigned.id() eq task.assigned().id()
                   and assigned.type() eq task.assigned().type()}"
                   th:text="${assigned.name()}">Assigned</option>

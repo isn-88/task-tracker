@@ -19,9 +19,13 @@ public class TaskAssignedMapper implements Mapper<Task, TaskAssignedDto> {
     } else if (task.getAssignedGroup() != null) {
       return assignedGroupMapper.map(task.getAssignedGroup());
     } else {
-      return TaskAssignedDto.builder()
-          .build();
+      return unassigned();
     }
+  }
+
+  private TaskAssignedDto unassigned() {
+    return TaskAssignedDto.builder()
+        .build();
   }
 
 }

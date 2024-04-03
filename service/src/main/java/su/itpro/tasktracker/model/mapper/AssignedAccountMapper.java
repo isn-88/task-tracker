@@ -11,14 +11,10 @@ public class AssignedAccountMapper implements Mapper<Account, TaskAssignedDto> {
 
   @Override
   public TaskAssignedDto map(Account account) {
-    if (account == null) {
-      return null;
-    }
-
     return TaskAssignedDto.builder()
         .id(account.getId())
         .name(ProfileUtil.getUserFullName(account.getProfile()))
-        .type(AssignedType.A)
+        .type(AssignedType.ACCOUNT)
         .build();
   }
 }

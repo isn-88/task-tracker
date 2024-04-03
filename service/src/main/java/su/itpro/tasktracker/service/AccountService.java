@@ -13,7 +13,7 @@ import su.itpro.tasktracker.repository.GroupRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AccountService {
 
   private final AccountRepository accountRepository;

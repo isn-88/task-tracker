@@ -10,14 +10,10 @@ public class AssignedGroupMapper implements Mapper<Group, TaskAssignedDto> {
 
   @Override
   public TaskAssignedDto map(Group group) {
-    if (group == null) {
-      return null;
-    }
-
     return TaskAssignedDto.builder()
         .id(group.getId())
         .name(group.getName())
-        .type(AssignedType.G)
+        .type(AssignedType.GROUP)
         .build();
   }
 }
