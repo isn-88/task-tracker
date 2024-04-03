@@ -1,13 +1,13 @@
-package su.itpro.tasktracker.integration;
+package su.itpro.tasktracker.integration.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import su.itpro.tasktracker.integration.IntegrationTestBase;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.repository.ProjectRepository;
 
@@ -60,7 +60,7 @@ public class ProjectIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
 
-    Optional<Project> actualResult = projectRepository.findById(UUID.randomUUID());
+    Optional<Project> actualResult = projectRepository.findById(Integer.MAX_VALUE);
 
     assertThat(actualResult).isEmpty();
   }

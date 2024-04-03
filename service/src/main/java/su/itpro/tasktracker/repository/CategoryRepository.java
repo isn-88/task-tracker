@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import su.itpro.tasktracker.model.entity.Category;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Integer> {
+public interface CategoryRepository extends JpaRepository<Category, Short> {
 
 }

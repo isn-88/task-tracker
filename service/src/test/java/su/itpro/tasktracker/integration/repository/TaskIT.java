@@ -1,4 +1,4 @@
-package su.itpro.tasktracker.integration;
+package su.itpro.tasktracker.integration.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import su.itpro.tasktracker.integration.IntegrationTestBase;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Group;
@@ -185,8 +186,8 @@ public class TaskIT extends IntegrationTestBase {
         .project(project)
         .type(TaskType.FEATURE)
         .status(TaskStatus.ASSIGNED)
-        .assigned(accountWithTwoTasks)
         .priority(TaskPriority.HIGH)
+        .assignedAccount(accountWithTwoTasks)
         .build();
     taskRepository.save(parentTask);
     Task childTask1 = Task.builder()
@@ -195,25 +196,18 @@ public class TaskIT extends IntegrationTestBase {
         .type(TaskType.FEATURE)
         .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
-        .assigned(accountWithTwoTasks)
         .priority(TaskPriority.NORMAL)
+        .assignedAccount(accountWithTwoTasks)
         .build();
     taskRepository.save(childTask1);
-    Account accountWithOneTask = Account.builder()
-        .email("account-2@email.com")
-        .login("accountWithOneTask")
-        .password("password")
-        .role(Role.USER)
-        .build();
-    accountRepository.save(accountWithOneTask);
     Task childTask2 = Task.builder()
         .title("child-2")
         .project(project)
         .type(TaskType.FEATURE)
         .parent(parentTask)
         .status(TaskStatus.CLOSED)
-        .assigned(accountWithOneTask)
         .priority(TaskPriority.NORMAL)
+        .assignedGroup(group)
         .build();
     taskRepository.save(childTask2);
     Task freeTask = Task.builder()
@@ -221,13 +215,16 @@ public class TaskIT extends IntegrationTestBase {
         .project(project)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
-        .priority(TaskPriority.LOW)
+        .priority(TaskPriority.HIGH)
         .build();
     taskRepository.save(freeTask);
     entityManager.flush();
     entityManager.clear();
+
     TaskFilter filter = TaskFilter.builder()
-        .accountId(accountWithTwoTasks.getId())
+        .assignedAccountId(accountWithTwoTasks.getId())
+        .types(List.of(TaskType.FEATURE))
+        .statuses(List.of(TaskStatus.ASSIGNED))
         .priorities(List.of(TaskPriority.HIGH))
         .build();
 

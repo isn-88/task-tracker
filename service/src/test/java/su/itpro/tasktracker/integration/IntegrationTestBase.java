@@ -7,7 +7,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import su.itpro.tasktracker.integration.annotation.IT;
 
 @IT
-abstract class IntegrationTestBase {
+public abstract class IntegrationTestBase {
 
   private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
 

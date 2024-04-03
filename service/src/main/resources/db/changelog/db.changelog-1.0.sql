@@ -3,7 +3,7 @@
 --changeset s.ivaschenko:1
 CREATE TABLE category
 (
-    id SERIAL PRIMARY KEY ,
+    id SMALLSERIAL PRIMARY KEY ,
     name VARCHAR(64) NOT NULL UNIQUE ,
     CONSTRAINT check_name_con CHECK ( name <> '' )
 );
@@ -12,7 +12,7 @@ CREATE TABLE category
 --changeset s.ivaschenko:2
 CREATE TABLE groups
 (
-    id UUID PRIMARY KEY ,
+    id SERIAL PRIMARY KEY ,
     name VARCHAR(64) NOT NULL UNIQUE
 );
 --rollback DROP TABLE groups;
@@ -20,8 +20,8 @@ CREATE TABLE groups
 --changeset s.ivaschenko:3
 CREATE TABLE account
 (
-    id UUID PRIMARY KEY ,
-    group_id UUID REFERENCES groups (id) ,
+    id BIGSERIAL PRIMARY KEY ,
+    group_id INT REFERENCES groups (id) ,
     email VARCHAR(128) NOT NULL UNIQUE ,
     login VARCHAR(128) NOT NULL UNIQUE ,
     password VARCHAR(64) NOT NULL ,
@@ -33,7 +33,7 @@ CREATE TABLE account
 --changeset s.ivaschenko:4
 CREATE TABLE profile
 (
-    account_id UUID PRIMARY KEY REFERENCES account (id),
+    account_id BIGINT PRIMARY KEY REFERENCES account (id),
     lastname VARCHAR(32) NOT NULL ,
     firstname VARCHAR(32) NOT NULL ,
     surname VARCHAR(32) ,
@@ -45,7 +45,7 @@ CREATE TABLE profile
 --changeset s.ivaschenko:5
 CREATE TABLE project
 (
-    id UUID PRIMARY KEY ,
+    id SERIAL PRIMARY KEY ,
     name VARCHAR(128) NOT NULL UNIQUE ,
     description text
 );
@@ -56,17 +56,20 @@ CREATE TABLE task
 (
     id BIGSERIAL PRIMARY KEY ,
     parent_id BIGINT REFERENCES task (id) ,
-    project_id UUID NOT NULL REFERENCES project (id) ,
+    project_id INT NOT NULL REFERENCES project (id) ,
+    category_id SMALLINT REFERENCES category (id) ,
     type VARCHAR(32) NOT NULL ,
-    title VARCHAR(32) NOT NULL ,
     status VARCHAR(32) NOT NULL ,
     priority VARCHAR(32) NOT NULL ,
-    assigned_id UUID REFERENCES account (id) ,
-    category_id INT REFERENCES category (id) ,
+    assigned_account_id BIGINT REFERENCES account (id) ,
+    assigned_group_id INT REFERENCES groups (id) ,
     create_at TIMESTAMP WITH TIME ZONE NOT NULL ,
     close_at TIMESTAMP WITH TIME ZONE ,
-    progress SMALLINT NOT NULL ,
+    progress SMALLINT NOT NULL DEFAULT 0,
+    title VARCHAR(64) NOT NULL ,
     description TEXT ,
-    CONSTRAINT check_title_con CHECK ( task.title <> '' )
-)
+    CONSTRAINT check_title_con CHECK ( task.title <> '' ) ,
+    CONSTRAINT only_once_con CHECK ( NOT (assigned_account_id NOTNULL AND assigned_group_id NOTNULL) )
+);
 --rollback DROP TABLE task;
+

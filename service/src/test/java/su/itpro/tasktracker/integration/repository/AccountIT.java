@@ -1,4 +1,4 @@
-package su.itpro.tasktracker.integration;
+package su.itpro.tasktracker.integration.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,9 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NonUniqueResultException;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import su.itpro.tasktracker.integration.IntegrationTestBase;
 import su.itpro.tasktracker.model.dto.AccountLoginDto;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Profile;
@@ -101,7 +101,7 @@ public class AccountIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
 
-    Optional<Account> actualResult = accountRepository.findById(UUID.randomUUID());
+    Optional<Account> actualResult = accountRepository.findById(Long.MAX_VALUE);
 
     assertThat(actualResult).isEmpty();
   }
