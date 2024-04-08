@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
-import su.itpro.tasktracker.model.mapper.TaskCreateMapper;
+import su.itpro.tasktracker.model.mapper.TaskCreateUpdateMapper;
 import su.itpro.tasktracker.model.mapper.TaskReadMapper;
 import su.itpro.tasktracker.repository.TaskRepository;
 
@@ -17,7 +17,7 @@ import su.itpro.tasktracker.repository.TaskRepository;
 @Transactional
 public class TaskService {
 
-  private final TaskCreateMapper taskCreateMapper;
+  private final TaskCreateUpdateMapper taskCreateMapper;
   private final TaskReadMapper taskReadMapper;
   private final TaskRepository taskRepository;
 

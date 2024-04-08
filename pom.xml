@@ -28,6 +28,7 @@
     <querydsl.version>5.1.0</querydsl.version>
     <testcontainers-postgresql.version>1.19.7</testcontainers-postgresql.version>
     <checkstyle.version>10.9.1</checkstyle.version>
+    <springdoc.version>2.5.0</springdoc.version>
     <!--  plugin  -->
     <site-plugin.version>4.0.0-M13</site-plugin.version>
     <project-info-reports-plugin.version>3.5.0</project-info-reports-plugin.version>
@@ -56,6 +57,11 @@
         <artifactId>postgresql</artifactId>
         <version>${testcontainers-postgresql.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

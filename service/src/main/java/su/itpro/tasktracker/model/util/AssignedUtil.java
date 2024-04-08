@@ -13,7 +13,7 @@ public class AssignedUtil {
     if (assignedValue == null || assignedValue.equals(NONE)) {
       return null;
     }
-    if (assignedValue.startsWith(AssignedType.ACCOUNT.name())) {
+    if (assignedValue.startsWith(AssignedType.ACCOUNT.getPath())) {
       return Long.parseLong(assignedValue.substring(assignedValue.indexOf(SEPARATOR) + 1));
     }
     return null;
@@ -23,7 +23,7 @@ public class AssignedUtil {
     if (assignedValue == null || assignedValue.equals(NONE)) {
       return null;
     }
-    if (assignedValue.startsWith(AssignedType.GROUP.name())) {
+    if (assignedValue.startsWith(AssignedType.GROUP.getPath())) {
       return Integer.parseInt(assignedValue.substring(assignedValue.indexOf(SEPARATOR) + 1));
     }
     return null;

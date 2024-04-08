@@ -22,7 +22,7 @@ import su.itpro.tasktracker.repository.TaskRepository;
 
 @Component
 @RequiredArgsConstructor
-public class TaskCreateMapper implements Mapper<TaskCreateUpdateDto, Task> {
+public class TaskCreateUpdateMapper implements Mapper<TaskCreateUpdateDto, Task> {
 
   private final AccountRepository accountRepository;
   private final CategoryRepository categoryRepository;
@@ -58,7 +58,7 @@ public class TaskCreateMapper implements Mapper<TaskCreateUpdateDto, Task> {
 
   private Task getParentTask(Long id) {
     return Optional.ofNullable(id)
-        .flatMap(taskRepository::findById)
+        .map(taskId -> taskRepository.findById(taskId).orElseThrow())
         .orElse(null);
   }
 

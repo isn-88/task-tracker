@@ -21,12 +21,13 @@ public class TaskFilterRepositoryImpl implements TaskFilterRepository {
 
   public List<Task> findAllByFilter(TaskFilter filter) {
     Predicate predicate = QPredicate.builder()
-        .add(filter.assignedAccountId(), task.assignedAccount.id::eq)
-        .add(filter.assignedGroupId(), task.assignedGroup.id::eq)
+        .add(filter.findPattern(), task.title::containsIgnoreCase)
         .add(filter.parentId(), task.parent.id::eq)
         .add(filter.priorities(), task.priority::in)
         .add(filter.statuses(), task.status::in)
         .add(filter.types(), task.type::in)
+        .add(filter.assignedAccountId(), task.assignedAccount.id::eq)
+        .add(filter.assignedGroupId(), task.assignedGroup.id::eq)
         .buildAnd();
 
     EntityGraph<Task> taskGraph = entityManager.createEntityGraph(Task.class);

@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import java.time.Instant;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -67,11 +68,14 @@ public class Task implements BaseEntity<Long> {
   @OneToOne
   private Category category;
 
+  private LocalDate startDate;
+
+  private LocalDate endDate;
+
   @CreationTimestamp
-  @Column(name = "create_at", nullable = false)
+  @Column(nullable = false)
   private Instant createAt;
 
-  @Column(name = "close_at")
   private Instant closeAt;
 
   @Builder.Default
