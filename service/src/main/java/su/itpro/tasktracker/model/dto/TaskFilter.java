@@ -9,11 +9,12 @@ import su.itpro.tasktracker.model.enums.TaskType;
 
 @Builder
 @FieldNameConstants
-public record TaskFilter(Long assignedAccountId,
-                         Integer assignedGroupId,
+public record TaskFilter(String findPattern,
                          Long parentId,
                          List<TaskType> types,
                          List<TaskStatus> statuses,
-                         List<TaskPriority> priorities) {
+                         List<TaskPriority> priorities,
+                         Long assignedAccountId,
+                         Integer assignedGroupId) {
 
 }

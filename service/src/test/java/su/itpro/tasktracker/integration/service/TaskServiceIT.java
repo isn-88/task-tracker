@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.integration.IntegrationTestBase;
-import su.itpro.tasktracker.model.dto.TaskAssignedDto;
 import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
@@ -88,7 +87,7 @@ class TaskServiceIT extends IntegrationTestBase {
       assertThat(actualResult.title()).isEqualTo(title);
       assertThat(actualResult.status()).isEqualTo(TaskStatus.NEW);
       assertThat(actualResult.priority()).isEqualTo(TaskPriority.NORMAL);
-      assertThat(actualResult.assigned()).isEqualTo(TaskAssignedDto.builder().build());
+      assertThat(actualResult.assigned()).isNull();
       assertThat(actualResult.category()).isNull();
       assertThat(actualResult.closeAt()).isNull();
       assertThat(actualResult.description()).isEqualTo(description);

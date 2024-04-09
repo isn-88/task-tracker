@@ -1,21 +1,22 @@
 package su.itpro.tasktracker.web.controller;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
-import su.itpro.tasktracker.model.enums.TaskPriority;
-import su.itpro.tasktracker.model.enums.TaskStatus;
-import su.itpro.tasktracker.model.enums.TaskType;
 import su.itpro.tasktracker.service.AccountService;
 import su.itpro.tasktracker.service.ProjectService;
 import su.itpro.tasktracker.service.TaskService;
@@ -39,26 +40,30 @@ public class TaskController {
   @GetMapping("/{id}")
   public String findById(@PathVariable Long id, Model model) {
     TaskReadDto taskReadDto = taskService.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
     model.addAttribute("task", taskReadDto);
     model.addAttribute("projects", projectService.findAll());
-    model.addAttribute("types", TaskType.values());
-    model.addAttribute("statuses", TaskStatus.values());
-    model.addAttribute("priorities", TaskPriority.values());
     model.addAttribute("allAssigned", accountService.getAllAssigned());
     return "task/task";
   }
 
   @PostMapping
-  public String create(TaskCreateUpdateDto taskCreateDto) {
+  public String create(@Validated TaskCreateUpdateDto taskCreateDto) {
     return "redirect:/tasks/" + taskService.create(taskCreateDto).id();
   }
 
   @PostMapping("/{id}/update")
-  public String update(@PathVariable Long id, TaskCreateUpdateDto taskCreateDto) {
+  public String update(@PathVariable Long id,
+                       @Validated TaskCreateUpdateDto taskCreateDto,
+                       BindingResult bindingResult,
+                       RedirectAttributes redirectAttributes) {
+    if (bindingResult.hasErrors()) {
+      redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+      return "redirect:/tasks/{id}";
+    }
     return taskService.update(id, taskCreateDto)
         .map(it -> "redirect:/tasks/{id}")
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
   }
 
 }

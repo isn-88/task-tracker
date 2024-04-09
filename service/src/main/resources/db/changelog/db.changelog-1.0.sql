@@ -63,6 +63,8 @@ CREATE TABLE task
     priority VARCHAR(32) NOT NULL ,
     assigned_account_id BIGINT REFERENCES account (id) ,
     assigned_group_id INT REFERENCES groups (id) ,
+    start_date DATE ,
+    end_date DATE ,
     create_at TIMESTAMP WITH TIME ZONE NOT NULL ,
     close_at TIMESTAMP WITH TIME ZONE ,
     progress SMALLINT NOT NULL DEFAULT 0,

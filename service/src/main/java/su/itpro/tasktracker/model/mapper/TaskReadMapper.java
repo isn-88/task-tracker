@@ -25,6 +25,8 @@ public class TaskReadMapper implements Mapper<Task, TaskReadDto> {
         .priority(task.getPriority())
         .assigned(taskAssignedMapper.map(task))
         .category(task.getCategory())
+        .startDate(task.getStartDate())
+        .endDate(task.getEndDate())
         .createAt(task.getCreateAt())
         .closeAt(task.getCloseAt())
         .progress(task.getProgress())

@@ -1,6 +1,7 @@
 package su.itpro.tasktracker.model.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import lombok.Builder;
 import su.itpro.tasktracker.model.entity.Category;
 import su.itpro.tasktracker.model.enums.TaskPriority;
@@ -17,6 +18,8 @@ public record TaskReadDto(Long id,
                           TaskPriority priority,
                           TaskAssignedDto assigned,
                           Category category,
+                          LocalDate startDate,
+                          LocalDate endDate,
                           Instant createAt,
                           Instant closeAt,
                           Short progress,
