@@ -15,15 +15,15 @@ function findParentTaskByPattern(pattern = '') {
   .then(function (responseData) {
     let html = '<ul class="list-group">';
 
-    if (responseData.length > 0) {
-      for (let count = 0; count < responseData.length; count++) {
-        html += '<a href="javascript:;" class="list-group-item list-group-item-action parentIdCheckModal" ' +
-          'id="parentId-' + responseData[count].id + '" ' +
-          'onclick="checkParentTaskByResult(this)" ' +
-          'value="' + responseData[count].id + '">' +
-          responseData[count].type + ' #' + responseData[count].id +
-          ': ' + responseData[count].title +
-          '</a>';
+    if (responseData.success) {
+      let data = responseData.data;
+      if (data.length > 0) {
+        for (let count = 0; count < data.length; count++) {
+          html += '<a href="javascript:;" class="list-group-item list-group-item-action parentIdCheckModal" ' +
+            'id="parentId-' + data[count].id + '" ' + 'onclick="selectParentTaskByResult(this)" ' +
+            'title="' + data[count].id + '">' + data[count].type + ' #' +
+            data[count].id + ': ' + data[count].title + '</a>';
+        }
       }
     }
 
@@ -32,9 +32,9 @@ function findParentTaskByPattern(pattern = '') {
   })
 }
 
-function checkParentTaskByResult(element) {
+function selectParentTaskByResult(element) {
   let parentIdElement = document.getElementById('parentIdModal');
-  parentIdElement.value = element.getAttribute('value');
+  parentIdElement.value = element.title;
 }
 
 function setParentId() {

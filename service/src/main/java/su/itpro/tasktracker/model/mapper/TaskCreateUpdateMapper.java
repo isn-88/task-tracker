@@ -19,6 +19,7 @@ import su.itpro.tasktracker.repository.CategoryRepository;
 import su.itpro.tasktracker.repository.GroupRepository;
 import su.itpro.tasktracker.repository.ProjectRepository;
 import su.itpro.tasktracker.repository.TaskRepository;
+import su.itpro.tasktracker.web.exception.ResourceNotFoundException;
 
 @Component
 @RequiredArgsConstructor
@@ -58,7 +59,10 @@ public class TaskCreateUpdateMapper implements Mapper<TaskCreateUpdateDto, Task>
 
   private Task getParentTask(Long id) {
     return Optional.ofNullable(id)
-        .map(taskId -> taskRepository.findById(taskId).orElseThrow())
+        .map(taskId -> taskRepository.findById(taskId)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Parent task with id: " + id + " not found"))
+        )
         .orElse(null);
   }
 

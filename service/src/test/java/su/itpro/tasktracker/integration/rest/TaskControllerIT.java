@@ -61,6 +61,7 @@ class TaskControllerIT extends IntegrationTestBase {
     mockMvc.perform(get("/api/v1/tasks").param("findPattern", "task"))
         .andExpectAll(
             status().isOk(),
+            jsonPath("$.success").value(true),
             jsonPath("$.length()").value(2)
         );
   }

@@ -45,6 +45,7 @@ class CategoryControllerIT extends IntegrationTestBase {
     mockMvc.perform(get("/api/v1/categories"))
         .andExpectAll(
             status().isOk(),
+            jsonPath("$.success").value(true),
             jsonPath("$.length()").value(2)
         );
   }
@@ -54,8 +55,9 @@ class CategoryControllerIT extends IntegrationTestBase {
     mockMvc.perform(get("/api/v1/categories/{id}", categoryOne.getId()))
         .andExpectAll(
             status().isOk(),
-            jsonPath("$.id").value(categoryOne.getId().intValue()),
-            jsonPath("$.name").value(categoryOne.getName())
+            jsonPath("$.success").value(true),
+            jsonPath("$.data.id").value(categoryOne.getId().intValue()),
+            jsonPath("$.data.name").value(categoryOne.getName())
         );
   }
 
@@ -63,7 +65,9 @@ class CategoryControllerIT extends IntegrationTestBase {
   void findById_failure() throws Exception {
     mockMvc.perform(get("/api/v1/categories/{id}", Short.MAX_VALUE))
         .andExpectAll(
-            status().isNotFound()
+            status().isNotFound(),
+            jsonPath("$.success").value(false),
+            jsonPath("$.message").isString()
         );
   }
 
@@ -74,8 +78,9 @@ class CategoryControllerIT extends IntegrationTestBase {
                         .content("{\"name\":  \"testCreate\"}"))
         .andExpectAll(
             status().isCreated(),
-            jsonPath("$.id").isNumber(),
-            jsonPath("$.name").value("testCreate")
+            jsonPath("$.success").value(true),
+            jsonPath("$.data.id").isNumber(),
+            jsonPath("$.data.name").value("testCreate")
         );
   }
 
@@ -85,19 +90,22 @@ class CategoryControllerIT extends IntegrationTestBase {
                         .contentType(APPLICATION_JSON)
                         .content("{\"name\":  \"\"}"))
         .andExpectAll(
-            status().is4xxClientError()
+            status().is4xxClientError(),
+            jsonPath("$.success").value(false),
+            jsonPath("$.message").isString()
         );
   }
 
   @Test
-  void update() throws Exception {
+  void update_success() throws Exception {
     mockMvc.perform(put("/api/v1/categories/{id}", categoryTwo.getId())
                         .contentType(APPLICATION_JSON)
                         .content("{\"name\":  \"testUpdate\"}"))
         .andExpectAll(
             status().isOk(),
-            jsonPath("$.id").isNumber(),
-            jsonPath("$.name").value("testUpdate")
+            jsonPath("$.success").value(true),
+            jsonPath("$.data.id").isNumber(),
+            jsonPath("$.data.name").value("testUpdate")
         );
   }
 
@@ -107,7 +115,9 @@ class CategoryControllerIT extends IntegrationTestBase {
                         .contentType(APPLICATION_JSON)
                         .content("{\"name\":  \"testUpdate\"}"))
         .andExpectAll(
-            status().isNotFound()
+            status().isNotFound(),
+            jsonPath("$.success").value(false),
+            jsonPath("$.message").isString()
         );
   }
 
