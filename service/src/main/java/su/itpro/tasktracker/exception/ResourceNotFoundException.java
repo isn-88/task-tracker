@@ -1,4 +1,4 @@
-package su.itpro.tasktracker.web.exception;
+package su.itpro.tasktracker.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
 

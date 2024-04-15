@@ -5,11 +5,11 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
-import su.itpro.tasktracker.model.mapper.TaskCreateUpdateMapper;
+import su.itpro.tasktracker.model.dto.TaskUpdateDto;
 import su.itpro.tasktracker.model.mapper.TaskReadMapper;
+import su.itpro.tasktracker.model.mapper.TaskUpdateMapper;
 import su.itpro.tasktracker.repository.TaskRepository;
 
 @Service
@@ -17,7 +17,7 @@ import su.itpro.tasktracker.repository.TaskRepository;
 @Transactional
 public class TaskService {
 
-  private final TaskCreateUpdateMapper taskCreateMapper;
+  private final TaskUpdateMapper taskCreateMapper;
   private final TaskReadMapper taskReadMapper;
   private final TaskRepository taskRepository;
 
@@ -34,7 +34,7 @@ public class TaskService {
         .map(taskReadMapper::map);
   }
 
-  public TaskReadDto create(TaskCreateUpdateDto taskCreateDto) {
+  public TaskReadDto create(TaskUpdateDto taskCreateDto) {
     return Optional.of(taskCreateDto)
         .map(taskCreateMapper::map)
         .map(taskRepository::saveAndFlush)
@@ -42,7 +42,7 @@ public class TaskService {
         .orElseThrow();
   }
 
-  public Optional<TaskReadDto> update(Long id, TaskCreateUpdateDto taskUpdateDto) {
+  public Optional<TaskReadDto> update(Long id, TaskUpdateDto taskUpdateDto) {
     return taskRepository.findById(id)
         .map(task -> taskCreateMapper.map(taskUpdateDto, task))
         .map(taskRepository::saveAndFlush)

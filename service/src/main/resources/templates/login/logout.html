@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/icons.all.min.css}" rel="stylesheet">
+  <title>Logout</title>
+</head>
+
+<body>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm-10 col-md-8 col-xl-6 p-5">
+      <div class="card shadow">
+        <div class="card-header">
+          <div class="text-center">
+            <h3 class="fst-italic">Task Tracker</h3>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-text">
+            <p class="fs-5">Вы уверены, что хотите выйти?</p>
+          </div>
+          <div class="card-text text-center">
+            <i class="fa-solid fa-plug-circle-xmark fa-5x"></i>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="card-text">
+            <form th:action="@{/logout}" method="POST">
+              <div class="d-grid">
+                <input class="btn btn-outline-primary" type="submit"
+                       value="Выйти">
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</html>

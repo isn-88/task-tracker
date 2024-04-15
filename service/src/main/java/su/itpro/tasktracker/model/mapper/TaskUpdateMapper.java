@@ -4,7 +4,8 @@ import java.time.Instant;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
+import su.itpro.tasktracker.exception.ResourceNotFoundException;
+import su.itpro.tasktracker.model.dto.TaskUpdateDto;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Category;
 import su.itpro.tasktracker.model.entity.Group;
@@ -19,11 +20,10 @@ import su.itpro.tasktracker.repository.CategoryRepository;
 import su.itpro.tasktracker.repository.GroupRepository;
 import su.itpro.tasktracker.repository.ProjectRepository;
 import su.itpro.tasktracker.repository.TaskRepository;
-import su.itpro.tasktracker.web.exception.ResourceNotFoundException;
 
 @Component
 @RequiredArgsConstructor
-public class TaskCreateUpdateMapper implements Mapper<TaskCreateUpdateDto, Task> {
+public class TaskUpdateMapper implements Mapper<TaskUpdateDto, Task> {
 
   private final AccountRepository accountRepository;
   private final CategoryRepository categoryRepository;
@@ -32,16 +32,16 @@ public class TaskCreateUpdateMapper implements Mapper<TaskCreateUpdateDto, Task>
   private final TaskRepository taskRepository;
 
   @Override
-  public Task map(TaskCreateUpdateDto dto) {
+  public Task map(TaskUpdateDto dto) {
     return copy(dto, new Task());
   }
 
   @Override
-  public Task map(TaskCreateUpdateDto dto, Task task) {
+  public Task map(TaskUpdateDto dto, Task task) {
     return copy(dto, task);
   }
 
-  private Task copy(TaskCreateUpdateDto dto, Task task) {
+  private Task copy(TaskUpdateDto dto, Task task) {
     task.setParent(getParentTask(dto.parentId()));
     task.setProject(getProject(dto.projectId()));
     task.setType(TaskType.valueOf(dto.type()));
@@ -51,7 +51,8 @@ public class TaskCreateUpdateMapper implements Mapper<TaskCreateUpdateDto, Task>
     task.setAssignedAccount(getAccount(AssignedUtil.getAccountId(dto.assignedForm())));
     task.setAssignedGroup(getGroup(AssignedUtil.getGroupId(dto.assignedForm())));
     task.setCategory(getCategory(dto.categoryId()));
-    task.setCreateAt(Instant.now());
+    task.setStartDate(dto.startDate());
+    task.setEndDate(dto.endDate());
     task.setCloseAt(getCloseAt(dto.closeAt()));
     task.setDescription(dto.description());
     return task;

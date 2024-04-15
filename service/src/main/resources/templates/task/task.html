@@ -9,6 +9,11 @@
 </head>
 
 <body>
+
+<section>
+  <div th:insert="~{navigation/user-nav :: user-nav}"></div>
+</section>
+
 <section style="padding-top: 80px; padding-bottom: 10px;">
   <div class="container">
     <div class="row">
@@ -75,7 +80,7 @@
         </div>
         <div class="row row-cols-2">
           <div class="col-3">
-            <p>Срок окончания:</p>
+            <p>Срок завершения:</p>
           </div>
           <div class="col">
             <p th:text="${task.endDate()} ?: _">-</p>
@@ -108,161 +113,72 @@
 </section>
 
 <section style="padding-top: 20px; padding-bottom: 10px;">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col">
-        <div th:class="'collapse' + ${errors ne null ? ' show' : ''}" id="collapseEdit">
-          <div class="card card-footer">
-            <form th:action="@{/tasks/{taskId}/update(taskId=${task.id()})}" method="post"
-                  th:object="${task}" id="formTaskEdit">
-              <div class="mb-3 text-danger" th:if="${errors}">
-                <p th:each="error : ${errors}"
-                   th:text="|${error.field}: ${error.defaultMessage}|"></p>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col">
+          <div th:class="'collapse' + ${errors ne null ? ' show' : ''}" id="collapseEdit">
+            <div class="card card-footer">
+              <form th:action="@{/tasks/{taskId}/update(taskId=${task.id()})}" method="POST"
+                    th:object="${task}" id="formTaskEdit">
+
+                <div th:insert="~{task/task-edit :: task-edit}"></div>
+
+              </form>
+              <form th:action="@{/tasks/{taskId}(taskId=${task.id()})}" id="formTaskReset">
+              </form>
+              <div class="mb-3">
+                <button type="submit" class="btn btn-primary me-3"
+                        form="formTaskEdit">Отправить
+                </button>
+                <button class="btn btn-secondary me-3" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#collapseEdit"
+                        aria-expanded="false" aria-controls="collapseEdit">Отмена
+                </button>
+                <button type="submit" class="btn btn-outline-danger"
+                        form="formTaskReset">Сброс
+                </button>
               </div>
-              <div class="mb-3 row">
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editTitle">Тема<span class="text-danger">*</span></label>
-                <div class="col-12 col-lg-10">
-                  <input class="form-control form-control-lg"
-                         aria-describedby="editTitleHelp" type="text" id="editTitle" name="title"
-                         th:value="*{title()}" required>
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editProject">Проект<span class="text-danger">*</span></label>
-                <div class="col-12 col-lg-4">
-                  <select class="form-select" name="projectId" id="editProject">
-                    <option th:each="project : ${projects}" th:value="${project.id()}"
-                            th:selected="${project.id eq task.project().id()}"
-                            th:text="${project.name()}">Project name
-                    </option>
-                  </select>
-                </div>
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editType">Задача<span class="text-danger">*</span></label>
-                <div class="col-12 col-lg-4">
-                  <select class="form-select" name="type" id="editType">
-                    <option
-                        th:each="type : ${T(su.itpro.tasktracker.model.enums.TaskType).values()}"
-                        th:value="${type}" th:selected="${type eq task.type()}"
-                        th:text="${type.getType()}">Type
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editStatus">Статус<span class="text-danger">*</span></label>
-                <div class="col-12 col-lg-4">
-                  <select class="form-select" name="status" id="editStatus">
-                    <option
-                        th:each="status : ${T(su.itpro.tasktracker.model.enums.TaskStatus).values()}"
-                        th:value="${status}" th:selected="${status eq task.status()}"
-                        th:text="${status.getStatus()}">Status
-                    </option>
-                  </select>
-                </div>
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editPriority">Приоритет<span class="text-danger">*</span></label>
-                <div class="col-12 col-lg-4">
-                  <select class="form-select" name="priority" id="editPriority">
-                    <option
-                        th:each="priority : ${T(su.itpro.tasktracker.model.enums.TaskPriority).values()}"
-                        th:value="${priority}" th:selected="${priority eq task.priority()}"
-                        th:text="${priority.getPriority()}">Priority
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <hr>
-              <div class="mb-3 row">
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editAssigned">Назначена</label>
-                <div class="col-12 col-lg-4">
-                  <select class="form-select" name="assignedForm" id="editAssigned">
-                    <option value="none" th:selected="${task.assigned() eq null}"></option>
-                    <option th:each="assigned : ${allAssigned}"
-                            th:value="|${assigned.type().getPath()}:${assigned.id()}|"
-                            th:selected="${assigned.id() eq task.assigned()?.id() and assigned.type() eq task.assigned()?.type()}"
-                            th:text="${assigned.name()}">Assigned
-                    </option>
-                  </select>
-                </div>
-                <label class="col-12 col-lg-3 col-form-label text-lg-end fs-5"
-                       for="editParent">Родительская задача</label>
-                <div class="col-12 col-lg-3">
-                  <div class="input-group">
-                    <span class="input-group-text">#</span>
-                    <input class="form-control" aria-describedby="editParentHelp"
-                           id="editParent" name="parentId" th:value="*{parentTask()?.id()}">
-                    <button class="btn btn-outline-secondary" type="button"
-                            data-bs-toggle="modal" data-bs-target="#findParentTaskModal">Поиск
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
-                       for="editDescription">Описание</label>
-                <div class="col-12 col-lg-10">
-                  <textarea class="form-control" id="editDescription" name="description" rows="5"
-                            th:value="*{description()}" th:text="*{description()}"></textarea>
-                </div>
-              </div>
-            </form>
-            <form th:action="@{/tasks/{taskId}(taskId=${task.id()})}" id="formTaskReset">
-            </form>
-            <div class="mb-3">
-              <button type="submit" class="btn btn-primary me-3"
-                      form="formTaskEdit">Отправить
-              </button>
-              <button class="btn btn-secondary me-3" type="button"
-                      data-bs-toggle="collapse" data-bs-target="#collapseEdit"
-                      aria-expanded="false" aria-controls="collapseEdit">Отмена
-              </button>
-              <button type="submit" class="btn btn-outline-danger"
-                      form="formTaskReset">Сброс
-              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- Модальное окно: Родительская задача - поиск-->
-<div class="modal fade" id="findParentTaskModal" tabindex="-1"
-     aria-labelledby="findParentTaskLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="findParentTaskLabel">Поиск родительской задачи</h1>
-        <button type="button" class="btn-close"
-                data-bs-dismiss="modal" aria-label="Закрыть"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label fs-5"
-                 for="findParentInputModal">Поиск по заголовку</label>
-          <input class="form-control" aria-describedby="findParentHelp"
-                 id="findParentInputModal" name="findPattern">
-          <span id="searchParentResult"></span>
+
+    <!-- Модальное окно: Родительская задача - поиск-->
+    <div class="modal fade" id="findParentTaskModal" tabindex="-1"
+         aria-labelledby="findParentTaskLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="findParentTaskLabel">Поиск родительской задачи</h1>
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="modal" aria-label="Закрыть"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label fs-5"
+                     for="findParentInputModal">Поиск по заголовку</label>
+              <input class="form-control" aria-describedby="findParentHelp"
+                     id="findParentInputModal" name="findPattern">
+              <span id="searchParentResult"></span>
+            </div>
+            <div class="mb-3 findParentTaskResult">
+              <label><input id="parentIdModal" hidden></label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                    onclick="setParentId()">Применить
+            </button>
+          </div>
         </div>
-        <div class="mb-3 findParentTaskResult">
-          <label><input id="parentIdModal" hidden></label>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                onclick="setParentId()">Применить</button>
       </div>
     </div>
-  </div>
-</div>
 
+</section>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/script.js}"></script>

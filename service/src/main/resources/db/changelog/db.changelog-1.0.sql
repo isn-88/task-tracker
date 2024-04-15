@@ -23,9 +23,10 @@ CREATE TABLE account
     id BIGSERIAL PRIMARY KEY ,
     group_id INT REFERENCES groups (id) ,
     email VARCHAR(128) NOT NULL UNIQUE ,
-    login VARCHAR(128) NOT NULL UNIQUE ,
-    password VARCHAR(64) NOT NULL ,
+    username VARCHAR(128) NOT NULL UNIQUE ,
+    password VARCHAR(256) NOT NULL ,
     role VARCHAR(8) NOT NULL ,
+    enabled BOOLEAN NOT NULL DEFAULT true,
     CONSTRAINT check_role_con CHECK ( role IN ('USER', 'ADMIN') )
 );
 --rollback DROP TABLE account;
@@ -38,6 +39,9 @@ CREATE TABLE profile
     firstname VARCHAR(32) NOT NULL ,
     surname VARCHAR(32) ,
     gender VARCHAR(6) ,
+    about_me TEXT ,
+    CONSTRAINT check_lastname_con CHECK ( lastname <> '' ),
+    CONSTRAINT check_firstname_con CHECK ( firstname <> '' ),
     CONSTRAINT check_gender_con CHECK ( gender IN ('MALE', 'FEMALE') )
 );
 --rollback DROP TABLE profile;
@@ -65,7 +69,10 @@ CREATE TABLE task
     assigned_group_id INT REFERENCES groups (id) ,
     start_date DATE ,
     end_date DATE ,
-    create_at TIMESTAMP WITH TIME ZONE NOT NULL ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL ,
+    created_by VARCHAR(256) ,
+    modified_at TIMESTAMP WITH TIME ZONE ,
+    modified_by VARCHAR(256) ,
     close_at TIMESTAMP WITH TIME ZONE ,
     progress SMALLINT NOT NULL DEFAULT 0,
     title VARCHAR(64) NOT NULL ,
@@ -75,3 +82,38 @@ CREATE TABLE task
 );
 --rollback DROP TABLE task;
 
+--changeset s.ivaschenko:7
+CREATE TABLE task_revision
+(
+    id SERIAL PRIMARY KEY ,
+    timestamp BIGINT
+);
+--rollback DROP TABLE task_revision;
+
+--changeset s.ivaschenko:8
+CREATE TABLE task_aud
+(
+    id BIGINT NOT NULL ,
+    rev INT NOT NULL ,
+    revtype SMALLINT ,
+    parent_id BIGINT ,
+    project_id INT ,
+    category_id SMALLINT ,
+    type VARCHAR(32) ,
+    status VARCHAR(32) ,
+    priority VARCHAR(32) ,
+    assigned_account_id BIGINT ,
+    assigned_group_id INT ,
+    start_date DATE ,
+    end_date DATE ,
+    created_at TIMESTAMP WITH TIME ZONE ,
+    created_by VARCHAR(256) ,
+    modified_at TIMESTAMP WITH TIME ZONE ,
+    modified_by VARCHAR(256) ,
+    close_at TIMESTAMP WITH TIME ZONE ,
+    progress SMALLINT ,
+    title VARCHAR(64) ,
+    description TEXT ,
+    PRIMARY KEY (id, rev)
+);
+--rollback DROP TABLE task_aud;

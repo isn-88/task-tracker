@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import su.itpro.tasktracker.model.dto.CategoryCreateUpdateDto;
+import su.itpro.tasktracker.exception.ResourceNotFoundException;
 import su.itpro.tasktracker.model.dto.CategoryReadDto;
+import su.itpro.tasktracker.model.dto.CategoryUpdateDto;
 import su.itpro.tasktracker.service.CategoryService;
-import su.itpro.tasktracker.web.exception.ResourceNotFoundException;
 import su.itpro.tasktracker.web.response.RestResponse;
 
 @RestController
@@ -41,14 +41,14 @@ public class CategoryRestController {
   @PostMapping
   @ResponseStatus(CREATED)
   public RestResponse<CategoryReadDto> create(@Validated @RequestBody
-                                              CategoryCreateUpdateDto createDto) {
+                                              CategoryUpdateDto createDto) {
     return RestResponse.success(categoryService.create(createDto));
   }
 
   @PutMapping("/{id}")
   public RestResponse<CategoryReadDto> update(@PathVariable("id") Short id,
                                               @Validated @RequestBody
-                                              CategoryCreateUpdateDto updateDto) {
+                                              CategoryUpdateDto updateDto) {
     return RestResponse.success(categoryService.update(id, updateDto)
                                     .orElseThrow(() -> new ResourceNotFoundException(
                                         "Category with id: " + id + " not found")));

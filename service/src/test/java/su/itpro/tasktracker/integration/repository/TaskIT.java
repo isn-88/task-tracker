@@ -170,7 +170,7 @@ public class TaskIT extends IntegrationTestBase {
     groupRepository.save(group);
     Account accountWithTwoTasks = Account.builder()
         .email("account-1@email.com")
-        .login("accountWithTwoTasks")
+        .username("accountWithTwoTasks")
         .password("password")
         .role(Role.USER)
         .group(group)
