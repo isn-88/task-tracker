@@ -5,8 +5,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import su.itpro.tasktracker.model.dto.CategoryCreateUpdateDto;
 import su.itpro.tasktracker.model.dto.CategoryReadDto;
+import su.itpro.tasktracker.model.dto.CategoryUpdateDto;
 import su.itpro.tasktracker.model.mapper.CategoryCreateUpdateMapper;
 import su.itpro.tasktracker.model.mapper.CategoryReadMapper;
 import su.itpro.tasktracker.repository.CategoryRepository;
@@ -33,7 +33,7 @@ public class CategoryService {
         .map(categoryReadMapper::map);
   }
 
-  public CategoryReadDto create(CategoryCreateUpdateDto categoryCreateDto) {
+  public CategoryReadDto create(CategoryUpdateDto categoryCreateDto) {
     return Optional.of(categoryCreateDto)
         .map(categoryCreateUpdateMapper::map)
         .map(categoryRepository::saveAndFlush)
@@ -41,7 +41,7 @@ public class CategoryService {
         .orElseThrow();
   }
 
-  public Optional<CategoryReadDto> update(Short id, CategoryCreateUpdateDto categoryUpdateDto) {
+  public Optional<CategoryReadDto> update(Short id, CategoryUpdateDto categoryUpdateDto) {
     return categoryRepository.findById(id)
         .map(category -> categoryCreateUpdateMapper.map(categoryUpdateDto, category))
         .map(categoryRepository::saveAndFlush)

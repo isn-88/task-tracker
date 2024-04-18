@@ -19,7 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
 import su.itpro.tasktracker.model.enums.TaskType;
@@ -32,7 +33,8 @@ import su.itpro.tasktracker.model.enums.TaskType;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Task implements BaseEntity<Long> {
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+public class Task extends AuditingEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,10 +73,6 @@ public class Task implements BaseEntity<Long> {
   private LocalDate startDate;
 
   private LocalDate endDate;
-
-  @CreationTimestamp
-  @Column(nullable = false)
-  private Instant createAt;
 
   private Instant closeAt;
 

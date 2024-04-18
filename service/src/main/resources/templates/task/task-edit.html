@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Task</title>
+</head>
+
+<body>
+<div th:fragment="task-edit">
+  <div class="mb-3 text-danger" th:if="${errors}">
+    <p th:each="error : ${errors}"
+       th:text="|${error.field}: ${error.defaultMessage}|"></p>
+  </div>
+  <div class="mb-3 row">
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
+           for="editTitle">Тема<span class="text-danger">*</span></label>
+    <div class="col-12 col-lg-10">
+      <input class="form-control form-control-lg" aria-describedby="editTitleHelp"
+             type="text" id="editTitle" name="title"
+             th:value="${task.title()}" required>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
+           for="editProject">Проект<span class="text-danger">*</span></label>
+    <div class="col-12 col-lg-4">
+      <select class="form-select" name="projectId" id="editProject">
+        <option th:each="project : ${projects}" th:value="${project.id()}"
+                th:selected="${project.id eq task.project().id()}"
+                th:text="${project.name()}">Project name
+        </option>
+      </select>
+    </div>
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
+           for="editType">Задача<span class="text-danger">*</span></label>
+    <div class="col-12 col-lg-4">
+      <select class="form-select" name="type" id="editType">
+        <option
+            th:each="type : ${T(su.itpro.tasktracker.model.enums.TaskType).values()}"
+            th:value="${type}" th:selected="${type eq task.type()}"
+            th:text="${type.getType()}">Type
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
+           for="editStatus">Статус<span class="text-danger">*</span></label>
+    <div class="col-12 col-lg-4">
+      <select class="form-select" name="status" id="editStatus">
+        <option
+            th:each="status : ${T(su.itpro.tasktracker.model.enums.TaskStatus).values()}"
+            th:value="${status}" th:selected="${status eq task.status()}"
+            th:text="${status.getStatus()}">Status
+        </option>
+      </select>
+    </div>
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-5"
+           for="editPriority">Приоритет<span class="text-danger">*</span></label>
+    <div class="col-12 col-lg-4">
+      <select class="form-select" name="priority" id="editPriority">
+        <option
+            th:each="priority : ${T(su.itpro.tasktracker.model.enums.TaskPriority).values()}"
+            th:value="${priority}" th:selected="${priority eq task.priority()}"
+            th:text="${priority.getPriority()}">Priority
+        </option>
+      </select>
+    </div>
+  </div>
+  <hr>
+  <div class="mb-3 row">
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-6"
+           for="editAssigned">Назначена</label>
+    <div class="col-12 col-lg-4">
+      <select class="form-select" name="assignedForm" id="editAssigned">
+        <option value="none" th:selected="${task.assigned() eq null}"></option>
+        <option th:each="assigned : ${allAssigned}"
+                th:value="|${assigned.type().getPath()}:${assigned.id()}|"
+                th:selected="${assigned.id() eq task.assigned()?.id() and assigned.type() eq task.assigned()?.type()}"
+                th:text="${assigned.name()}">Assigned
+        </option>
+      </select>
+    </div>
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-6"
+           for="editParent">Родительская задача</label>
+    <div class="col-12 col-lg-4">
+      <div class="input-group">
+        <span class="input-group-text">#</span>
+        <input class="form-control" aria-describedby="editParentHelp"
+               type="text" id="editParent" name="parentId"
+               th:value="${task.parentTask()?.id()}">
+        <button class="btn btn-outline-secondary" type="button"
+                data-bs-toggle="modal" data-bs-target="#findParentTaskModal">Поиск
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-6"
+           for="editStartDate">Дата начала</label>
+    <div class="col-12 col-lg-4">
+      <input class="form-control" aria-describedby="editStartDateHelp"
+             type="date" id="editStartDate" name="startDate"
+             th:value="${task.startDate()}">
+    </div>
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-6"
+           for="editEndDate">Срок завершения</label>
+    <div class="col-12 col-lg-4">
+      <input class="form-control" aria-describedby="editУтвDateHelp"
+             type="date" id="editEndDate" name="endDate"
+             th:value="${task.endDate()}">
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label class="col-12 col-lg-2 col-form-label text-lg-end fs-6"
+           for="editDescription">Описание</label>
+    <div class="col-12 col-lg-10">
+                  <textarea class="form-control" id="editDescription" name="description" rows="5"
+                            th:text="${task.description()}"></textarea>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

@@ -1,16 +1,17 @@
 package su.itpro.tasktracker.integration.controller;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
-import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.priority;
-import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.projectId;
-import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.status;
-import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.title;
-import static su.itpro.tasktracker.model.dto.TaskCreateUpdateDto.Fields.type;
+import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.priority;
+import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.projectId;
+import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.status;
+import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.title;
+import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.type;
 import static su.itpro.tasktracker.model.dto.TaskFilter.Fields.types;
 
 import jakarta.persistence.EntityManager;
@@ -19,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
-import su.itpro.tasktracker.integration.IntegrationTestBase;
+import su.itpro.tasktracker.integration.IntegrationTestSecurity;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.TaskPriority;
@@ -28,7 +29,7 @@ import su.itpro.tasktracker.model.enums.TaskType;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class TaskControllerIT extends IntegrationTestBase {
+class TaskControllerIT extends IntegrationTestSecurity {
 
   private final EntityManager entityManager;
   private final MockMvc mockMvc;
@@ -82,7 +83,8 @@ class TaskControllerIT extends IntegrationTestBase {
                         .param(type, "FEATURE")
                         .param(title, "Title create")
                         .param(status, "NEW")
-                        .param(priority, "NORMAL"))
+                        .param(priority, "NORMAL")
+                        .with(csrf()))
         .andExpectAll(
             status().is3xxRedirection(),
             redirectedUrlPattern("/tasks/{\\d+}")
@@ -96,7 +98,8 @@ class TaskControllerIT extends IntegrationTestBase {
                         .param(type, "FEATURE")
                         .param(title, "Title update")
                         .param(status, "ASSIGNED")
-                        .param(priority, "HIGH"))
+                        .param(priority, "HIGH")
+                        .with(csrf()))
         .andExpectAll(
             status().is3xxRedirection(),
             redirectedUrlPattern("/tasks/{\\d+}")

@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
+import su.itpro.tasktracker.model.dto.TaskUpdateDto;
 import su.itpro.tasktracker.service.AccountService;
 import su.itpro.tasktracker.service.ProjectService;
 import su.itpro.tasktracker.service.TaskService;
@@ -48,13 +48,13 @@ public class TaskController {
   }
 
   @PostMapping
-  public String create(@Validated TaskCreateUpdateDto taskCreateDto) {
+  public String create(@Validated TaskUpdateDto taskCreateDto) {
     return "redirect:/tasks/" + taskService.create(taskCreateDto).id();
   }
 
   @PostMapping("/{id}/update")
   public String update(@PathVariable Long id,
-                       @Validated TaskCreateUpdateDto taskCreateDto,
+                       @Validated TaskUpdateDto taskCreateDto,
                        BindingResult bindingResult,
                        RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {

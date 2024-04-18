@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/icons.all.min.css}" rel="stylesheet">
+  <title>Profile</title>
+</head>
+<body>
+
+
+<section>
+  <div th:insert="~{navigation/user-nav :: user-nav}"></div>
+</section>
+
+<section style="padding-top: 80px; padding-bottom: 10px;">
+  <div class="container">
+    <div class="row p-3">
+      <div class="col-12">
+        <div class="card shadow">
+          <div class="row g-0">
+            <div class="col-12 col-md-4 col-xl-3">
+              <div class="card-header h-100 border-end">
+                <div class="nav flex-column nav-pills me-3"
+                     id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                  <button th:class="'nav-link fs-5' + (${tab} eq null ? ' active' : '')"
+                          id="v-pills-overview-tab" type="button" role="tab"
+                          data-bs-toggle="pill" data-bs-target="#v-pills-overview"
+                          th:aria-selected="${tab} eq null ? true : false"
+                          aria-controls="v-pills-overview">Обзор
+                  </button>
+
+                  <button th:class="'nav-link fs-5' + (${tab} eq 'account' ? ' active' : '')"
+                          id="v-pills-account-tab" type="button" role="tab"
+                          data-bs-toggle="pill" data-bs-target="#v-pills-account"
+                          th:aria-selected="${tab} eq 'account'"
+                          aria-controls="v-pills-account">Аккаунт
+                  </button>
+
+                  <button th:class="'nav-link fs-5' + (${tab} eq 'profile' ? ' active' : '')"
+                          id="v-pills-profile-tab" type="button" role="tab"
+                          data-bs-toggle="pill" data-bs-target="#v-pills-profile"
+                          th:aria-selected="${tab} eq 'profile'"
+                          aria-controls="v-pills-profile">Профиль
+                  </button>
+
+                  <button class="nav-link fs-5"
+                          id="v-pills-icon-tab" type="button" role="tab"
+                          data-bs-toggle="pill" data-bs-target="#v-pills-icon"
+                          th:aria-selected="${tab} eq 'icon'"
+                          aria-controls="v-pills-icon">Иконка
+                  </button>
+
+                  <button th:class="'nav-link fs-5' + (${tab} eq 'password' ? ' active' : '')"
+                          id="v-pills-password-tab" type="button" role="tab"
+                          data-bs-toggle="pill" data-bs-target="#v-pills-password"
+                          th:aria-selected="${tab} eq 'password'"
+                          aria-controls="v-pills-password">Пароль
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="card-body">
+                <div class="tab-content" id="v-pills-tabContent">
+
+
+                  <!--                  Вкладка Обзор-->
+                  <div th:class="'tab-pane fade' + (${tab} eq null ? ' show active' : '')"
+                       id="v-pills-overview" role="tabpanel"
+                       aria-labelledby="v-pills-overview-tab">
+                    <div class="container">
+                      <div class="row row-cols-1 p-3">
+                        <div class="col">
+                          <h5>Проверка профиля пользователя</h5>
+                        </div>
+                        <div class="col">
+                          <div class="mt-5">
+                            <h5>Уровень заполнения профиля</h5>
+                            <div class="progress" role="progressbar" aria-label="Basic example"
+                                 aria-valuenow="0"
+                                 aria-valuemin="0" aria-valuemax="100">
+                              <div class="progress-bar"
+                                   style="width: 0%">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <!--                  Вкладка Аккаунт-->
+                  <div th:class="'tab-pane fade' + (${tab} eq 'account' ? ' show active' : '')"
+                       id="v-pills-account" role="tabpanel" aria-labelledby="v-pills-account-tab">
+                    <div class="container">
+                      <form th:action="@{/account}" method="POST">
+                        <div class="row p-3">
+                          <div class="col">
+                            <h6>При необходимости можно изменить данные для входа в личный
+                              кабинет</h6>
+                          </div>
+                        </div>
+                        <!--                        Email-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="editEmail" class="form-label">Эл. адрес</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <span class="input-group-text" id="addonEmail">
+                                 <i class="fa-regular fa-envelope"></i></span>
+                              <input th:class="'form-control' +(${binding?.hasFieldErrors('email')} ? ' is-invalid' : '')"
+                                     id="editEmail" type="email" name="email" th:value="${account.email()}"
+                                     aria-describedby="addonEmail validationEmailFeedback"
+                                     placeholder="Адрес электронной почты" required>
+                              <div id="validationEmailFeedback" class="invalid-feedback">
+                                <div th:if="${binding?.hasFieldErrors('email')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('email')}"
+                                      th:text="${error.defaultMessage}">Username Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Username-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="editUsername" class="form-label">Имя пользователя</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <span class="input-group-text" id="addonUsername">
+                                <i class="fa-regular fa-user"></i></span>
+                              <input th:class="'form-control' +(${binding?.hasFieldErrors('username')} ? ' is-invalid' : '')"
+                                     id="editUsername" type="text" name="username" th:value="${account.username()}"
+                                     aria-describedby="addonUsername validationUsernameFeedback"
+                                     placeholder="Имя пользователя" required>
+                              <div id="validationUsernameFeedback" class="invalid-feedback">
+                                <div th:if="${binding?.hasFieldErrors('username')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('username')}"
+                                     th:text="${error.defaultMessage}">Username Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row p-5">
+                          <div class="col-lg-3">
+                          </div>
+                          <div class="col">
+                            <input class="btn btn-outline-primary" type="submit" value="Сохранить">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+
+                  <!--                  Вкладка Профиль-->
+                  <div th:class="'tab-pane fade' + (${tab} eq 'profile' ? ' show active' : '')"
+                       id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <div class="container">
+                      <form th:action="@{/account/profile}" method="POST">
+                        <div class="row p-3">
+                          <div class="col">
+                            <h6>При необходимости можно изменить личные данные</h6>
+                          </div>
+                        </div>
+                        <!--                        Фамилия-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="editLastname" class="form-label">Фамилия</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <input th:class="'form-control' + (${binding?.hasFieldErrors('lastname')} ? ' is-invalid' : '')"
+                                     id="editLastname" type="text" name="lastname" th:value="${account.lastname()}"
+                                     aria-describedby="validationLastnameFeedback"
+                                     placeholder="Фамилия" required>
+                              <div class="invalid-feedback" id="validationLastnameFeedback">
+                                <div th:if="${binding?.hasFieldErrors('lastname')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('lastname')}"
+                                      th:text="${error.defaultMessage}">Lastname Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Имя-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="editFirstname" class="form-label">Имя</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <input th:class="'form-control' +(${binding?.hasFieldErrors('firstname')} ? ' is-invalid' : '')"
+                                     id="editFirstname" type="text" name="firstname" th:value="${account.firstname()}"
+                                     aria-describedby="validationFirstnameFeedback"
+                                     placeholder="Имя" required>
+                              <div class="invalid-feedback" id="validationFirstnameFeedback">
+                                <div th:if="${binding?.hasFieldErrors('firstname')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('firstname')}"
+                                      th:text="${error.defaultMessage}">Lastname Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Отчество-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="editSurname" class="form-label">Отчество</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <input th:class="'form-control' +(${binding?.hasFieldErrors('surname')} ? ' is-invalid' : '')"
+                                     id="editSurname" type="text" name="surname" th:value="${account.surname()}"
+                                     aria-describedby="validationSurnameFeedback"
+                                     placeholder="Отчество">
+                              <div class="invalid-feedback" id="validationSurnameFeedback">
+                                <div th:if="${binding?.hasFieldErrors('surname')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('surname')}"
+                                      th:text="${error.defaultMessage}">Lastname Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Пол-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="flexRadioMale" class="form-label">Пол</label>
+                          </div>
+                          <div class="col">
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="radio"
+                                     id="flexRadioMale" name="gender" value="MALE"
+                                     th:checked="${account.gender()?.name() eq 'MALE'}">
+                              <label class="form-check-label" for="flexRadioMale">Мужской</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="radio"
+                                     id="flexRadioFemale" name="gender" value="FEMALE"
+                                     th:checked="${account.gender()?.name() eq 'FEMALE'}">
+                              <label class="form-check-label" for="flexRadioFemale">Женский</label>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Обо мне-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="editAboutMe" class="form-label">Обо мне</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group">
+                              <textarea class="form-control" id="editAboutMe" rows="5"
+                                        name="aboutMe" th:text="${account.aboutMe()}"
+                                        maxlength="1000">AboutMe</textarea>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row p-5">
+                          <div class="col-lg-3">
+                          </div>
+                          <div class="col">
+                            <input class="btn btn-outline-primary" type="submit"
+                                   value="Сохранить">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+
+
+                  <!--                  Вкладка Иконка-->
+                  <div th:class="'tab-pane fade' + (${tab} eq 'icon' ? ' show active' : '')"
+                       id="v-pills-icon" role="tabpanel" aria-labelledby="v-pills-icon-tab">
+                    <div class="container">
+
+                      <div class="row row-cols-1 row-cols-sm-2 g-3 m-auto">
+                        <div class="col">
+                          <div class="row row-cols-1">
+
+                            <div class="col mb-2 text-center">
+                              <h5>Текущее фото</h5>
+                            </div>
+
+                            <div class="col">
+                              <div class="mb-3 d-flex flex-column align-items-center">
+                                <img
+                                    src="${pageContext.request.contextPath}/icon/download/${sessionScope.account.id()}"
+                                    alt="profile icon"
+                                    class="img-fluid rounded-circle mb-2"
+                                    onError="this.onerror=null;this.src='${pageContext.request.contextPath}/img/default-profile-icon.jpg';"
+                                    style="width: 180px; height: 180px"/>
+                              </div>
+                            </div>
+
+                            <div class="col">
+                              <form action="${pageContext.request.contextPath}/icon/delete"
+                                    method="post">
+                                <div class="d-flex justify-content-center">
+                                  <button type="submit" class="btn btn-outline-danger"
+                                          id="buttonIconDelete">
+                                    <i class="fa-regular fa-trash-can"></i> Удалить
+                                  </button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col">
+                          <form action="${pageContext.request.contextPath}/icon/edit" method="post"
+                                enctype="multipart/form-data">
+                            <div class="row row-cols-1">
+                              <div class="col mb-2 text-center">
+                                <h5>Изменить фото</h5>
+                              </div>
+
+                              <div class="form-group">
+                                <div
+                                    class="fileinput fileinput-new mb-2 d-flex flex-column justify-content-center"
+                                    data-provides="fileinput">
+                                  <div
+                                      class="mb-4 fileinput-preview align-self-center img-fluid rounded-circle overflow-hidden"
+                                      style="max-width: 180px; max-height: 180px; min-width: 180px; min-height: 180px;"
+                                      data-trigger="fileinput"></div>
+                                  <span
+                                      class="btn btn-outline-secondary btn-file mb-3 w-auto align-self-center">
+                                  <span class="fileinput-new">
+                                    <i class="fa-regular fa-image"></i> Выбрать фото</span>
+                                  <span class="fileinput-exists">
+                                    <i class="fa-solid fa-arrows-rotate"></i> Заменить</span>
+                                  <input type="file" name="icon">
+                                </span>
+                                  <a href="#"
+                                     class="btn btn-outline-danger mb-2 fileinput-exists w-auto align-self-center"
+                                     data-dismiss="fileinput">
+                                    <i class="fa-regular fa-trash-can"></i> Удалить</a>
+                                </div>
+                              </div>
+                              <div class="col">
+                                <div class="d-flex justify-content-center">
+                                  <button type="submit" class="btn btn-outline-success"
+                                          id="buttonIconSave">
+                                    <i class="fa-solid fa-check"></i> Сохранить
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!--                  Вкладка Пароль-->
+                  <div th:class="'tab-pane fade' + (${tab} eq 'password' ? ' show active' : '')"
+                       id="v-pills-password" role="tabpanel" aria-labelledby="v-pills-password-tab">
+                    <div class="container">
+                      <form th:action="@{/account/password}" method="POST">
+                        <!--                        Текущий пароль-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="inputCurrentPassword"
+                                   class="col-form-label">Текущий пароль</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <input th:class="'form-control' +(${binding?.hasFieldErrors('currentPassword')} ? ' is-invalid' : '')"
+                                     id="inputCurrentPassword" name="currentPassword" type="password"
+                                     aria-describedby="validationCurrentPasswordFeedback"
+                                     value="" placeholder="" required>
+                              <div class="invalid-feedback" id="validationCurrentPasswordFeedback">
+                                <div th:if="${binding?.hasFieldErrors('currentPassword')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('currentPassword')}"
+                                      th:text="${error.defaultMessage}">Current Password Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Новый пароль-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="inputNewPassword"
+                                   class="col-form-label">Новый пароль</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <input th:class="'form-control' + (${binding?.hasFieldErrors('newPassword')} ? ' is-invalid' : '')"
+                                     id="inputNewPassword" name="newPassword" type="password"
+                                     aria-describedby="validationNewPasswordFeedback"
+                                     value="" placeholder="" required>
+                              <div class="invalid-feedback" id="validationNewPasswordFeedback">
+                                <div th:if="${binding?.hasFieldErrors('newPassword')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('newPassword')}"
+                                      th:text="${error.defaultMessage}">New Password Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!--                        Повтор пароля-->
+                        <div class="row p-3">
+                          <div class="col-lg-3 text-start text-lg-end">
+                            <label for="inputRepeatPassword"
+                                   class="col-form-label">Повтор пароля</label>
+                          </div>
+                          <div class="col">
+                            <div class="input-group has-validation">
+                              <input th:class="'form-control' + (${binding?.hasFieldErrors('repeatPassword')} ? ' is-invalid' : '')"
+                                     id="inputRepeatPassword" name="repeatPassword" type="password"
+                                     aria-describedby="validationRepeatPasswordFeedback"
+                                     value="" placeholder="" required>
+                              <div class="invalid-feedback" id="validationRepeatPasswordFeedback">
+                                <div th:if="${binding?.hasFieldErrors('repeatPassword')}"><ul>
+                                  <li th:each="error : ${binding.getFieldErrors('repeatPassword')}"
+                                      th:text="${error.defaultMessage}">Repeat Password Error</li></ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row p-5 align-items-start">
+                          <div class="col-lg-3">
+                          </div>
+                          <div class="col">
+                            <input class="btn btn-outline-primary" type="submit" value="Изменить">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -3,15 +3,34 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
   <title>Tasks</title>
 </head>
 
 <body>
-<div>
-  <h3>All tasks:</h3><br>
-  <div th:each="task : ${tasks}">
-    <a th:href="@{'/tasks/' + ${task.id()}}" th:text="|${task.id()}: ${task.title()}|">Task</a>
+
+<section>
+  <div th:insert="~{navigation/user-nav :: user-nav}"></div>
+</section>
+
+<section style="padding-top: 80px; padding-bottom: 10px;">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div>
+          <h3>All tasks:</h3><br>
+          <div th:each="task : ${tasks}">
+            <a th:href="@{'/tasks/' + ${task.id()}}"
+               th:text="|${task.id()}: ${task.title()}|">Task</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+
+</section>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

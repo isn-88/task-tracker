@@ -1,6 +1,6 @@
 package su.itpro.tasktracker.integration.rest;
 
-import static org.springframework.http.MediaType.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -13,12 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
-import su.itpro.tasktracker.integration.IntegrationTestBase;
+import su.itpro.tasktracker.integration.IntegrationTestSecurity;
 import su.itpro.tasktracker.model.entity.Category;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class CategoryControllerIT extends IntegrationTestBase {
+class CategoryControllerIT extends IntegrationTestSecurity {
 
   private final EntityManager entityManager;
   private final MockMvc mockMvc;

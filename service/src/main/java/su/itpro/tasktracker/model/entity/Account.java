@@ -37,7 +37,7 @@ public class Account implements BaseEntity<Long> {
   private String email;
 
   @Column(nullable = false, unique = true)
-  private String login;
+  private String username;
 
   @Column(nullable = false)
   private String password;
@@ -45,6 +45,10 @@ public class Account implements BaseEntity<Long> {
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
   private Role role;
+
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean enabled = Boolean.TRUE;
 
   @ManyToOne
   private Group group;

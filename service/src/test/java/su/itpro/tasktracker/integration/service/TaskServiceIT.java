@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.integration.IntegrationTestBase;
-import su.itpro.tasktracker.model.dto.TaskCreateUpdateDto;
+import su.itpro.tasktracker.model.dto.TaskUpdateDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
 import su.itpro.tasktracker.model.entity.Project;
@@ -69,7 +69,7 @@ class TaskServiceIT extends IntegrationTestBase {
   void create() {
     String title = "Title";
     String description = "Description";
-    TaskCreateUpdateDto taskDto = TaskCreateUpdateDto.builder()
+    TaskUpdateDto taskDto = TaskUpdateDto.builder()
         .projectId(savedProjectId)
         .type("FEATURE")
         .status("NEW")
@@ -98,7 +98,7 @@ class TaskServiceIT extends IntegrationTestBase {
   void update() {
     String title = "Title updated";
     String description = "Description updated";
-    TaskCreateUpdateDto taskUpdateDto = TaskCreateUpdateDto.builder()
+    TaskUpdateDto taskUpdateDto = TaskUpdateDto.builder()
         .projectId(savedProjectId)
         .type("FEATURE")
         .status("ASSIGNED")

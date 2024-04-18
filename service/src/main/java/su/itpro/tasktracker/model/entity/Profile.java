@@ -45,6 +45,8 @@ public class Profile implements BaseEntity<Long> {
   @Enumerated(value = EnumType.STRING)
   private Gender gender;
 
+  private String aboutMe;
+
   public void setAccount(Account account) {
     account.setProfile(this);
     this.account = account;

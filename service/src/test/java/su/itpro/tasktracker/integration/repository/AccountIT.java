@@ -28,7 +28,7 @@ public class AccountIT extends IntegrationTestBase {
   void createAccount() {
     Account account = Account.builder()
         .email("test-create@email.com")
-        .login("test-create")
+        .username("test-create")
         .password("password")
         .role(Role.USER)
         .build();
@@ -52,7 +52,7 @@ public class AccountIT extends IntegrationTestBase {
   void readExistsAccount() {
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .login("test-1")
+        .username("test-1")
         .password("password")
         .role(Role.USER)
         .build();
@@ -62,7 +62,7 @@ public class AccountIT extends IntegrationTestBase {
         .build();
     Account account2 = Account.builder()
         .email("test-2@email.com")
-        .login("test-2")
+        .username("test-2")
         .password("password")
         .role(Role.ADMIN)
         .build();
@@ -88,7 +88,7 @@ public class AccountIT extends IntegrationTestBase {
   void readNotExistsAccount() {
     Account account = Account.builder()
         .email("test-not-exist@email.com")
-        .login("test-not-exist")
+        .username("test-not-exist")
         .password("password")
         .role(Role.USER)
         .build();
@@ -110,7 +110,7 @@ public class AccountIT extends IntegrationTestBase {
   void updateAccount() {
     Account account = Account.builder()
         .email("old@email.com")
-        .login("test-update")
+        .username("test-update")
         .password("password")
         .role(Role.USER)
         .build();
@@ -139,7 +139,7 @@ public class AccountIT extends IntegrationTestBase {
   void deleteAccount() {
     Account account = Account.builder()
         .email("test-delete@email.com")
-        .login("test-delete")
+        .username("test-delete")
         .password("password")
         .role(Role.USER)
         .build();
@@ -163,13 +163,13 @@ public class AccountIT extends IntegrationTestBase {
   void findByLogin_notFound() {
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .login("test-1")
+        .username("test-1")
         .password("password")
         .role(Role.USER)
         .build();
     Account account2 = Account.builder()
         .email("test-2@email.com")
-        .login("test-2")
+        .username("test-2")
         .password("password")
         .role(Role.ADMIN)
         .build();
@@ -191,13 +191,13 @@ public class AccountIT extends IntegrationTestBase {
     String login = "test-1";
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .login(login)
+        .username(login)
         .password("password")
         .role(Role.USER)
         .build();
     Account account2 = Account.builder()
         .email("test-2@email.com")
-        .login("test-2")
+        .username("test-2")
         .password("password")
         .role(Role.ADMIN)
         .build();
@@ -220,13 +220,13 @@ public class AccountIT extends IntegrationTestBase {
     String email = "test-2@email.com";
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .login("test-1")
+        .username("test-1")
         .password("password")
         .role(Role.USER)
         .build();
     Account account2 = Account.builder()
         .email(email)
-        .login("test-2")
+        .username("test-2")
         .password("password")
         .role(Role.ADMIN)
         .build();
@@ -250,13 +250,13 @@ public class AccountIT extends IntegrationTestBase {
     String email = "test-2@email.com";
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .login(login)
+        .username(login)
         .password("password")
         .role(Role.USER)
         .build();
     Account account2 = Account.builder()
         .email(email)
-        .login("test-2")
+        .username("test-2")
         .password("password")
         .role(Role.ADMIN)
         .build();

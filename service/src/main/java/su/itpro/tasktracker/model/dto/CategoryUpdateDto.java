@@ -6,7 +6,7 @@ import lombok.experimental.FieldNameConstants;
 
 @FieldNameConstants
 @Builder
-public record CategoryCreateUpdateDto(@NotBlank
-                                      String name) {
+public record CategoryUpdateDto(@NotBlank
+                                String name) {
 
 }
