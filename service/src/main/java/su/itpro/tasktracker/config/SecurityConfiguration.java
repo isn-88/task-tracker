@@ -2,6 +2,7 @@ package su.itpro.tasktracker.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -18,16 +19,17 @@ public class SecurityConfiguration {
         .csrf((csrf) -> csrf
             .ignoringRequestMatchers("/api/**"))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/login", "/logout", "/registration").permitAll()
+            .requestMatchers("/", "/login", "/logout", "/registration",
+                             "/css/**", "/js/**", "/webfonts/**", "/image/**")
+            .permitAll()
             .anyRequest().authenticated())
         .formLogin((login) -> login
-            .permitAll()
             .loginPage("/login")
             .defaultSuccessUrl("/tasks"))
         .logout((logout) -> logout
-            .permitAll()
             .logoutUrl("/logout")
-            .logoutSuccessUrl("/login"));
+            .logoutSuccessUrl("/login"))
+        .httpBasic(Customizer.withDefaults());
     return http.build();
   }
 

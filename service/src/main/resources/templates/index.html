@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <title>Hello</title>
+</head>
+
+<body>
+<section style="padding-top: 80px; padding-bottom: 10px;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-md-8 col-xl-6 p-5">
+        <div class="card mb-3 shadow">
+          <img src="/image/intro.png" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 class="card-title">Task Tracker</h5>
+            <p class="card-text">Добро пожаловать в сервис по постановке и отслеживанию задач!
+              Войдите или зарегистрируйтесь для работы с задачами.</p>
+          </div>
+          <div class="card-footer">
+            <a href="/login" class="btn btn-primary">Войти</a>
+            <a href="/registration" class="btn btn-outline-primary">Зарегистрироваться</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

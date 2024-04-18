@@ -16,10 +16,10 @@ public class AccountRegistrationMapper implements Mapper<RegistrationDto, Accoun
   @Override
   public Account map(RegistrationDto dto) {
     return Account.builder()
-        .email(dto.email())
-        .username(dto.username())
-        .password(passwordEncoder.encode(dto.password()))
-        .role(dto.role() != null ? dto.role() : Role.USER)
+        .email(dto.getEmail())
+        .username(dto.getUsername())
+        .password(passwordEncoder.encode(dto.getPassword()))
+        .role(dto.getRole() != null ? dto.getRole() : Role.USER)
         .enabled(Boolean.TRUE)
         .build();
   }

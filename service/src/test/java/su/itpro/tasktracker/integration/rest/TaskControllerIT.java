@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
-import su.itpro.tasktracker.integration.IntegrationTestBase;
+import su.itpro.tasktracker.integration.IntegrationTestSecurity;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.TaskPriority;
@@ -19,7 +19,7 @@ import su.itpro.tasktracker.model.enums.TaskType;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class TaskControllerIT extends IntegrationTestBase {
+class TaskControllerIT extends IntegrationTestSecurity {
 
   private final EntityManager entityManager;
   private final MockMvc mockMvc;
@@ -65,6 +65,5 @@ class TaskControllerIT extends IntegrationTestBase {
             jsonPath("$.length()").value(2)
         );
   }
-
 
 }

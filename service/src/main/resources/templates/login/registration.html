@@ -22,37 +22,66 @@
         </div>
         <div class="card-body">
           <div class="card-text">
-            <form th:action="@{/registration}" method="POST">
+            <form th:action="@{/registration}" method="POST" th:object="${register}">
               <div class="row gy-4">
                 <div class="col-12">
                   <div class="form-text">Укажите адрес электронной почты</div>
-                  <div class="input-group">
-                    <span class="input-group-text" id="basic-addon-plus">@</span>
-                    <input type="text" class="form-control" name="email"
-                           value=""
-                           placeholder="Электронная почта"
-                           aria-describedby="basic-addon-plus" aria-label="">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="col-12">
-                    <div class="input-group">
-                    <span class="input-group-text" id="basic-addon-email">
-                      <i class="fa-regular fa-user"></i></span>
-                      <input type="text" class="form-control" name="username"
-                             value=""
-                             placeholder="Имя пользователя"
-                             aria-describedby="basic-addon-email" aria-label="" required>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text" id="addonEmail">
+                      <i class="fa-regular fa-envelope"></i></span>
+                    <input th:class="'form-control' +(${#fields.hasErrors('email')} ? ' is-invalid' : '')"
+                           id="inputEmail" type="text" th:field="*{email}"
+                           placeholder="Электронная почта" aria-label=""
+                           aria-describedby="addonEmail validationEmailFeedback" required>
+                    <div id="validationEmailFeedback" class="invalid-feedback">
+                      <div th:if="${#fields.hasErrors('email')}"><ul>
+                        <li th:each="error : ${#fields.errors('email')}"
+                            th:text="${error}">Email error</li></ul>
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div class="col-12">
-                  <input type="password" class="form-control" id="inputPassword"
-                         name="password" aria-label="Password"
-                         placeholder="Пароль" required>
-                  <div id="passwordHelpBlock" class="form-text">
-                    Ваш пароль должен состоять из 8-20 символов, содержать буквы и цифры и не должен
-                    содержать пробелов, специальных символов или эмодзи.
+                  <div class="col-12">
+                    <div class="form-text">Укажите имя пользователя</div>
+                    <div class="input-group has-validation">
+                    <span class="input-group-text" id="addonUser">
+                      <i class="fa-regular fa-user"></i></span>
+                      <input th:class="'form-control' +(${#fields.hasErrors('username')} ? ' is-invalid' : '')"
+                             id="inputUsername" type="text" th:field="*{username}"
+                             aria-describedby="addonUsername validationUsernameFeedback usernameHelpBlock"
+                             placeholder="Имя пользователя" aria-label="" required>
+                      <div id="validationUsernameFeedback" class="invalid-feedback">
+                        <div th:if="${#fields.hasErrors('username')}"><ul>
+                          <li th:each="error : ${#fields.errors('username')}"
+                              th:text="${error}">Username error</li></ul>
+                        </div>
+                      </div>
+                      <div id="usernameHelpBlock" class="form-text">
+                        Ваше имя пользователя должно содержать минимум 3 символа.
+                        Допустимо использовать латинские буквы, цифры и символы точка (.),
+                        нижнее подчёркивание (_) и тире (-). Должно начинаться с буквы.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="input-group has-validation">
+                    <input th:class="'form-control' +(${#fields.hasErrors('password')} ? ' is-invalid' : '')"
+                           id="inputPassword" type="password" th:field="*{password}"
+                           aria-describedby="passwordHelpBlock validationPasswordFeedback"
+                           placeholder="Пароль" aria-label="Password" required>
+                    <div id="validationPasswordFeedback" class="invalid-feedback">
+                      <div th:if="${#fields.hasErrors('password')}"><ul>
+                        <li th:each="error : ${#fields.errors('password')}"
+                            th:text="${error}">Password error</li></ul>
+                      </div>
+                    </div>
+                    <div id="passwordHelpBlock" class="form-text">
+                      Ваш пароль должен состоять из 8-20 символов, содержать буквы и цифры и не
+                      должен
+                      содержать пробелов, специальных символов или эмодзи.
+                    </div>
                   </div>
                 </div>
                 <div class="col-12">

@@ -1,6 +1,10 @@
 package su.itpro.tasktracker.service;
 
+import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.currentPassword;
+import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.repeatPassword;
+
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import su.itpro.tasktracker.exception.IllegalPasswordException;
+import su.itpro.tasktracker.exception.PasswordMismatchException;
 import su.itpro.tasktracker.model.dto.AccountReadDto;
 import su.itpro.tasktracker.model.dto.AccountUpdateDto;
 import su.itpro.tasktracker.model.dto.PasswordUpdateDto;
@@ -59,8 +63,7 @@ public class AccountService implements UserDetailsService {
             "Account with username: " + username + " not found"));
   }
 
-  public void registration(RegistrationDto dto) {
-    // TODO validation dto
+  public void register(RegistrationDto dto) {
     Account newAccount = accountRegistrationMapper.map(dto);
     accountRepository.save(newAccount);
     Profile profile = profileRegistrationMapper.map(dto);
@@ -73,6 +76,7 @@ public class AccountService implements UserDetailsService {
             "Account with username: " + username + " not found"));
     account.setEmail(updateDto.email());
     account.setUsername(updateDto.username());
+    accountRepository.saveAndFlush(account);
   }
 
   public void updateProfile(ProfileUpdateDto updateDto, String username) {
@@ -88,12 +92,16 @@ public class AccountService implements UserDetailsService {
   }
 
   public void updatePassword(PasswordUpdateDto updateDto, String username) {
-    // TODO custom password fields validator
+    if (!Objects.equals(updateDto.newPassword(), updateDto.repeatPassword())) {
+      throw new PasswordMismatchException("New password and repeat password has mismatch",
+                                          repeatPassword);
+    }
     Account account = accountRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException(
             "Account with username: " + username + " not found"));
     if (!passwordEncoder.matches(updateDto.currentPassword(), account.getPassword())) {
-      throw new IllegalPasswordException("Input current password is incorrect");
+      throw new PasswordMismatchException("Input current password is incorrect",
+                                          currentPassword);
     }
     account.setPassword(passwordEncoder.encode(updateDto.newPassword()));
   }

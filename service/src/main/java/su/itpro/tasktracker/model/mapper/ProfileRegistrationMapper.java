@@ -10,8 +10,8 @@ public class ProfileRegistrationMapper implements Mapper<RegistrationDto, Profil
   @Override
   public Profile map(RegistrationDto registrationDto) {
     return Profile.builder()
-        .lastname(registrationDto.lastname())
-        .firstname(registrationDto.firstname())
+        .lastname(registrationDto.getLastname())
+        .firstname(registrationDto.getFirstname())
         .build();
   }
 

@@ -1,5 +1,7 @@
 package su.itpro.tasktracker.web.controller;
 
+import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.repeatPassword;
+
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +19,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import su.itpro.tasktracker.exception.PasswordMismatchException;
 import su.itpro.tasktracker.model.dto.AccountUpdateDto;
 import su.itpro.tasktracker.model.dto.PasswordUpdateDto;
-import su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields;
 import su.itpro.tasktracker.model.dto.ProfileUpdateDto;
 import su.itpro.tasktracker.service.AccountService;
 
@@ -80,7 +82,16 @@ public class AccountController {
       return "redirect:/account";
     }
 
-    accountService.updatePassword(updateDto, userDetails.getUsername());
+    try {
+      accountService.updatePassword(updateDto, userDetails.getUsername());
+    } catch (PasswordMismatchException ex) {
+      bindingResult.addError(
+          new FieldError("passwordUpdateDto", ex.getField(), ex.getMessage())
+      );
+      redirectAttributes.addFlashAttribute("binding", clearFieldsValue(bindingResult));
+      redirectAttributes.addFlashAttribute("tab", "password");
+      return "redirect:/account";
+    }
 
     return "redirect:/logout";
   }
@@ -101,7 +112,7 @@ public class AccountController {
       if (error.getCode() != null && error.getCode().equals("PasswordCheckRepeat")) {
         bindingResult.addError(
             new FieldError(error.getObjectName(),
-                           Fields.repeatPassword,
+                           repeatPassword,
                            Objects.toString(error.getDefaultMessage(), "")
             )
         );

@@ -13,12 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
-import su.itpro.tasktracker.integration.IntegrationTestBase;
+import su.itpro.tasktracker.integration.IntegrationTestSecurity;
 import su.itpro.tasktracker.model.entity.Category;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class CategoryControllerIT extends IntegrationTestBase {
+class CategoryControllerIT extends IntegrationTestSecurity {
 
   private final EntityManager entityManager;
   private final MockMvc mockMvc;
