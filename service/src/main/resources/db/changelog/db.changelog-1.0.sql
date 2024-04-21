@@ -21,7 +21,6 @@ CREATE TABLE groups
 CREATE TABLE account
 (
     id BIGSERIAL PRIMARY KEY ,
-    group_id INT REFERENCES groups (id) ,
     email VARCHAR(128) NOT NULL UNIQUE ,
     username VARCHAR(128) NOT NULL UNIQUE ,
     password VARCHAR(256) NOT NULL ,
@@ -32,6 +31,18 @@ CREATE TABLE account
 --rollback DROP TABLE account;
 
 --changeset s.ivaschenko:4
+CREATE TABLE groups_account
+(
+    id BIGSERIAL PRIMARY KEY ,
+    group_id INT NOT NULL REFERENCES groups (id) ,
+    account_id BIGINT NOT NULL REFERENCES account (id) ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    created_by VARCHAR(256) ,
+    CONSTRAINT group_account_unq UNIQUE (group_id, account_id)
+);
+--rollback DROP TABLE groups_account;
+
+--changeset s.ivaschenko:5
 CREATE TABLE profile
 (
     account_id BIGINT PRIMARY KEY REFERENCES account (id),
@@ -46,7 +57,7 @@ CREATE TABLE profile
 );
 --rollback DROP TABLE profile;
 
---changeset s.ivaschenko:5
+--changeset s.ivaschenko:6
 CREATE TABLE project
 (
     id SERIAL PRIMARY KEY ,
@@ -55,7 +66,7 @@ CREATE TABLE project
 );
 --rollback DROP TABLE project;
 
---changeset s.ivaschenko:6
+--changeset s.ivaschenko:7
 CREATE TABLE task
 (
     id BIGSERIAL PRIMARY KEY ,
@@ -82,7 +93,7 @@ CREATE TABLE task
 );
 --rollback DROP TABLE task;
 
---changeset s.ivaschenko:7
+--changeset s.ivaschenko:8
 CREATE TABLE task_revision
 (
     id SERIAL PRIMARY KEY ,
@@ -90,7 +101,7 @@ CREATE TABLE task_revision
 );
 --rollback DROP TABLE task_revision;
 
---changeset s.ivaschenko:8
+--changeset s.ivaschenko:9
 CREATE TABLE task_aud
 (
     id BIGINT NOT NULL ,

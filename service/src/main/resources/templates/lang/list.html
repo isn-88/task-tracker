@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>List Language</title>
+</head>
+
+<body>
+<div th:fragment="list">
+  <li><a class="dropdown-item" th:href="@{''(lang=en)}">English</a></li>
+  <li><a class="dropdown-item" th:href="@{''(lang=ru)}">Русский</a></li>
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Lang</title>
+</head>
+
+<body>
+<div th:fragment="lang-light">
+  <div class="dropdown text-end mt-1">
+    <a class="dropdown-toggle btn btn-sm btn-outline-light" href="#"
+       id="dropdownMenuLightLink" role="button"
+       th:text="${#strings.toUpperCase(#locale)}"
+       data-bs-toggle="dropdown" aria-expanded="false">Lang</a>
+
+    <ul class="dropdown-menu dropdown-menu-end">
+      <div th:insert="~{lang/list :: list}"></div>
+    </ul>
+  </div>
+</div>
+
+<div th:fragment="lang-default">
+  <div class="dropdown text-end mt-1">
+    <a class="dropdown-toggle btn btn-sm" href="#"
+       id="dropdownMenuDefaultLink" role="button"
+       th:text="${#strings.toUpperCase(#locale)}"
+       data-bs-toggle="dropdown" aria-expanded="false">Lang</a>
+
+    <ul class="dropdown-menu dropdown-menu-end">
+      <div th:insert="~{lang/list :: list}"></div>
+    </ul>
+  </div>
+</div>
+</body>
+
+</html>

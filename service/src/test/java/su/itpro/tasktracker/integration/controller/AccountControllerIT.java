@@ -171,7 +171,7 @@ public class AccountControllerIT extends IntegrationTestSecurity {
                         .with(csrf()))
         .andExpectAll(
             status().is3xxRedirection(),
-            redirectedUrl("/logout")
+            redirectedUrl("/login")
         );
 
     Optional<Account> actualResult = accountRepository.findByUsername(USERNAME);

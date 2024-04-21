@@ -11,6 +11,7 @@ import su.itpro.tasktracker.integration.IntegrationTestBase;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Group;
+import su.itpro.tasktracker.model.entity.GroupAccount;
 import su.itpro.tasktracker.model.entity.Profile;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
@@ -19,6 +20,7 @@ import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
 import su.itpro.tasktracker.model.enums.TaskType;
 import su.itpro.tasktracker.repository.AccountRepository;
+import su.itpro.tasktracker.repository.GroupAccountRepository;
 import su.itpro.tasktracker.repository.GroupRepository;
 import su.itpro.tasktracker.repository.ProjectRepository;
 import su.itpro.tasktracker.repository.TaskRepository;
@@ -28,6 +30,7 @@ public class TaskIT extends IntegrationTestBase {
 
   private final AccountRepository accountRepository;
   private final GroupRepository groupRepository;
+  private final GroupAccountRepository groupAccountRepository;
   private final ProjectRepository projectRepository;
   private final TaskRepository taskRepository;
   private final EntityManager entityManager;
@@ -173,9 +176,13 @@ public class TaskIT extends IntegrationTestBase {
         .username("accountWithTwoTasks")
         .password("password")
         .role(Role.USER)
-        .group(group)
         .build();
     accountRepository.save(accountWithTwoTasks);
+    GroupAccount groupAccount = GroupAccount.builder()
+        .account(accountWithTwoTasks)
+        .group(group)
+        .build();
+    groupAccountRepository.save(groupAccount);
     Profile profile = Profile.builder()
         .firstname("Firstname")
         .lastname("Lastname")
@@ -222,7 +229,7 @@ public class TaskIT extends IntegrationTestBase {
     entityManager.clear();
 
     TaskFilter filter = TaskFilter.builder()
-        .assignedAccountId(accountWithTwoTasks.getId())
+        .assignedAccountId(List.of(accountWithTwoTasks.getId()))
         .types(List.of(TaskType.FEATURE))
         .statuses(List.of(TaskStatus.ASSIGNED))
         .priorities(List.of(TaskPriority.HIGH))

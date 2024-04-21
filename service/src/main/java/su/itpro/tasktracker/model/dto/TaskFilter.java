@@ -14,7 +14,7 @@ public record TaskFilter(String findPattern,
                          List<TaskType> types,
                          List<TaskStatus> statuses,
                          List<TaskPriority> priorities,
-                         Long assignedAccountId,
-                         Integer assignedGroupId) {
+                         List<Long> assignedAccountId,
+                         List<Integer> assignedGroupId) {
 
 }

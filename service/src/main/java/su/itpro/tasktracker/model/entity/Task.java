@@ -34,7 +34,7 @@ import su.itpro.tasktracker.model.enums.TaskType;
 @Builder
 @Entity
 @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-public class Task extends AuditingEntity<Long> {
+public class Task extends AuditingModifyEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

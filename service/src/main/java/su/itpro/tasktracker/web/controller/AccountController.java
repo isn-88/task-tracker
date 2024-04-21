@@ -2,10 +2,12 @@ package su.itpro.tasktracker.web.controller;
 
 import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.repeatPassword;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -75,7 +77,8 @@ public class AccountController {
   public String updatePassword(@AuthenticationPrincipal UserDetails userDetails,
                                @Validated @ModelAttribute PasswordUpdateDto updateDto,
                                BindingResult bindingResult,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session) {
     if (bindingResult.hasErrors()) {
       redirectAttributes.addFlashAttribute("binding", clearFieldsValue(bindingResult));
       redirectAttributes.addFlashAttribute("tab", "password");
@@ -93,9 +96,13 @@ public class AccountController {
       return "redirect:/account";
     }
 
-    return "redirect:/logout";
-  }
+    SecurityContextHolder.clearContext();
+    if (session != null) {
+      session.invalidate();
+    }
 
+    return "redirect:/login";
+  }
 
   private BindingResult clearFieldsValue(BindingResult bindingSource) {
     BindingResult bindingResult =

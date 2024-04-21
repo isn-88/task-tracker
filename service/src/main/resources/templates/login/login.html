@@ -5,51 +5,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
-  <title>Task</title>
+  <title>Login</title>
 </head>
 
 <body>
 
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-sm-10 col-md-8 col-xl-6 p-5">
+    <div class="col-sm-10 col-md-8 col-xl-6 p-4">
       <div class="card shadow">
         <div class="card-header">
 
+          <div th:insert="~{lang/selector :: lang-default}"></div>
+
           <div class="text-center">
             <h3 class="fst-italic">Task Tracker</h3>
-            <span>Войдите для работы с задачами</span>
+            <span th:text="#{page.login.description}">Description</span>
           </div>
         </div>
         <div class="card-body">
           <div class="card-text">
+            <div th:if="${param.error}">
+              <div class="alert alert-danger">
+                <span th:text="#{page.login.error.message}"></span>
+              </div>
+            </div>
             <form th:action="@{/login}" method="POST">
               <div class="row gy-4">
                 <div class="col-12">
                   <div class="form-text">
-                    Введите логин или email
+                    <span th:text="#{page.login.login.label}">Login</span>
                   </div>
                   <div class="input-group">
-                    <input type="text" class="form-control" name="username" id="inputLogin"
-                           aria-label="Login"
-                           placeholder="Имя пользователя или email" required>
+                    <input class="form-control" name="username" id="inputLogin"
+                           type="text" aria-label="Login"
+                           th:placeholder="#{page.login.login.placeholder}" required>
                   </div>
                 </div>
 
                 <div class="col-12">
-                  <input type="password" class="form-control" id="inputPassword"
-                         name="password" aria-label="Password"
-                         placeholder="Пароль" required>
+                  <input class="form-control" name="password" id="inputPassword"
+                         type="password" aria-label="Password"
+                         th:placeholder="#{page.login.password.placeholder}" required>
                   <div id="passwordHelpBlock" class="form-text">
-                    Не помните пароль?
-                    <a href="#">
-                      Восстановить
-                    </a>
+                    <span th:text="#{page.login.link.recover.label}">Recover message</span>
+                    <a href="#" th:text="#{page.login.link.recover.button}">Recover</a>
                   </div>
                 </div>
 
                 <div class="d-grid">
-                  <input class="btn btn-outline-primary" type="submit" value="Войти">
+                  <input class="btn btn-outline-primary" type="submit"
+                         th:value="#{page.login.submit.button}">
                 </div>
               </div>
             </form>
@@ -60,15 +66,13 @@
   </div>
 
   <div class="row justify-content-center">
-    <div class="col col-sm-10 col-md-8 col-xl-6 p-5">
+    <div class="col col-sm-10 col-md-8 col-xl-6 p-4">
       <div class="card shadow">
         <div class="card-body">
           <div class="card-text">
-
-            <h5>Нет аккаунта?
-              <a href="/registration">Зарегистрировать</a>
+            <h5><span th:text="#{page.login.link.register.label}">Register?</span>
+              <a href="/registration" th:text="#{page.login.link.register.button}">Register</a>
             </h5>
-
           </div>
         </div>
       </div>

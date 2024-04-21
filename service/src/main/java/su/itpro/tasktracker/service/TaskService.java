@@ -2,9 +2,12 @@ package su.itpro.tasktracker.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import su.itpro.tasktracker.model.dto.AccountWithGroupsDto;
+import su.itpro.tasktracker.model.dto.GroupReadDto;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.dto.TaskReadDto;
 import su.itpro.tasktracker.model.dto.TaskUpdateDto;
@@ -22,6 +25,12 @@ public class TaskService {
   private final TaskRepository taskRepository;
 
   @Transactional(readOnly = true)
+  public Optional<TaskReadDto> findById(Long id) {
+    return taskRepository.findById(id)
+        .map(taskReadMapper::map);
+  }
+
+  @Transactional(readOnly = true)
   public List<TaskReadDto> findAllBy(TaskFilter filter) {
     return taskRepository.findAllByFilter(filter).stream()
         .map(taskReadMapper::map)
@@ -29,9 +38,18 @@ public class TaskService {
   }
 
   @Transactional(readOnly = true)
-  public Optional<TaskReadDto> findById(Long id) {
-    return taskRepository.findById(id)
-        .map(taskReadMapper::map);
+  public List<TaskReadDto> findAllAssignedTaskForUser(AccountWithGroupsDto accountWithGroups) {
+    TaskFilter filterByAccount = TaskFilter.builder()
+        .assignedAccountId(List.of(accountWithGroups.account().id()))
+        .build();
+    TaskFilter filterByGroup = TaskFilter.builder()
+        .assignedGroupId(accountWithGroups.groups().stream().map(GroupReadDto::id).toList())
+        .build();
+    return Stream.concat(
+        taskRepository.findAllByFilter(filterByAccount).stream().map(taskReadMapper::map),
+        taskRepository.findAllByFilter(filterByGroup).stream().map(taskReadMapper::map)
+        )
+        .toList();
   }
 
   public TaskReadDto create(TaskUpdateDto taskCreateDto) {

@@ -7,12 +7,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldNameConstants;
 import su.itpro.tasktracker.model.enums.Role;
 
 @Getter
 @Setter
 @Builder
-public class RegistrationDto {
+@FieldNameConstants
+public class RegisterDto {
 
   @NotBlank
   @Email
@@ -20,8 +22,7 @@ public class RegistrationDto {
 
   @NotBlank
   @Size(min = 3, max = 128)
-  @Pattern(regexp = "^[a-zA-Z][-_.a-zA-Z0-9]*$",
-      message = "должно соответствовать шаблону")
+  @Pattern(regexp = "^[a-zA-Z][-_.a-zA-Z0-9]*$", message = "{validation.username.pattern}")
   private String username;
 
   @NotBlank
