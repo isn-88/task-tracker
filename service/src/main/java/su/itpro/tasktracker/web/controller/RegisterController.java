@@ -36,8 +36,8 @@ public class RegisterController {
                          RegisterDto registerDto,
                          BindingResult bindingResult,
                          HttpServletRequest request) {
-    accountService.register(registerDto, bindingResult, localeResolver.resolveLocale(request));
-    if (bindingResult.hasErrors()) {
+    if (!accountService.register(registerDto, bindingResult,
+                                 localeResolver.resolveLocale(request))) {
       return "login/registration";
     }
     return "redirect:/login";

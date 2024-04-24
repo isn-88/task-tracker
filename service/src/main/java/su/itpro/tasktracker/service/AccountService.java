@@ -1,8 +1,5 @@
 package su.itpro.tasktracker.service;
 
-import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.currentPassword;
-import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.repeatPassword;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -20,6 +17,7 @@ import su.itpro.tasktracker.model.dto.AccountReadDto;
 import su.itpro.tasktracker.model.dto.AccountUpdateDto;
 import su.itpro.tasktracker.model.dto.AccountWithGroupsDto;
 import su.itpro.tasktracker.model.dto.PasswordUpdateDto;
+import su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields;
 import su.itpro.tasktracker.model.dto.ProfileUpdateDto;
 import su.itpro.tasktracker.model.dto.RegisterDto;
 import su.itpro.tasktracker.model.dto.TaskAssignedDto;
@@ -56,10 +54,9 @@ public class AccountService implements UserDetailsService {
   @Transactional(readOnly = true)
   public List<TaskAssignedDto> getAllAssigned() {
     return Stream.concat(
-            groupRepository.findAll().stream().map(assignedGroupMapper::map),
-            accountRepository.findAll().stream().map(assignedAccountMapper::map)
-        )
-        .toList();
+        groupRepository.findAll().stream().map(assignedGroupMapper::map),
+        accountRepository.findAll().stream().map(assignedAccountMapper::map)
+    ).toList();
   }
 
   @Transactional(readOnly = true)
@@ -78,15 +75,16 @@ public class AccountService implements UserDetailsService {
             "Account with username: " + username + " not found"));
   }
 
-  public void register(RegisterDto dto, BindingResult bindingResult, Locale locale) {
+  public boolean register(RegisterDto dto, BindingResult bindingResult, Locale locale) {
     registerPostValidator.validate(dto, bindingResult, locale);
     if (bindingResult.hasErrors()) {
-      return;
+      return false;
     }
     Account newAccount = accountRegistrationMapper.map(dto);
     accountRepository.save(newAccount);
     Profile profile = profileRegistrationMapper.map(dto);
     profile.setAccount(newAccount);
+    return true;
   }
 
   public void update(AccountUpdateDto updateDto, String username) {
@@ -112,19 +110,15 @@ public class AccountService implements UserDetailsService {
 
   public void updatePassword(PasswordUpdateDto updateDto, String username) {
     if (!Objects.equals(updateDto.newPassword(), updateDto.repeatPassword())) {
-      throw new PasswordMismatchException(
-          "New password and repeat password has mismatch",
-          repeatPassword
-      );
+      throw new PasswordMismatchException("New password and repeat password has mismatch",
+                                          Fields.repeatPassword);
     }
     Account account = accountRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException(
             "Account with username: " + username + " not found"));
     if (!passwordEncoder.matches(updateDto.currentPassword(), account.getPassword())) {
-      throw new PasswordMismatchException(
-          "Input current password is incorrect",
-          currentPassword
-      );
+      throw new PasswordMismatchException("Input current password is incorrect",
+                                          Fields.currentPassword);
     }
     account.setPassword(passwordEncoder.encode(updateDto.newPassword()));
   }

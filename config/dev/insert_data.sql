@@ -43,7 +43,6 @@ VALUES (null, (SELECT id FROM project where name = 'task-tracker'), 'FEATURE', '
         (SELECT id FROM category WHERE name = 'general'), (SELECT id FROM groups WHERE name = 'developers'), now(), 0,
         'Корневая задача по разработке сервиса отслеживания задач');
 
-
 INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, assigned_account_id, created_at, progress, description)
 VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
         'FEATURE', 'Создание проекта', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
