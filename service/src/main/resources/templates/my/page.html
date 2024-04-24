@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <title>My page</title>
+</head>
+
+<body>
+<section>
+  <div th:insert="~{navigation/nav :: account}"></div>
+  <div th:insert="~{navigation/nav :: tab}"></div>
+</section>
+
+<section style="padding-top: 20px; padding-bottom: 10px;">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <div>
+          <h5>Моя страница</h5>
+        </div>
+        <div>
+          <a href="#" th:text="'Мои задачи (' + ${#lists.size(tasks)} + ')'">Мои задачи</a>
+        </div>
+
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Проект</th>
+            <th scope="col">Тип</th>
+            <th scope="col">Статус</th>
+            <th scope="col">Тема</th>
+            <th scope="col">Назначена</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="task : ${tasks}">
+            <td>
+              <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
+            </td>
+            <td th:text="${task.project().name()}">Project</td>
+            <td th:text="${task.type().getType()}">Type</td>
+            <td th:text="${task.status().getStatus()}">Status</td>
+            <td>
+              <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+            </td>
+            <td>
+              <a th:href="@{/{type}/{id}(type=${task.assigned().type().getPath()}, id=${task.assigned().id()})}"
+                 th:text="${task.assigned().name()}">Assigned</a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

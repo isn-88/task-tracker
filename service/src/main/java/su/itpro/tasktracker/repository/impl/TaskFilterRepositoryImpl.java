@@ -26,8 +26,8 @@ public class TaskFilterRepositoryImpl implements TaskFilterRepository {
         .add(filter.priorities(), task.priority::in)
         .add(filter.statuses(), task.status::in)
         .add(filter.types(), task.type::in)
-        .add(filter.assignedAccountId(), task.assignedAccount.id::eq)
-        .add(filter.assignedGroupId(), task.assignedGroup.id::eq)
+        .add(filter.assignedAccountId(), task.assignedAccount.id::in)
+        .add(filter.assignedGroupId(), task.assignedGroup.id::in)
         .buildAnd();
 
     EntityGraph<Task> taskGraph = entityManager.createEntityGraph(Task.class);

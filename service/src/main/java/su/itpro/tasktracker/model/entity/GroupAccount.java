@@ -1,14 +1,11 @@
 package su.itpro.tasktracker.model.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -19,24 +16,32 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "groupAccounts")
-@ToString(exclude = "groupAccounts")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
+@ToString(of = "id")
 @Builder
 @Entity
-@Table(name = "groups")
-public class Group implements BaseEntity<Integer> {
+@Table(name = "groups_account")
+public class GroupAccount extends AuditingCreateEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String name;
+  @ManyToOne
+  private Group group;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "group")
-  List<GroupAccount> groupAccounts = new ArrayList<>();
+  @ManyToOne
+  private Account account;
 
+  public void setAccount(Account account) {
+    this.account = account;
+    this.account.getGroupAccounts().add(this);
+  }
+
+  public void setGroup(Group group) {
+    this.group = group;
+    this.group.getGroupAccounts().add(this);
+  }
 }

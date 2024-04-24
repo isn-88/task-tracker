@@ -19,7 +19,7 @@ public class AccountFilterRepositoryImpl implements AccountFilterRepository {
 
   public Optional<Account> findByFilter(AccountLoginDto loginDto) {
     Predicate predicate = QPredicate.builder()
-        .add(loginDto.login(), account.username::eq)
+        .add(loginDto.username(), account.username::eq)
         .add(loginDto.email(), account.email::eq)
         .buildOr();
 

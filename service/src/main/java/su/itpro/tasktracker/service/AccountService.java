@@ -1,9 +1,7 @@
 package su.itpro.tasktracker.service;
 
-import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.currentPassword;
-import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.repeatPassword;
-
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -13,23 +11,28 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import su.itpro.tasktracker.exception.PasswordMismatchException;
 import su.itpro.tasktracker.model.dto.AccountReadDto;
 import su.itpro.tasktracker.model.dto.AccountUpdateDto;
+import su.itpro.tasktracker.model.dto.AccountWithGroupsDto;
 import su.itpro.tasktracker.model.dto.PasswordUpdateDto;
+import su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields;
 import su.itpro.tasktracker.model.dto.ProfileUpdateDto;
-import su.itpro.tasktracker.model.dto.RegistrationDto;
+import su.itpro.tasktracker.model.dto.RegisterDto;
 import su.itpro.tasktracker.model.dto.TaskAssignedDto;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Profile;
 import su.itpro.tasktracker.model.mapper.AccountReadMapper;
 import su.itpro.tasktracker.model.mapper.AccountRegistrationMapper;
+import su.itpro.tasktracker.model.mapper.AccountWithGroupMapper;
 import su.itpro.tasktracker.model.mapper.AssignedAccountMapper;
 import su.itpro.tasktracker.model.mapper.AssignedGroupMapper;
 import su.itpro.tasktracker.model.mapper.ProfileRegistrationMapper;
 import su.itpro.tasktracker.model.mapper.UserDetailsMapper;
 import su.itpro.tasktracker.repository.AccountRepository;
 import su.itpro.tasktracker.repository.GroupRepository;
+import su.itpro.tasktracker.validation.RegisterPostValidator;
 
 @Service
 @RequiredArgsConstructor
@@ -39,20 +42,21 @@ public class AccountService implements UserDetailsService {
   private final AccountRepository accountRepository;
   private final GroupRepository groupRepository;
   private final AccountReadMapper accountReadMapper;
+  private final AccountWithGroupMapper accountWithGroupMapper;
   private final AccountRegistrationMapper accountRegistrationMapper;
   private final AssignedAccountMapper assignedAccountMapper;
   private final AssignedGroupMapper assignedGroupMapper;
   private final UserDetailsMapper userDetailsMapper;
   private final ProfileRegistrationMapper profileRegistrationMapper;
   private final PasswordEncoder passwordEncoder;
+  private final RegisterPostValidator registerPostValidator;
 
   @Transactional(readOnly = true)
   public List<TaskAssignedDto> getAllAssigned() {
     return Stream.concat(
-            groupRepository.findAll().stream().map(assignedGroupMapper::map),
-            accountRepository.findAll().stream().map(assignedAccountMapper::map)
-        )
-        .toList();
+        groupRepository.findAll().stream().map(assignedGroupMapper::map),
+        accountRepository.findAll().stream().map(assignedAccountMapper::map)
+    ).toList();
   }
 
   @Transactional(readOnly = true)
@@ -63,11 +67,24 @@ public class AccountService implements UserDetailsService {
             "Account with username: " + username + " not found"));
   }
 
-  public void register(RegistrationDto dto) {
+  @Transactional(readOnly = true)
+  public AccountWithGroupsDto findAccountWithGroups(String username) {
+    return accountRepository.findByUsername(username)
+        .map(accountWithGroupMapper::map)
+        .orElseThrow(() -> new UsernameNotFoundException(
+            "Account with username: " + username + " not found"));
+  }
+
+  public boolean register(RegisterDto dto, BindingResult bindingResult, Locale locale) {
+    registerPostValidator.validate(dto, bindingResult, locale);
+    if (bindingResult.hasErrors()) {
+      return false;
+    }
     Account newAccount = accountRegistrationMapper.map(dto);
     accountRepository.save(newAccount);
     Profile profile = profileRegistrationMapper.map(dto);
     profile.setAccount(newAccount);
+    return true;
   }
 
   public void update(AccountUpdateDto updateDto, String username) {
@@ -94,14 +111,14 @@ public class AccountService implements UserDetailsService {
   public void updatePassword(PasswordUpdateDto updateDto, String username) {
     if (!Objects.equals(updateDto.newPassword(), updateDto.repeatPassword())) {
       throw new PasswordMismatchException("New password and repeat password has mismatch",
-                                          repeatPassword);
+                                          Fields.repeatPassword);
     }
     Account account = accountRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException(
             "Account with username: " + username + " not found"));
     if (!passwordEncoder.matches(updateDto.currentPassword(), account.getPassword())) {
       throw new PasswordMismatchException("Input current password is incorrect",
-                                          currentPassword);
+                                          Fields.currentPassword);
     }
     account.setPassword(passwordEncoder.encode(updateDto.newPassword()));
   }

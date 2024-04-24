@@ -160,7 +160,7 @@ public class AccountIT extends IntegrationTestBase {
   }
 
   @Test
-  void findByLogin_notFound() {
+  void findByUsername_notFound() {
     Account account1 = Account.builder()
         .email("test-1@email.com")
         .username("test-1")
@@ -178,7 +178,7 @@ public class AccountIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
-        .login("test")
+        .username("test")
         .build();
 
     Optional<Account> actualResult = accountRepository.findByFilter(loginDto);
@@ -187,11 +187,11 @@ public class AccountIT extends IntegrationTestBase {
   }
 
   @Test
-  void findByLogin_findByLoginSuccess() {
-    String login = "test-1";
+  void findByUsername_success() {
+    String username = "test-1";
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .username(login)
+        .username(username)
         .password("password")
         .role(Role.USER)
         .build();
@@ -206,7 +206,7 @@ public class AccountIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
-        .login(login)
+        .username(username)
         .build();
 
     Optional<Account> actualResult = accountRepository.findByFilter(loginDto);
@@ -216,7 +216,7 @@ public class AccountIT extends IntegrationTestBase {
   }
 
   @Test
-  void findByLogin_findByEmailSuccess() {
+  void findByEmail_success() {
     String email = "test-2@email.com";
     Account account1 = Account.builder()
         .email("test-1@email.com")
@@ -245,12 +245,12 @@ public class AccountIT extends IntegrationTestBase {
   }
 
   @Test
-  void findByLogin_findByLoginAndEmailFiled() {
-    String login = "test-1";
+  void findByUsernameAndEmail_filed() {
+    String username = "test-1";
     String email = "test-2@email.com";
     Account account1 = Account.builder()
         .email("test-1@email.com")
-        .username(login)
+        .username(username)
         .password("password")
         .role(Role.USER)
         .build();
@@ -265,7 +265,7 @@ public class AccountIT extends IntegrationTestBase {
     entityManager.flush();
     entityManager.clear();
     AccountLoginDto loginDto = AccountLoginDto.builder()
-        .login(login)
+        .username(username)
         .email(email)
         .build();
 

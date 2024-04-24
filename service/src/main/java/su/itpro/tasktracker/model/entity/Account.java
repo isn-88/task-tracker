@@ -8,8 +8,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -21,8 +23,8 @@ import su.itpro.tasktracker.model.enums.Role;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = {"group", "profile"})
-@ToString(exclude = {"group", "profile"})
+@EqualsAndHashCode(exclude = {"profile", "groupAccounts"})
+@ToString(exclude = {"profile", "groupAccounts"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -50,8 +52,9 @@ public class Account implements BaseEntity<Long> {
   @Builder.Default
   private Boolean enabled = Boolean.TRUE;
 
-  @ManyToOne
-  private Group group;
+  @Builder.Default
+  @OneToMany(mappedBy = "account")
+  private List<GroupAccount> groupAccounts = new ArrayList<>();
 
   @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
   private Profile profile;

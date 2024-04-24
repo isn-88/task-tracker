@@ -1,8 +1,9 @@
 package su.itpro.tasktracker.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -19,17 +20,18 @@ public class SecurityConfiguration {
         .csrf((csrf) -> csrf
             .ignoringRequestMatchers("/api/**"))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/", "/login", "/logout", "/registration",
-                             "/css/**", "/js/**", "/webfonts/**", "/image/**")
+            .requestMatchers("/", "/login", "/logout", "/registration", "/error", "/api/**",
+                             "/css/**", "/js/**", "/webfonts/**", "/image/**", "/favicon.ico")
             .permitAll()
             .anyRequest().authenticated())
         .formLogin((login) -> login
             .loginPage("/login")
-            .defaultSuccessUrl("/tasks"))
+            .defaultSuccessUrl("/my/page")
+            .failureUrl("/login?error=true"))
         .logout((logout) -> logout
             .logoutUrl("/logout")
             .logoutSuccessUrl("/login"))
-        .httpBasic(Customizer.withDefaults());
+        .httpBasic(withDefaults());
     return http.build();
   }
 
@@ -37,4 +39,5 @@ public class SecurityConfiguration {
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
+
 }
