@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
   <meta charset="UTF-8">
@@ -26,8 +27,7 @@
               </span>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-white"
-               href="/account">Учётная запись</a>
+            <a class="nav-link text-white" href="/account/edit">Учётная запись</a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-white" href="/logout">Выход</a>
@@ -41,15 +41,22 @@
   </nav>
 </div>
 
+
 <div th:fragment="tab">
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Переключатель навигации">
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+              aria-controls="navbarNavAltMarkup" aria-expanded="false"
+              aria-label="Переключатель навигации">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="/my/page">Моя страница</a>
+          <a class="nav-link active" aria-current="page" href="/my">Моя страница</a>
+          <div sec:authorize="hasAuthority('ADMIN')">
+            <a class="nav-link" href="/admin/account/find">Администрирование</a>
+          </div>
           <a class="nav-link" href="/my/projects">Проекты</a>
           <a class="nav-link" href="/my/tasks">Задачи</a>
           <a class="nav-link" href="/my/expenses">Трудозатраты</a>
@@ -59,6 +66,35 @@
     </div>
   </nav>
 </div>
+
+
+
+
+<ul th:fragment="admin" class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'find'} ? 'active'"
+       th:href="@{/admin/account/find}">Поиск аккаунта</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'create'} ? 'active'"
+       th:href="@{/admin/account/create}">Создать аккаунт</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'group'} ? 'active'"
+       th:href="@{/admin/group}">Группы</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'project'} ? 'active'"
+       th:href="@{/admin/project}">Проекты</a>
+  </li>
+</ul>
+
+
+<a th:fragment="paging(pageNum, label, tooltip)" class="page-link"
+   th:href="@{'/admin/account/find?' + 'page=' + ${pageNum} + '&size=' + ${pageSize}}"
+   th:title="${tooltip}" rel="tooltip" th:text="${label}">Link
+</a>
+
 
 </body>
 </html>

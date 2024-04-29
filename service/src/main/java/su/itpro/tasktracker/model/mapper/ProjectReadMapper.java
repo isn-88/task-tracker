@@ -12,6 +12,7 @@ public class ProjectReadMapper implements Mapper<Project, ProjectReadDto> {
     return ProjectReadDto.builder()
         .id(project.getId())
         .name(project.getName())
+        .createdAt(project.getCreatedAt())
         .description(project.getDescription())
         .build();
   }

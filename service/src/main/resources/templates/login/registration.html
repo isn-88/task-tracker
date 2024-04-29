@@ -32,11 +32,12 @@
                   <div class="input-group has-validation">
                     <span class="input-group-text" id="addonEmail">
                       <i class="fa-regular fa-envelope"></i></span>
-                    <input
-                        th:class="'form-control' +(${#fields.hasErrors('email')} ? ' is-invalid' : '')"
-                        id="inputEmail" type="text" th:field="*{email}"
-                        th:placeholder="#{page.register.email.placeholder}" aria-label=""
-                        aria-describedby="addonEmail validationEmailFeedback" required>
+                    <input class="form-control"
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                           th:placeholder="#{page.register.email.placeholder}"
+                           id="inputEmail" type="text" th:field="*{email}"
+                           aria-describedby="addonEmail validationEmailFeedback"
+                           aria-label="" required>
                     <div id="validationEmailFeedback" class="invalid-feedback">
                       <div th:if="${#fields.hasErrors('email')}">
                         <ul>
@@ -49,41 +50,39 @@
                   </div>
                 </div>
                 <div class="col-12">
-                  <div class="col-12">
-                    <div class="form-text" th:text="#{page.register.username.label}">Username</div>
-                    <div class="input-group has-validation">
+                  <div class="form-text" th:text="#{page.register.username.label}">Username</div>
+                  <div class="input-group has-validation">
                     <span class="input-group-text" id="addonUser">
                       <i class="fa-regular fa-user"></i></span>
-                      <input
-                          th:class="'form-control' +(${#fields.hasErrors('username')} ? ' is-invalid' : '')"
-                          id="inputUsername" type="text" th:field="*{username}"
-                          aria-describedby="addonUsername validationUsernameFeedback usernameHelpBlock"
-                          th:placeholder="#{page.register.username.placeholder}"
-                          aria-label="" required>
-                      <div id="validationUsernameFeedback" class="invalid-feedback">
-                        <div th:if="${#fields.hasErrors('username')}">
-                          <ul>
-                            <li th:each="error : ${#fields.errors('username')}"
-                                th:text="${error}">Username error
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div id="usernameHelpBlock" class="form-text">
-                        <span th:text="#{page.register.username.help}">Help</span>
+                    <input class="form-control"
+                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                           th:placeholder="#{page.register.username.placeholder}"
+                           id="inputUsername" type="text" th:field="*{username}"
+                           aria-describedby="addonUsername validationUsernameFeedback usernameHelpBlock"
+                           aria-label="" required>
+                    <div id="validationUsernameFeedback" class="invalid-feedback">
+                      <div th:if="${#fields.hasErrors('username')}">
+                        <ul>
+                          <li th:each="error : ${#fields.errors('username')}"
+                              th:text="${error}">Username error
+                          </li>
+                        </ul>
                       </div>
                     </div>
+                  </div>
+                  <div id="usernameHelpBlock" class="form-text">
+                    <span th:text="#{page.register.username.help}">Help</span>
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="form-text" th:text="#{page.register.password.label}">Password</div>
                   <div class="input-group has-validation">
-                    <input
-                        th:class="'form-control' +(${#fields.hasErrors('password')} ? ' is-invalid' : '')"
-                        id="inputPassword" type="password" th:field="*{password}"
-                        aria-describedby="passwordHelpBlock validationPasswordFeedback"
-                        th:placeholder="#{page.register.password.placeholder}"
-                        aria-label="Password" required>
+                    <input class="form-control"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                           th:placeholder="#{page.register.password.placeholder}"
+                           id="inputPassword" type="password" th:field="*{password}"
+                           aria-describedby="passwordHelpBlock validationPasswordFeedback"
+                           aria-label="Password" required>
                     <div id="validationPasswordFeedback" class="invalid-feedback">
                       <div th:if="${#fields.hasErrors('password')}">
                         <ul>
@@ -93,19 +92,19 @@
                         </ul>
                       </div>
                     </div>
-                    <div id="passwordHelpBlock" class="form-text">
-                      <span th:text="#{page.register.password.help}"></span>
-                    </div>
+                  </div>
+                  <div id="passwordHelpBlock" class="form-text">
+                    <span th:text="#{page.register.password.help}"></span>
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="input-group has-validation">
-                    <input
-                        th:class="'form-control' +(${#fields.hasErrors('lastname')} ? ' is-invalid' : '')"
-                        id="inputLastname" type="text" th:field="*{lastname}"
-                        th:placeholder="#{page.register.lastname.placeholder}"
-                        aria-describedby="validationLastnameFeedback"
-                        aria-label="" required>
+                    <input class="form-control"
+                           th:classappend="${#fields.hasErrors('lastname')} ? 'is-invalid'"
+                           th:placeholder="#{page.register.lastname.placeholder}"
+                           id="inputLastname" type="text" th:field="*{lastname}"
+                           aria-describedby="validationLastnameFeedback"
+                           aria-label="" required>
                     <div id="validationLastnameFeedback" class="invalid-feedback">
                       <div th:if="${#fields.hasErrors('lastname')}">
                         <ul>
@@ -119,12 +118,12 @@
                 </div>
                 <div class="col-12">
                   <div class="input-group has-validation">
-                    <input
-                        th:class="'form-control' +(${#fields.hasErrors('firstname')} ? ' is-invalid' : '')"
-                        id="inputFirstname" type="text" th:field="*{firstname}"
-                        th:placeholder="#{page.register.firstname.placeholder}"
-                        aria-describedby="validationFirstnameFeedback"
-                        aria-label="" required>
+                    <input class="form-control"
+                           th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid'"
+                           th:placeholder="#{page.register.firstname.placeholder}"
+                           id="inputFirstname" type="text" th:field="*{firstname}"
+                           aria-describedby="validationFirstnameFeedback"
+                           aria-label="" required>
                     <div id="validationFirstnameFeedback" class="invalid-feedback">
                       <div th:if="${#fields.hasErrors('firstname')}">
                         <ul>
@@ -135,10 +134,10 @@
                       </div>
                     </div>
                   </div>
-                  <div class="d-grid mt-3">
-                    <input class="btn btn-outline-primary" type="submit"
-                           th:value="#{page.register.submit.button}">
-                  </div>
+                </div>
+                <div class="d-grid mt-3">
+                  <input class="btn btn-outline-primary" type="submit"
+                         th:value="#{page.register.submit.button}">
                 </div>
               </div>
             </form>

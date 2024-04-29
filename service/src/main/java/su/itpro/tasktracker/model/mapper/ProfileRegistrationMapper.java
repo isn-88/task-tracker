@@ -12,6 +12,7 @@ public class ProfileRegistrationMapper implements Mapper<RegisterDto, Profile> {
     return Profile.builder()
         .lastname(registerDto.getLastname())
         .firstname(registerDto.getFirstname())
+        .surname(registerDto.getSurname())
         .build();
   }
 

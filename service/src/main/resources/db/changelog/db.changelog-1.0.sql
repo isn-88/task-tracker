@@ -13,7 +13,8 @@ CREATE TABLE category
 CREATE TABLE groups
 (
     id SERIAL PRIMARY KEY ,
-    name VARCHAR(64) NOT NULL UNIQUE
+    name VARCHAR(64) NOT NULL UNIQUE ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 --rollback DROP TABLE groups;
 
@@ -25,7 +26,9 @@ CREATE TABLE account
     username VARCHAR(128) NOT NULL UNIQUE ,
     password VARCHAR(256) NOT NULL ,
     role VARCHAR(8) NOT NULL ,
-    enabled BOOLEAN NOT NULL DEFAULT true,
+    enabled BOOLEAN NOT NULL DEFAULT true ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now() ,
+    last_login_at TIMESTAMP WITH TIME ZONE ,
     CONSTRAINT check_role_con CHECK ( role IN ('USER', 'ADMIN') )
 );
 --rollback DROP TABLE account;
@@ -62,6 +65,7 @@ CREATE TABLE project
 (
     id SERIAL PRIMARY KEY ,
     name VARCHAR(128) NOT NULL UNIQUE ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now() ,
     description text
 );
 --rollback DROP TABLE project;
@@ -80,12 +84,12 @@ CREATE TABLE task
     assigned_group_id INT REFERENCES groups (id) ,
     start_date DATE ,
     end_date DATE ,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now() ,
     created_by VARCHAR(256) ,
     modified_at TIMESTAMP WITH TIME ZONE ,
     modified_by VARCHAR(256) ,
     close_at TIMESTAMP WITH TIME ZONE ,
-    progress SMALLINT NOT NULL DEFAULT 0,
+    progress SMALLINT NOT NULL DEFAULT 0 ,
     title VARCHAR(64) NOT NULL ,
     description TEXT ,
     CONSTRAINT check_title_con CHECK ( task.title <> '' ) ,

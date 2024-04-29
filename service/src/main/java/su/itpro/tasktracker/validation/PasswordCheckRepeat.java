@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordCheckRepeat {
 
-  String message() default "New password and repeat password not match";
+  String message() default "{validation.password.repeat.mismatch}";
 
   Class<?>[] groups() default {};
 

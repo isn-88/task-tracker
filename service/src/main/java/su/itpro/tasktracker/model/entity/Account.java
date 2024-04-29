@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ import su.itpro.tasktracker.model.enums.Role;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Account implements BaseEntity<Long> {
+public class Account extends AuditingCreateAtEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,9 +49,11 @@ public class Account implements BaseEntity<Long> {
   @Enumerated(value = EnumType.STRING)
   private Role role;
 
-  @Column(nullable = false)
   @Builder.Default
+  @Column(nullable = false)
   private Boolean enabled = Boolean.TRUE;
+
+  private Instant lastLoginAt;
 
   @Builder.Default
   @OneToMany(mappedBy = "account")

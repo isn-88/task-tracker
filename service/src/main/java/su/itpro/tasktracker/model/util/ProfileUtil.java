@@ -6,25 +6,54 @@ import su.itpro.tasktracker.model.entity.Profile;
 @UtilityClass
 public class ProfileUtil {
 
-  private static final String SHORT_NAME_FORMAT = "%s %s.";
-  private static final String FULL_NAME_FORMAT = "%s %s.%s.";
+  private static final String SHORT_INITIAL_FORMAT = "%s %s.";
+  private static final String FILL_INITIAL_FORMAT = "%s %s.%s.";
+  private static final String SHORT_NAME_FORMAT = "%s %s";
+  private static final String FULL_NAME_FORMAT = "%s %s %s";
 
-  public String getUserFullName(Profile profile) {
+
+  public String getFullName(Profile profile) {
     if (profile == null) {
       return "";
     }
-    String firstname = getShortName(profile.getFirstname());
-    String surname = getShortName(profile.getSurname());
-    return surname.isBlank()
-           ? SHORT_NAME_FORMAT.formatted(profile.getLastname(), firstname)
-           : FULL_NAME_FORMAT.formatted(profile.getLastname(), firstname, surname);
+    return (profile.getSurname() == null || profile.getSurname().isBlank())
+           ? SHORT_NAME_FORMAT.formatted(profile.getLastname(), profile.getFirstname())
+           : FULL_NAME_FORMAT.formatted(
+               profile.getLastname(), profile.getFirstname(), profile.getSurname()
+           );
   }
 
-  private String getShortName(String name) {
+  public String getShortName(Profile profile) {
+    if (profile == null) {
+      return "";
+    }
+    return SHORT_NAME_FORMAT.formatted(profile.getLastname(), profile.getFirstname());
+  }
+
+  public String getFullInitialName(Profile profile) {
+    if (profile == null) {
+      return "";
+    }
+    String firstnameInitial = getInitial(profile.getFirstname());
+    String surnameInitial = getInitial(profile.getSurname());
+    return surnameInitial.isBlank()
+           ? SHORT_NAME_FORMAT.formatted(profile.getLastname(), firstnameInitial)
+           : FULL_NAME_FORMAT.formatted(profile.getLastname(), firstnameInitial, surnameInitial);
+  }
+
+  public String getShortInitialName(Profile profile) {
+    if (profile == null) {
+      return "";
+    }
+    return SHORT_NAME_FORMAT.formatted(profile.getLastname(), getInitial(profile.getFirstname()));
+
+  }
+
+  private String getInitial(String name) {
     if (name == null || name.isBlank()) {
       return "";
     }
-    return name.substring(0, 1).toUpperCase();
+    return name.strip().substring(0, 1).toUpperCase();
   }
 
 }

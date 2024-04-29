@@ -9,34 +9,33 @@
 </head>
 
 <body>
-<section style="padding-top: 80px; padding-bottom: 10px;">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-sm-10 col-md-8 col-xl-6 p-5">
-        <div class="card mb-3 shadow">
-          <div class="card-header">
 
-            <div th:insert="~{lang/selector :: lang-default}"></div>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm-10 col-md-8 col-xl-6 p-4">
+      <div class="card shadow">
+        <div class="card-header">
 
-            <div>
-              <h3 class="card-title text-center fst-italic">Task Tracker</h3>
-            </div>
+          <div th:insert="~{lang/selector :: lang-default}"></div>
+
+          <div>
+            <h3 class="card-title text-center fst-italic">Task Tracker</h3>
           </div>
-          <img src="/image/intro.png" class="card-img-top" alt="intro">
-          <div class="card-body">
-            <p class="card-text" th:utext="#{page.root.description}">Description</p>
-          </div>
-          <div class="card-footer">
-            <a href="/login" class="btn btn-primary"
-               th:text="#{page.root.login.button}">Login</a>
-            <a href="/registration" class="btn btn-outline-primary"
-               th:text="#{page.root.register.button}">Register</a>
-          </div>
+        </div>
+        <img src="/image/intro.png" class="card-img-top" alt="intro">
+        <div class="card-body">
+          <p class="card-text" th:utext="#{page.root.description}">Description</p>
+        </div>
+        <div class="card-footer">
+          <a href="/login" class="btn btn-primary"
+             th:text="#{page.root.login.button}">Login</a>
+          <a href="/registration" class="btn btn-outline-primary"
+             th:text="#{page.root.register.button}">Register</a>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>

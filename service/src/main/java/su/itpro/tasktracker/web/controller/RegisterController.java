@@ -25,15 +25,14 @@ public class RegisterController {
   private final AccountService accountService;
   private final LocaleResolver localeResolver;
 
-  @GetMapping()
+  @GetMapping
   public String getPage(Model model) {
     model.addAttribute("register", RegisterDto.builder().build());
     return "login/registration";
   }
 
   @PostMapping()
-  public String register(@Validated @ModelAttribute("register")
-                         RegisterDto registerDto,
+  public String register(@Validated @ModelAttribute("register") RegisterDto registerDto,
                          BindingResult bindingResult,
                          HttpServletRequest request) {
     if (!accountService.register(registerDto, bindingResult,

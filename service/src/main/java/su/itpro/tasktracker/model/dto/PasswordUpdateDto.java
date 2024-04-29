@@ -19,4 +19,12 @@ public record PasswordUpdateDto(@NotBlank
 
                                 String repeatPassword) {
 
+  @Override
+  public String toString() {
+    return "PasswordUpdateDto{" +
+           "currentPassword='****'" +
+           ", newPassword='****'" +
+           ", repeatPassword='****'" +
+           '}';
+  }
 }
