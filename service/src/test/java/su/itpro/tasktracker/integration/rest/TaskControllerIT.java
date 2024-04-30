@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
-import su.itpro.tasktracker.integration.IntegrationTestSecurity;
+import su.itpro.tasktracker.integration.IntegrationTestUserSecurity;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.TaskPriority;
@@ -19,14 +19,10 @@ import su.itpro.tasktracker.model.enums.TaskType;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
-class TaskControllerIT extends IntegrationTestSecurity {
+class TaskControllerIT extends IntegrationTestUserSecurity {
 
   private final EntityManager entityManager;
   private final MockMvc mockMvc;
-
-  private Integer savedProjectId;
-  private Task parentTask;
-  private Task childTask;
 
   @BeforeEach
   void prepare() {
@@ -34,8 +30,7 @@ class TaskControllerIT extends IntegrationTestSecurity {
         .name("TestProject")
         .build();
     entityManager.persist(project);
-    savedProjectId = project.getId();
-    parentTask = Task.builder()
+    Task parentTask = Task.builder()
         .title("Task first")
         .project(project)
         .type(TaskType.FEATURE)
@@ -43,7 +38,7 @@ class TaskControllerIT extends IntegrationTestSecurity {
         .priority(TaskPriority.HIGH)
         .build();
     entityManager.persist(parentTask);
-    childTask = Task.builder()
+    Task childTask = Task.builder()
         .parent(parentTask)
         .title("Task second")
         .project(project)

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import su.itpro.tasktracker.model.dto.CategoryReadDto;
 import su.itpro.tasktracker.model.dto.CategoryUpdateDto;
-import su.itpro.tasktracker.model.mapper.CategoryCreateUpdateMapper;
 import su.itpro.tasktracker.model.mapper.CategoryReadMapper;
+import su.itpro.tasktracker.model.mapper.CategoryUpdateMapper;
 import su.itpro.tasktracker.repository.CategoryRepository;
 
 @Service
@@ -17,7 +17,7 @@ import su.itpro.tasktracker.repository.CategoryRepository;
 public class CategoryService {
 
   private final CategoryRepository categoryRepository;
-  private final CategoryCreateUpdateMapper categoryCreateUpdateMapper;
+  private final CategoryUpdateMapper categoryUpdateMapper;
   private final CategoryReadMapper categoryReadMapper;
 
   @Transactional(readOnly = true)
@@ -35,7 +35,7 @@ public class CategoryService {
 
   public CategoryReadDto create(CategoryUpdateDto categoryCreateDto) {
     return Optional.of(categoryCreateDto)
-        .map(categoryCreateUpdateMapper::map)
+        .map(categoryUpdateMapper::map)
         .map(categoryRepository::saveAndFlush)
         .map(categoryReadMapper::map)
         .orElseThrow();
@@ -43,7 +43,7 @@ public class CategoryService {
 
   public Optional<CategoryReadDto> update(Short id, CategoryUpdateDto categoryUpdateDto) {
     return categoryRepository.findById(id)
-        .map(category -> categoryCreateUpdateMapper.map(categoryUpdateDto, category))
+        .map(category -> categoryUpdateMapper.map(categoryUpdateDto, category))
         .map(categoryRepository::saveAndFlush)
         .map(categoryReadMapper::map);
   }

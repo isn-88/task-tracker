@@ -20,6 +20,8 @@ import su.itpro.tasktracker.repository.TaskRepository;
 @Transactional
 public class TaskService {
 
+  private static final Integer EMPTY_GROUP = 0;
+
   private final TaskUpdateMapper taskCreateMapper;
   private final TaskReadMapper taskReadMapper;
   private final TaskRepository taskRepository;
@@ -38,18 +40,20 @@ public class TaskService {
   }
 
   @Transactional(readOnly = true)
-  public List<TaskReadDto> findAllAssignedTaskForUser(AccountWithGroupsDto accountWithGroups) {
+  public List<TaskReadDto> findAllAssignedTask(AccountWithGroupsDto accountWithGroups) {
     TaskFilter filterByAccount = TaskFilter.builder()
         .assignedAccountId(List.of(accountWithGroups.account().id()))
         .build();
+    List<Integer> groupIds = accountWithGroups.groups().stream()
+        .map(GroupReadDto::id)
+        .toList();
     TaskFilter filterByGroup = TaskFilter.builder()
-        .assignedGroupId(accountWithGroups.groups().stream().map(GroupReadDto::id).toList())
+        .assignedGroupId((groupIds.isEmpty()) ? List.of(EMPTY_GROUP) : groupIds)
         .build();
     return Stream.concat(
-        taskRepository.findAllByFilter(filterByAccount).stream().map(taskReadMapper::map),
-        taskRepository.findAllByFilter(filterByGroup).stream().map(taskReadMapper::map)
-        )
-        .toList();
+            taskRepository.findAllByFilter(filterByAccount).stream().map(taskReadMapper::map),
+            taskRepository.findAllByFilter(filterByGroup).stream().map(taskReadMapper::map)
+        ).toList();
   }
 
   public TaskReadDto create(TaskUpdateDto taskCreateDto) {

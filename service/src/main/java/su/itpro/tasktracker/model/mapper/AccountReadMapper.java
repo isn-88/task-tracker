@@ -3,6 +3,7 @@ package su.itpro.tasktracker.model.mapper;
 import org.springframework.stereotype.Component;
 import su.itpro.tasktracker.model.dto.AccountReadDto;
 import su.itpro.tasktracker.model.entity.Account;
+import su.itpro.tasktracker.model.util.ProfileUtil;
 
 @Component
 public class AccountReadMapper implements Mapper<Account, AccountReadDto> {
@@ -13,10 +14,12 @@ public class AccountReadMapper implements Mapper<Account, AccountReadDto> {
         .id(account.getId())
         .email(account.getEmail())
         .username(account.getUsername())
-        // TODO check profile is not null
+        .role(account.getRole())
+        .isEnabled(account.getEnabled())
         .lastname(account.getProfile().getLastname())
         .firstname(account.getProfile().getFirstname())
         .surname(account.getProfile().getSurname())
+        .fullName(ProfileUtil.getFullName(account.getProfile()))
         .gender(account.getProfile().getGender())
         .aboutMe(account.getProfile().getAboutMe())
         .build();

@@ -9,9 +9,9 @@
 </head>
 <body>
 
-
 <section>
-  <div th:insert="~{navigation/nav :: account}"></div>
+  <div th:insert="~{fragments/nav :: account}"></div>
+  <div th:insert="~{fragments/nav :: tab}"></div>
 </section>
 
 <section style="padding-top: 80px; padding-bottom: 10px;">
@@ -24,35 +24,35 @@
               <div class="card-header h-100 border-end">
                 <div class="nav flex-column nav-pills me-3"
                      id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                  <button th:class="'nav-link fs-5' + (${tab} eq null ? ' active' : '')"
+                  <button class="nav-link fs-5" th:classappend="${tab eq null} ? 'active'"
                           id="v-pills-overview-tab" type="button" role="tab"
                           data-bs-toggle="pill" data-bs-target="#v-pills-overview"
                           th:aria-selected="${tab} eq null ? true : false"
                           aria-controls="v-pills-overview">Обзор
                   </button>
 
-                  <button th:class="'nav-link fs-5' + (${tab} eq 'account' ? ' active' : '')"
+                  <button class="nav-link fs-5" th:classappend="${tab eq 'account'} ? 'active'"
                           id="v-pills-account-tab" type="button" role="tab"
                           data-bs-toggle="pill" data-bs-target="#v-pills-account"
                           th:aria-selected="${tab} eq 'account'"
                           aria-controls="v-pills-account">Аккаунт
                   </button>
 
-                  <button th:class="'nav-link fs-5' + (${tab} eq 'profile' ? ' active' : '')"
+                  <button class="nav-link fs-5" th:classappend="${tab eq 'profile'} ? 'active'"
                           id="v-pills-profile-tab" type="button" role="tab"
                           data-bs-toggle="pill" data-bs-target="#v-pills-profile"
                           th:aria-selected="${tab} eq 'profile'"
                           aria-controls="v-pills-profile">Профиль
                   </button>
 
-                  <button class="nav-link fs-5"
-                          id="v-pills-icon-tab" type="button" role="tab"
-                          data-bs-toggle="pill" data-bs-target="#v-pills-icon"
-                          th:aria-selected="${tab} eq 'icon'"
-                          aria-controls="v-pills-icon">Иконка
-                  </button>
+<!--                  <button class="nav-link fs-5"-->
+<!--                          id="v-pills-icon-tab" type="button" role="tab"-->
+<!--                          data-bs-toggle="pill" data-bs-target="#v-pills-icon"-->
+<!--                          th:aria-selected="${tab} eq 'icon'"-->
+<!--                          aria-controls="v-pills-icon">Иконка-->
+<!--                  </button>-->
 
-                  <button th:class="'nav-link fs-5' + (${tab} eq 'password' ? ' active' : '')"
+                  <button class="nav-link fs-5" th:classappend="${tab eq 'password'} ? 'active'"
                           id="v-pills-password-tab" type="button" role="tab"
                           data-bs-toggle="pill" data-bs-target="#v-pills-password"
                           th:aria-selected="${tab} eq 'password'"

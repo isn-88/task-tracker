@@ -43,7 +43,7 @@ public class TaskController {
         .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
     model.addAttribute("task", taskReadDto);
     model.addAttribute("projects", projectService.findAll());
-    model.addAttribute("allAssigned", accountService.getAllAssigned());
+    model.addAttribute("allAssigned", accountService.findAllAssigned());
     return "task/task";
   }
 

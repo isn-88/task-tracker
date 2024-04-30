@@ -39,4 +39,18 @@ public class RegisterDto {
   @Size(min = 2, max = 32)
   private String firstname;
 
+  private String surname;
+
+  @Override
+  public String toString() {
+    return "RegisterDto{" +
+           "email='" + email + '\'' +
+           ", username='" + username + '\'' +
+           ", password='****'" +
+           ", role=" + role +
+           ", lastname='" + lastname + '\'' +
+           ", firstname='" + firstname + '\'' +
+           ", surname='" + surname + '\'' +
+           '}';
+  }
 }

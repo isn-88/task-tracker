@@ -13,7 +13,7 @@ public class AssignedAccountMapper implements Mapper<Account, TaskAssignedDto> {
   public TaskAssignedDto map(Account account) {
     return TaskAssignedDto.builder()
         .id(account.getId())
-        .name(ProfileUtil.getUserFullName(account.getProfile()))
+        .name(ProfileUtil.getFullName(account.getProfile()))
         .type(AssignedType.ACCOUNT)
         .build();
   }

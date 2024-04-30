@@ -1,5 +1,7 @@
 package su.itpro.tasktracker.config;
 
+import static jakarta.servlet.DispatcherType.ERROR;
+import static jakarta.servlet.DispatcherType.FORWARD;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
@@ -20,18 +22,22 @@ public class SecurityConfiguration {
         .csrf((csrf) -> csrf
             .ignoringRequestMatchers("/api/**"))
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/", "/login", "/logout", "/registration", "/error", "/api/**",
-                             "/css/**", "/js/**", "/webfonts/**", "/image/**", "/favicon.ico")
-            .permitAll()
+            .dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
+            .requestMatchers(
+                "/", "/login", "/logout", "/registration", "/error",
+                "/css/**", "/js/**", "/webfonts/**", "/image/**", "/favicon.ico"
+            ).permitAll()
+            .requestMatchers("/admin/**").hasAuthority("ADMIN")
             .anyRequest().authenticated())
+        .httpBasic(withDefaults())
         .formLogin((login) -> login
             .loginPage("/login")
-            .defaultSuccessUrl("/my/page")
+            .defaultSuccessUrl("/my")
             .failureUrl("/login?error=true"))
         .logout((logout) -> logout
             .logoutUrl("/logout")
-            .logoutSuccessUrl("/login"))
-        .httpBasic(withDefaults());
+            .logoutSuccessUrl("/login"));
+
     return http.build();
   }
 

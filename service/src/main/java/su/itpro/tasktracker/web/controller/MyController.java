@@ -1,8 +1,7 @@
 package su.itpro.tasktracker.web.controller;
 
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +18,11 @@ public class MyController {
   private final AccountService accountService;
   private final TaskService taskService;
 
-  @GetMapping("/page")
-  public String myPage(Model model,
-                       @AuthenticationPrincipal UserDetails userDetails) {
+  @GetMapping
+  public String myPage(Principal principal, Model model) {
     AccountWithGroupsDto accountWithGroups =
-        accountService.findAccountWithGroups(userDetails.getUsername());
-    model.addAttribute("tasks",
-                       taskService.findAllAssignedTaskForUser(accountWithGroups));
+        accountService.findAccountWithGroups(principal.getName());
+    model.addAttribute("tasks", taskService.findAllAssignedTask(accountWithGroups));
     return "my/page";
   }
 

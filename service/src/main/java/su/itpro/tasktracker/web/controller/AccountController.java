@@ -3,12 +3,13 @@ package su.itpro.tasktracker.web.controller;
 import static su.itpro.tasktracker.model.dto.PasswordUpdateDto.Fields.repeatPassword;
 
 import jakarta.servlet.http.HttpSession;
+import java.security.Principal;
+import java.util.Locale;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -34,47 +35,46 @@ import su.itpro.tasktracker.service.AccountService;
 public class AccountController {
 
   private final AccountService accountService;
+  private final MessageSource messageSource;
 
-  @GetMapping
-  public String accountPage(Model model,
-                            @AuthenticationPrincipal UserDetails userDetails) {
+  @GetMapping("/edit")
+  public String accountEditPage(Principal principal, Model model) {
     model.addAttribute("account",
-                       accountService.findAccountByUsername(userDetails.getUsername()));
-
-    return "account/account";
+                       accountService.findAccountByUsername(principal.getName()));
+    return "account/edit";
   }
 
   @PostMapping
-  public String updateAccount(@AuthenticationPrincipal UserDetails userDetails,
+  public String updateAccount(Principal principal,
                               @Validated @ModelAttribute AccountUpdateDto updateDto,
                               BindingResult bindingResult,
                               RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {
       redirectAttributes.addFlashAttribute("binding", bindingResult);
       redirectAttributes.addFlashAttribute("tab", "account");
-      return "redirect:/account";
+      return "redirect:/account/edit";
     }
 
-    accountService.update(updateDto, userDetails.getUsername());
+    accountService.update(updateDto, principal.getName());
     return "redirect:/logout";
   }
 
   @PostMapping("/profile")
-  public String updateProfile(@AuthenticationPrincipal UserDetails userDetails,
+  public String updateProfile(Principal principal,
                               @Validated @ModelAttribute ProfileUpdateDto updateDto,
                               BindingResult bindingResult,
                               RedirectAttributes redirectAttributes) {
     if (bindingResult.hasErrors()) {
       redirectAttributes.addFlashAttribute("binding", bindingResult);
       redirectAttributes.addFlashAttribute("tab", "profile");
-      return "redirect:/account";
+      return "redirect:/account/edit";
     }
-    accountService.updateProfile(updateDto, userDetails.getUsername());
-    return "redirect:/account";
+    accountService.updateProfile(updateDto, principal.getName());
+    return "redirect:/account/edit";
   }
 
   @PostMapping("/password")
-  public String updatePassword(@AuthenticationPrincipal UserDetails userDetails,
+  public String updatePassword(Principal principal,
                                @Validated @ModelAttribute PasswordUpdateDto updateDto,
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
@@ -82,18 +82,20 @@ public class AccountController {
     if (bindingResult.hasErrors()) {
       redirectAttributes.addFlashAttribute("binding", clearFieldsValue(bindingResult));
       redirectAttributes.addFlashAttribute("tab", "password");
-      return "redirect:/account";
+      return "redirect:/account/edit";
     }
 
     try {
-      accountService.updatePassword(updateDto, userDetails.getUsername());
+      accountService.updatePassword(updateDto, principal.getName());
     } catch (PasswordMismatchException ex) {
       bindingResult.addError(
-          new FieldError("passwordUpdateDto", ex.getField(), ex.getMessage())
+          new FieldError("passwordUpdateDto", ex.getField(),
+                         messageSource.getMessage(ex.getMessage(), null, Locale.getDefault())
+          )
       );
       redirectAttributes.addFlashAttribute("binding", clearFieldsValue(bindingResult));
       redirectAttributes.addFlashAttribute("tab", "password");
-      return "redirect:/account";
+      return "redirect:/account/edit";
     }
 
     SecurityContextHolder.clearContext();

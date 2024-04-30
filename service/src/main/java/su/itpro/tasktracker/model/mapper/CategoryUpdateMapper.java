@@ -5,7 +5,7 @@ import su.itpro.tasktracker.model.dto.CategoryUpdateDto;
 import su.itpro.tasktracker.model.entity.Category;
 
 @Component
-public class CategoryCreateUpdateMapper implements Mapper<CategoryUpdateDto, Category> {
+public class CategoryUpdateMapper implements Mapper<CategoryUpdateDto, Category> {
 
   @Override
   public Category map(CategoryUpdateDto dto) {
