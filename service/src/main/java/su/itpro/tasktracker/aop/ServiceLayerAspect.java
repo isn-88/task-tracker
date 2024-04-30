@@ -3,6 +3,7 @@ package su.itpro.tasktracker.aop;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,15 @@ public class ServiceLayerAspect {
     String className = joinPoint.getSignature().getDeclaringTypeName();
     log.info("invoked method: {} in class: {} with returning value: {}",
              methodName, className, result);
+  }
+
+  @AfterThrowing(value = "su.itpro.tasktracker.aop.CommonPointcut.isServiceLayer()",
+      throwing = "ex")
+  public void addLoggingAfterThrowing(JoinPoint joinPoint, Throwable ex) {
+    String methodName = joinPoint.getSignature().getName();
+    String className = joinPoint.getSignature().getDeclaringTypeName();
+    log.info("invoked method: {} in class: {} with throwing exception: {}",
+             methodName, className, ex.getMessage());
   }
 
 }

@@ -43,10 +43,9 @@ public class AdminService {
         .add(filterDto.fullNameParts(), account.profile.surname.toLowerCase()::in)
         .buildOr();
     Predicate predicate = ExpressionUtils.allOf(accountPredicate, profilePredicate);
-    if (predicate == null) {
-      return accountRepository.findAll(pageable).map(accountReadMapper::map);
-    }
-    return accountRepository.findAll(predicate, pageable).map(accountReadMapper::map);
+    return (predicate == null)
+           ? accountRepository.findAll(pageable).map(accountReadMapper::map)
+           : accountRepository.findAll(predicate, pageable).map(accountReadMapper::map);
   }
 
   public void blockAccount(AccountBlockDto blockDto) {

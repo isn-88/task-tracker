@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Audited
 public abstract class AuditingCreateEntity<T extends Serializable>
-    extends AuditingCreateAtEntity<T> implements BaseEntity<T> {
+    extends AuditingCreatedAtEntity<T> implements BaseEntity<T> {
 
   @CreatedBy
   private String createdBy;

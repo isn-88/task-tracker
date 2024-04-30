@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Audited
-public abstract class AuditingCreateAtEntity<T extends Serializable> implements BaseEntity<T> {
+public abstract class AuditingCreatedAtEntity<T extends Serializable> implements BaseEntity<T> {
 
   @CreatedDate
   private Instant createdAt;

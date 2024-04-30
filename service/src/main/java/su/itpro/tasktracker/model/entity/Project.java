@@ -24,7 +24,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Project extends AuditingCreateAtEntity<Integer> {
+public class Project extends AuditingCreatedAtEntity<Integer> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

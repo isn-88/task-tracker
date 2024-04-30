@@ -26,7 +26,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "groups")
-public class Group extends AuditingCreateAtEntity<Integer> {
+public class Group extends AuditingCreatedAtEntity<Integer> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

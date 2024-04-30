@@ -30,7 +30,7 @@ import su.itpro.tasktracker.model.enums.Role;
 @NoArgsConstructor
 @Builder
 @Entity
-public class Account extends AuditingCreateAtEntity<Long> {
+public class Account extends AuditingCreatedAtEntity<Long> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
