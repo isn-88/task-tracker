@@ -17,6 +17,7 @@ public class AccountFilterMapper implements Mapper<AccountFilterFormDto, Account
   @Override
   public AccountFilterDto map(AccountFilterFormDto formDto) {
     return AccountFilterDto.builder()
+        .id(formDto.id())
         .username(notEmpty(formDto.username()) ? getLikePattern(formDto.username()) : null)
         .email(notEmpty(formDto.email()) ? getLikePattern(formDto.email()) : null)
         .role(notEmpty(formDto.role()) ? Role.valueOf(formDto.role()) : null)

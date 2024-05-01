@@ -76,12 +76,13 @@ CREATE TABLE task
     id BIGSERIAL PRIMARY KEY ,
     parent_id BIGINT REFERENCES task (id) ,
     project_id INT NOT NULL REFERENCES project (id) ,
+    owner_id BIGINT NOT NULL REFERENCES account (id) ,
     category_id SMALLINT REFERENCES category (id) ,
+    assigned_account_id BIGINT REFERENCES account (id) ,
+    assigned_group_id INT REFERENCES groups (id) ,
     type VARCHAR(32) NOT NULL ,
     status VARCHAR(32) NOT NULL ,
     priority VARCHAR(32) NOT NULL ,
-    assigned_account_id BIGINT REFERENCES account (id) ,
-    assigned_group_id INT REFERENCES groups (id) ,
     start_date DATE ,
     end_date DATE ,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now() ,
@@ -95,9 +96,21 @@ CREATE TABLE task
     CONSTRAINT check_title_con CHECK ( task.title <> '' ) ,
     CONSTRAINT only_once_con CHECK ( NOT (assigned_account_id NOTNULL AND assigned_group_id NOTNULL) )
 );
---rollback DROP TABLE task;
+--rollback DROP TABLE project_groups;
 
 --changeset s.ivaschenko:8
+CREATE TABLE project_groups
+(
+    id BIGSERIAL PRIMARY KEY ,
+    project_id INT NOT NULL REFERENCES project (id) ,
+    group_id INT NOT NULL REFERENCES groups (id) ,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    created_by VARCHAR(256) ,
+    CONSTRAINT project_group_unq UNIQUE (project_id, group_id)
+);
+--rollback DROP TABLE task;
+
+--changeset s.ivaschenko:9
 CREATE TABLE task_revision
 (
     id SERIAL PRIMARY KEY ,
@@ -105,7 +118,7 @@ CREATE TABLE task_revision
 );
 --rollback DROP TABLE task_revision;
 
---changeset s.ivaschenko:9
+--changeset s.ivaschenko:10
 CREATE TABLE task_aud
 (
     id BIGINT NOT NULL ,
@@ -113,12 +126,13 @@ CREATE TABLE task_aud
     revtype SMALLINT ,
     parent_id BIGINT ,
     project_id INT ,
+    owner_id BIGINT ,
     category_id SMALLINT ,
+    assigned_account_id BIGINT ,
+    assigned_group_id INT ,
     type VARCHAR(32) ,
     status VARCHAR(32) ,
     priority VARCHAR(32) ,
-    assigned_account_id BIGINT ,
-    assigned_group_id INT ,
     start_date DATE ,
     end_date DATE ,
     created_at TIMESTAMP WITH TIME ZONE ,

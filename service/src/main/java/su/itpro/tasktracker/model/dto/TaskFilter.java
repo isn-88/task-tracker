@@ -11,10 +11,11 @@ import su.itpro.tasktracker.model.enums.TaskType;
 @FieldNameConstants
 public record TaskFilter(String findPattern,
                          Long parentId,
+                         Long ownerId,
+                         List<Long> assignedAccountId,
+                         List<Integer> assignedGroupId,
                          List<TaskType> types,
                          List<TaskStatus> statuses,
-                         List<TaskPriority> priorities,
-                         List<Long> assignedAccountId,
-                         List<Integer> assignedGroupId) {
+                         List<TaskPriority> priorities) {
 
 }

@@ -17,7 +17,7 @@
 
 
 <section style="padding-top: 20px; padding-bottom: 10px;">
-  <div class="container-fluid">
+  <div class="container">
     <div class="row">
       <div class="col">
         <div class="mb-5">
@@ -27,87 +27,98 @@
         <div th:insert="~{fragments/nav :: admin}"></div>
 
         <!--      Поиск аккаунта    -->
-        <div class="mt-3">
+        <div class="p-4">
           <p class="lead"
-             th:text="'Всего зарегистрировано аккаунтов: ' + ${totalItems}">Accounts</p>
+             th:text="'Найдено аккаунтов: ' + ${totalItems}">Accounts</p>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-striped">
+        <div class="table-responsive p-4">
+          <form th:action="@{/admin/account/find}" id="formAdminFind" method="GET">
+          </form>
+          <table class="table table-striped w-auto">
             <thead>
-            <form th:action="@{/admin/account/find}" method="GET">
-              <tr>
-                <th><p>Имя пользователя</p>
-                  <p>
-                    <input class="form-control form-control-sm" type="text"
-                           name="username" th:value="${filter.username()}"
-                           placeholder="" aria-label="Username">
-                  </p>
-                </th>
-                <th scope="col"><p>ФИО</p>
-                  <p>
-                    <input class="form-control form-control-sm" type="text"
-                           name="fullName" th:value="${filter.fullName()}"
-                           placeholder="" aria-label="FullName">
-                  </p>
-                </th>
-                <th scope="col"><p>Эл. адрес</p>
-                  <p>
-                    <input class="form-control form-control-sm" type="text"
-                           name="email" th:value="${filter.email()}"
-                           placeholder="" aria-label="Email">
-                  </p>
-                </th>
-                <th scope="col"><p>Роль</p>
-                  <p>
-                    <select class="form-select form-select-sm w-auto" id="roleFilter" name="role">
-                      <option value="" th:selected="${filter.role() eq null}">Любая</option>
-                      <option th:each="role : ${roles}"
-                              th:value="${role.name()}" th:text="${role.name()}"
-                              th:selected="${filter?.role() eq role.name()}">Role
-                      </option>
-                    </select>
-                  </p>
-                </th>
-                <th scope="col">
-                  <p>Статус</p>
-                  <p>
-                    <select class="form-select form-select-sm w-auto"
-                            id="statusFilter" name="status">
-                      <option value="" th:selected="${filter.status() eq null}">Любой</option>
-                      <option value="true"
-                              th:selected="${filter.status() eq 'true'}">Активен
-                      </option>
-                      <option value="false"
-                              th:selected="${filter.status() eq 'false'}">Заблокирован
-                      </option>
-                    </select>
-                  </p>
-                </th>
-                <th scope="col"><p>Блокировка</p>
-                  <p>
-                    <button class="btn btn-sm btn-outline-secondary ms-2"
-                            type="button" disabled>
-                      <i class="fa-solid fa-ban"></i>
-                    </button>
-                  </p>
-                </th>
-                <th><p>Изменить</p>
-                  <p>
-                    <button class="btn btn-sm btn-outline-primary ms-2" type="submit">
-                      <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                  </p>
-                </th>
-              </tr>
-            </form>
+            <tr>
+              <th scope="col"><p>#</p>
+                <p>
+                  <input class="form-control form-control-sm w-auto" type="text"
+                         name="id" th:value="${filter.id()}"
+                         placeholder="" aria-label="ID" form="formAdminFind">
+                </p>
+              </th>
+              <th scope="col"><p>Имя пользователя</p>
+                <p>
+                  <input class="form-control form-control-sm w-auto" type="text"
+                         name="username" th:value="${filter.username()}"
+                         placeholder="" aria-label="Username" form="formAdminFind">
+                </p>
+              </th>
+              <th scope="col"><p>ФИО</p>
+                <p>
+                  <input class="form-control form-control-sm w-auto" type="text"
+                         name="fullName" th:value="${filter.fullName()}"
+                         placeholder="" aria-label="FullName" form="formAdminFind">
+                </p>
+              </th>
+              <th scope="col"><p>Эл. адрес</p>
+                <p>
+                  <input class="form-control form-control-sm w-auto" type="text"
+                         name="email" th:value="${filter.email()}"
+                         placeholder="" aria-label="Email" form="formAdminFind">
+                </p>
+              </th>
+              <th scope="col"><p>Роль</p>
+                <p>
+                  <select class="form-select form-select-sm w-auto"
+                          id="roleFilter" name="role" form="formAdminFind">
+                    <option value="" th:selected="${filter.role() eq null}">Любая</option>
+                    <option th:each="role : ${roles}"
+                            th:value="${role.name()}" th:text="${role.name()}"
+                            th:selected="${filter?.role() eq role.name()}">Role
+                    </option>
+                  </select>
+                </p>
+              </th>
+              <th scope="col">
+                <p>Статус</p>
+                <p>
+                  <select class="form-select form-select-sm w-auto"
+                          id="statusFilter" name="status" form="formAdminFind">
+                    <option value="" th:selected="${filter.status() eq null}">Любой</option>
+                    <option value="true"
+                            th:selected="${filter.status() eq 'true'}">Активен
+                    </option>
+                    <option value="false"
+                            th:selected="${filter.status() eq 'false'}">Заблокирован
+                    </option>
+                  </select>
+                </p>
+              </th>
+              <th scope="col"><p>Блокировка</p>
+                <p>
+                  <button class="btn btn-sm btn-outline-secondary ms-2"
+                          type="button" disabled>
+                    <i class="fa-solid fa-ban"></i>
+                  </button>
+                </p>
+              </th>
+              <th><p>Изменить</p>
+                <p>
+                  <button class="btn btn-sm btn-outline-success ms-2"
+                          type="submit" form="formAdminFind">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                </p>
+              </th>
+            </tr>
             </thead>
             <tbody>
             <tr th:each="account : ${accounts}">
+              <td th:text="${account.id()}">Id</td>
+
               <td th:text="${account.username()}">Username</td>
 
               <td><a th:href="@{/accounts/{id}(id=${account.id()})}"
-                     th:text="${account.fullName()}">Full Name</a>
+                     th:text="${account.fullName()}">Full name</a>
               </td>
               <td th:text="${account.email()}">Email
               </td>
@@ -140,11 +151,7 @@
                   <label>
                     <input hidden type="text" name="id" th:value="${account.id()}">
                   </label>
-                  <label>
-                    <input hidden type="text" name="isEnabled"
-                           th:value="${not account.isEnabled()}">
-                  </label>
-                  <button type="submit" class="btn btn-sm btn-outline-warning">
+                  <button type="submit" class="btn btn-sm btn-outline-primary">
                     <i class="fa-regular fa-pen-to-square"></i>
                   </button>
                 </form>
@@ -153,36 +160,213 @@
             </tbody>
           </table>
         </div>
-        <nav aria-label="Pagination" th:if="${totalPages > 0}">
-          <ul class="pagination justify-content-center">
-            <li class="page-item" th:classappend="${currentPage eq 1} ? 'disabled'">
-              <a th:replace="~{fragments/nav :: paging(1, '<<', 'First Page')}"></a>
-            </li>
-            <li class="page-item font-weight-bold"
-                th:classappend="${currentPage == 1} ? 'disabled'">
-              <a th:replace="~{fragments/nav :: paging(${currentPage - 1}, 'Назад', 'Previous Page')}"></a>
-            </li>
-            <li class="page-item disabled" th:if="${currentPage - (navPages - 1) > 1}">
-              <a class="page-link" href="#">...</a>
-            </li>
-            <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
-                th:each="page : ${#numbers.sequence((currentPage > (navPages - 1) ? currentPage - (navPages - 1) : 1),
-                (currentPage + (navPages - 1) < totalPages ? currentPage + (navPages - 1) : totalPages))}">
-              <a th:replace="~{fragments/nav :: paging(${page}, ${page}, 'Page ' + ${page})}"></a>
-            </li>
-            <li class="page-item disabled" th:if="${currentPage + (navPages - 1) < totalPages}">
-              <a class="page-link" href="#">...</a>
-            </li>
-            <li class="page-item font-weight-bold"
-                th:classappend="${currentPage == totalPages} ? 'disabled'">
-              <a th:replace="~{fragments/nav :: paging(${currentPage + 1},'Вперёд', 'Next Page')}"></a>
-            </li>
-            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
-              <a th:replace="~{fragments/nav :: paging(${totalPages}, '>>', 'Last Page')}"></a>
-            </li>
-          </ul>
-        </nav>
 
+        <div th:if="${totalItems eq 0}">
+          <div th:insert="~{fragments/insert :: nocontent}"></div>
+        </div>
+
+        <div th:if="${filter.id() eq null}">
+          <nav aria-label="Pagination" th:if="${totalPages > 0}">
+            <ul class="pagination justify-content-center">
+              <li class="page-item" th:classappend="${currentPage eq 1} ? 'disabled'">
+                <a th:replace="~{fragments/nav :: paging(1, '<<', 'First Page')}"></a>
+              </li>
+              <li class="page-item font-weight-bold"
+                  th:classappend="${currentPage == 1} ? 'disabled'">
+                <a th:replace="~{fragments/nav :: paging(${currentPage - 1}, 'Назад', 'Previous Page')}"></a>
+              </li>
+              <li class="page-item disabled" th:if="${currentPage - (navPages - 1) > 1}">
+                <a class="page-link" href="#">...</a>
+              </li>
+              <li class="page-item" th:classappend="${page == currentPage} ? 'active'"
+                  th:each="page : ${#numbers.sequence((currentPage > (navPages - 1) ? currentPage - (navPages - 1) : 1),
+                  (currentPage + (navPages - 1) < totalPages ? currentPage + (navPages - 1) : totalPages))}">
+                <a th:replace="~{fragments/nav :: paging(${page}, ${page}, 'Page ' + ${page})}"></a>
+              </li>
+              <li class="page-item disabled" th:if="${currentPage + (navPages - 1) < totalPages}">
+                <a class="page-link" href="#">...</a>
+              </li>
+              <li class="page-item font-weight-bold"
+                  th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:replace="~{fragments/nav :: paging(${currentPage + 1},'Вперёд', 'Next Page')}"></a>
+              </li>
+              <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a th:replace="~{fragments/nav :: paging(${totalPages}, '>>', 'Last Page')}"></a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div th:if="${edit}">
+          <div class="container-fluid">
+            <div class="row justify-content-start">
+              <div class="col-sm-10 col-md-8 col-xl-6 p-4">
+                <div class="card">
+                  <div class="card-header">
+                    Изменить данные пользователя
+                  </div>
+                  <div class="card-body">
+                    <div class="card-text">
+                      <form th:action="@{/admin/account/edit}" th:object="${edit}" method="POST">
+                        <div class="row gy-4">
+                          <label>
+                            <input hidden type="text" name="id" th:value="*{id}">
+                          </label>
+                          <div class="col-12">
+                            <div class="form-text" th:text="#{page.register.email.label}">Email
+                            </div>
+                            <div class="input-group has-validation">
+                            <span class="input-group-text" id="addonEmail">
+                              <i class="fa-regular fa-envelope"></i></span>
+                              <input class="form-control"
+                                     th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                     th:placeholder="#{page.register.email.placeholder}"
+                                     id="inputEmail" type="text" th:field="*{email}"
+                                     aria-describedby="addonEmail validationEmailFeedback"
+                                     aria-label="" required>
+                              <div id="validationEmailFeedback" class="invalid-feedback">
+                                <div th:if="${#fields.hasErrors('email')}">
+                                  <ul>
+                                    <li th:each="error : ${#fields.errors('email')}"
+                                        th:text="${error}">Email error
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="form-text" th:text="#{page.register.username.label}">
+                              Username
+                            </div>
+                            <div class="input-group has-validation">
+                              <span class="input-group-text" id="addonUser">
+                                <i class="fa-regular fa-user"></i></span>
+                              <input class="form-control"
+                                     th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                                     th:placeholder="#{page.register.username.placeholder}"
+                                     id="inputUsername" type="text" th:field="*{username}"
+                                     aria-describedby="addonUsername validationUsernameFeedback usernameHelpBlock"
+                                     aria-label="" required>
+                              <div id="validationUsernameFeedback" class="invalid-feedback">
+                                <div th:if="${#fields.hasErrors('username')}">
+                                  <ul>
+                                    <li th:each="error : ${#fields.errors('username')}"
+                                        th:text="${error}">Username error
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="usernameHelpBlock" class="form-text">
+                              <span th:text="#{page.register.username.help}">Help</span>
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="input-group has-validation">
+                              <input class="form-control"
+                                     th:classappend="${#fields.hasErrors('lastname')} ? 'is-invalid'"
+                                     th:placeholder="#{page.register.lastname.placeholder}"
+                                     id="inputLastname" type="text" th:field="*{lastname}"
+                                     aria-describedby="validationLastnameFeedback"
+                                     aria-label="" required>
+                              <div id="validationLastnameFeedback" class="invalid-feedback">
+                                <div th:if="${#fields.hasErrors('lastname')}">
+                                  <ul>
+                                    <li th:each="error : ${#fields.errors('lastname')}"
+                                        th:text="${error}">Lastname error
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="input-group has-validation">
+                              <input class="form-control"
+                                     th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid'"
+                                     th:placeholder="#{page.register.firstname.placeholder}"
+                                     id="inputFirstname" type="text" th:field="*{firstname}"
+                                     aria-describedby="validationFirstnameFeedback"
+                                     aria-label="" required>
+                              <div id="validationFirstnameFeedback" class="invalid-feedback">
+                                <div th:if="${#fields.hasErrors('firstname')}">
+                                  <ul>
+                                    <li th:each="error : ${#fields.errors('firstname')}"
+                                        th:text="${error}">Lastname error
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="input-group has-validation">
+                              <input class="form-control"
+                                     th:classappend="${#fields.hasErrors('surname')} ? 'is-invalid'"
+                                     th:placeholder="#{page.register.surname.placeholder}"
+                                     id="inputSurname" type="text" th:field="*{surname}"
+                                     aria-describedby="validationSurnameFeedback"
+                                     aria-label="" required>
+                              <div id="validationSurnameFeedback" class="invalid-feedback">
+                                <div th:if="${#fields.hasErrors('surname')}">
+                                  <ul>
+                                    <li th:each="error : ${#fields.errors('surname')}"
+                                        th:text="${error}">Surname error
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="mt-4">
+                            <div class="form-check form-check-inline" th:each="roleEnum : ${roles}">
+                              <input class="form-check-input" type="radio" name="role"
+                                     th:checked="${roleEnum.name()} eq *{role.name()}"
+                                     th:id="radio + ${roleEnum.name()}"
+                                     th:value="${roleEnum.name()}">
+                              <label class="form-check-label" th:for="radio + ${roleEnum.name()}"
+                                     th:text="${roleEnum.name()}">Role</label>
+                            </div>
+                          </div>
+                          <div class="d-grid mt-4">
+                            <input class="btn btn-outline-primary"
+                                   th:classappend="${#authentication.name eq edit.username} ? 'disabled'"
+                                   type="submit" value="Обновить">
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-10 col-md-8 col-xl-6 p-4">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-text">Изменить группы пользователя</div>
+                  </div>
+
+                  <div class="card-body">
+                    <p>Отметьте все необходимые группы</p>
+                    <form th:action="@{/admin/team/group}" method="POST">
+                      <select class="form-select" th:size="${groups?.size()}"
+                              name="formGroups" aria-label="" multiple>
+                        <option th:each="group : ${groups}"
+                                th:value="${group.id()}" th:text="${group.name()}"
+                                th:selected="${accountGroups.contains(group.id)}">Groups
+                        </option>
+                      </select>
+                      <input th:value="${edit.id()}" name="accountId" hidden>
+                      <div class="d-grid mt-4">
+                        <input class="btn btn-outline-primary" type="submit" value="Обновить">
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

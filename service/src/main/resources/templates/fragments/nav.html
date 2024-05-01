@@ -13,7 +13,7 @@
        style="background-color: #273A64;">
     <!--      0747A7-->
     <div class="container">
-      <a class="navbar-brand fst-italic text-white" href="/home">Task Tracker</a>
+      <a class="navbar-brand fst-italic text-white" href="/my">Task Tracker</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
               aria-expanded="false" aria-label="Переключатель навигации">
@@ -53,14 +53,18 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="/my">Моя страница</a>
+          <a class="nav-link"
+             aria-current="page" href="/my">Моя страница</a>
           <div sec:authorize="hasAuthority('ADMIN')">
-            <a class="nav-link" href="/admin/account/find">Администрирование</a>
+            <a class="nav-link"
+               href="/admin/account/find">Администрирование</a>
           </div>
           <a class="nav-link" href="/my/projects">Проекты</a>
           <a class="nav-link" href="/my/tasks">Задачи</a>
-          <a class="nav-link" href="/my/expenses">Трудозатраты</a>
-          <a class="nav-link" href="/my/news">Новости</a>
+          <a class="nav-link" href="/my">Трудозатраты</a>
+<!--          /expenses-->
+          <a class="nav-link" href="/my">Новости</a>
+<!--          /news-->
         </div>
       </div>
     </div>
@@ -84,8 +88,24 @@
        th:href="@{/admin/group}">Группы</a>
   </li>
   <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'team'} ? 'active'"
+       th:href="@{/admin/team}">Состав групп</a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link" th:classappend="${tab eq 'project'} ? 'active'"
-       th:href="@{/admin/project}">Проекты</a>
+       th:href="@{/admin/project/find}">Проекты</a>
+  </li>
+</ul>
+
+
+<ul th:fragment="task" class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'comment'} ? 'active'"
+       th:href="@{/tasks/{id}(id=${task.id()})}">Примечания</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" th:classappend="${tab eq 'story'} ? 'active'"
+       th:href="@{/tasks/{id}(id=${task.id()}, tab='story')}">История</a>
   </li>
 </ul>
 

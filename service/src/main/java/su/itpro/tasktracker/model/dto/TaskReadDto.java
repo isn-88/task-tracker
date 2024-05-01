@@ -25,4 +25,8 @@ public record TaskReadDto(Long id,
                           Short progress,
                           String description) {
 
+  public String getDescriptionHtml() {
+    return (description == null) ? "" : description.replaceAll("\n", "<br>");
+  }
+
 }

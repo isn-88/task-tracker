@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.test.web.servlet.MockMvc;
 import su.itpro.tasktracker.integration.IntegrationTestUserSecurity;
 import su.itpro.tasktracker.model.entity.Account;
-import su.itpro.tasktracker.model.entity.Profile;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.repository.AccountRepository;
 
@@ -24,8 +23,6 @@ public class AccountAboutControllerIT extends IntegrationTestUserSecurity {
   private static final String EMAIL = "user@email.com";
   private static final String USERNAME = "user";
   private static final String PASSWORD = "password";
-  private static final String LASTNAME = "Lastname";
-  private static final String FIRSTNAME = "Firstname";
 
   private final AccountRepository accountRepository;
   private final EntityManager entityManager;
@@ -41,12 +38,7 @@ public class AccountAboutControllerIT extends IntegrationTestUserSecurity {
         .password("{noop}" + PASSWORD)
         .role(Role.USER)
         .build();
-    Profile profile = Profile.builder()
-        .lastname(LASTNAME)
-        .firstname(FIRSTNAME)
-        .build();
     accountRepository.save(savedAccount);
-    profile.setAccount(savedAccount);
     entityManager.flush();
     entityManager.clear();
   }

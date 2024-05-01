@@ -39,7 +39,7 @@ public class RegisterController {
                                  localeResolver.resolveLocale(request))) {
       return "login/registration";
     }
-    return "redirect:/login";
+    return "redirect:/login?register=true";
   }
 
   @InitBinder

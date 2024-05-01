@@ -13,6 +13,8 @@ public record TaskUpdateDto(Long parentId,
                             @NotNull
                             Integer projectId,
 
+                            Long ownerId,
+
                             @NotBlank
                             String type,
 

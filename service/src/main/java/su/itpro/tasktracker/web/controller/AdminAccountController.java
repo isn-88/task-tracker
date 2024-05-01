@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import su.itpro.tasktracker.model.dto.AccountBlockDto;
+import su.itpro.tasktracker.model.dto.AccountEditDto;
 import su.itpro.tasktracker.model.dto.AccountFilterFormDto;
 import su.itpro.tasktracker.model.dto.AccountReadDto;
 import su.itpro.tasktracker.model.dto.RegisterDto;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.service.AccountService;
 import su.itpro.tasktracker.service.AdminService;
+import su.itpro.tasktracker.service.GroupService;
 
 @Controller
 @RequestMapping("/admin/account")
@@ -33,6 +35,7 @@ public class AdminAccountController {
 
   private final AdminService adminService;
   private final AccountService accountService;
+  private final GroupService groupService;
 
   @GetMapping("/find")
   public String myPage(@RequestParam(defaultValue = "1") int page,
@@ -52,7 +55,24 @@ public class AdminAccountController {
     model.addAttribute("navPages", NAV_PAGE_ITEMS);
     model.addAttribute("register", RegisterDto.builder().build());
     model.addAttribute("tab", "find");
+    if (formDto.id() != null) {
+      model.addAttribute("edit", accountService.findById(formDto.id()).orElse(null));
+      model.addAttribute("groups", groupService.findAll());
+      model.addAttribute("accountGroups", groupService.findAllGroupIdsByAccountId(formDto.id()));
+    }
     return "admin/account-find";
+  }
+
+  @PostMapping("/edit")
+  public String editAccount(@Validated @ModelAttribute("edit") AccountEditDto editDto,
+                            Principal principal) {
+    AccountReadDto account = accountService.findAccountByUsername(principal.getName());
+    if (!Objects.equals(account.id(), editDto.id())) {
+      adminService.editAccount(editDto);
+    } else {
+      throw new IllegalArgumentException("You can't edit yourself");
+    }
+    return "redirect:/admin/account/find?id=" + editDto.id();
   }
 
   @GetMapping("/create")

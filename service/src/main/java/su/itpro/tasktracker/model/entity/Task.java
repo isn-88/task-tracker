@@ -47,6 +47,19 @@ public class Task extends AuditingModifyEntity<Long> {
   @JoinColumn(nullable = false)
   private Project project;
 
+  @OneToOne
+  @JoinColumn(nullable = false)
+  private Account owner;
+
+  @OneToOne
+  private Category category;
+
+  @OneToOne
+  private Account assignedAccount;
+
+  @OneToOne
+  private Group assignedGroup;
+
   @Enumerated(value = EnumType.STRING)
   private TaskType type;
 
@@ -60,15 +73,6 @@ public class Task extends AuditingModifyEntity<Long> {
   @Column(nullable = false)
   @Enumerated(value = EnumType.STRING)
   private TaskPriority priority;
-
-  @OneToOne
-  private Account assignedAccount;
-
-  @OneToOne
-  private Group assignedGroup;
-
-  @OneToOne
-  private Category category;
 
   private LocalDate startDate;
 

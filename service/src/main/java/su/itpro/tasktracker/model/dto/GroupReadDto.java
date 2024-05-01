@@ -6,6 +6,7 @@ import lombok.Builder;
 @Builder
 public record GroupReadDto(Integer id,
                            String name,
-                           Instant createdAt) {
+                           Instant createdAt,
+                           Long count) {
 
 }

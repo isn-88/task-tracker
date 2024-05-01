@@ -2,6 +2,7 @@ package su.itpro.tasktracker.service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,6 +53,12 @@ public class AccountService implements UserDetailsService {
   private final ProfileRegistrationMapper profileRegistrationMapper;
   private final PasswordEncoder passwordEncoder;
   private final RegisterPostValidator registerPostValidator;
+
+  @Transactional(readOnly = true)
+  public Optional<AccountReadDto> findById(Long id) {
+    return accountRepository.findById(id)
+        .map(accountReadMapper::map);
+  }
 
   @Transactional(readOnly = true)
   public AccountAboutDto findAccountAboutBy(Long id) {

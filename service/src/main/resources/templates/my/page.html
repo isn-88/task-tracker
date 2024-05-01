@@ -15,51 +15,177 @@
 </section>
 
 <section style="padding-top: 20px; padding-bottom: 10px;">
-  <div class="container-fluid">
-    <div class="row">
+  <div class="container">
+    <div class="row mb-3">
+      <div class="col">
+        <div class="row row">
+          <div class="col">
+            <h5>Моя страница</h5>
+          </div>
+          <div class="col">
+            <div class="d-grid justify-content-end">
+              <button type="button" class="btn btn-primary"
+                      data-bs-toggle="collapse" data-bs-target="#collapseEdit"
+                      aria-expanded="false" aria-controls="collapseEdit">
+                Создать новую задачу
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div th:class="'collapse' + ${errors ne null ? ' show' : ''}" id="collapseEdit">
+          <div class="card card-footer">
+            <form th:action="@{/tasks}" method="POST"
+                  th:object="${task}" id="formTaskEdit">
+
+              <div th:insert="~{fragments/task :: edit}"></div>
+
+              <div>
+                <label><input name="ownerId" th:value="${account.id()}" hidden></label>
+              </div>
+
+            </form>
+            <div class="mb-3">
+              <button type="submit" class="btn btn-primary me-3"
+                      form="formTaskEdit">Создать
+              </button>
+              <button class="btn btn-secondary me-3" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#collapseEdit"
+                      aria-expanded="false" aria-controls="collapseEdit">Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row mb-5">
       <div class="col">
         <div>
-          <h5>Моя страница</h5>
+          <h5 th:text="'Мои задачи: ' + ${#lists.size(myTasks)}">Tasks</h5>
         </div>
-        <div>
-          <a href="#" th:text="'Мои задачи (' + ${#lists.size(tasks)} + ')'">Мои задачи</a>
+        <div class="table-responsive">
+          <table class="table table-striped p-4">
+            <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Проект</th>
+              <th scope="col">Тип</th>
+              <th scope="col">Статус</th>
+              <th scope="col">Тема</th>
+              <th scope="col">Назначена</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${myTasks}">
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
+              </td>
+              <td th:text="${task.project().name()}">Project</td>
+              <td th:text="${task.type().getType()}">Type</td>
+              <td th:text="${task.status().getStatus()}">Status</td>
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+              </td>
+              <td>
+                <a th:href="@{/{type}/{id}(type=${task.assigned().type().getPath()}, id=${task.assigned().id()})}"
+                   th:text="${task.assigned().name()}">Assigned</a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
+        <div th:if="${myTasks eq null} or ${myTasks.size() == 0}"
+             th:insert="~{fragments/insert :: nocontent}">
+        </div>
+      </div>
+    </div>
 
-        <table class="table table-striped">
-          <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Проект</th>
-            <th scope="col">Тип</th>
-            <th scope="col">Статус</th>
-            <th scope="col">Тема</th>
-            <th scope="col">Назначена</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="task : ${tasks}">
-            <td>
-              <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
-            </td>
-            <td th:text="${task.project().name()}">Project</td>
-            <td th:text="${task.type().getType()}">Type</td>
-            <td th:text="${task.status().getStatus()}">Status</td>
-            <td>
-              <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
-            </td>
-            <td>
-              <a th:href="@{/{type}/{id}(type=${task.assigned().type().getPath()}, id=${task.assigned().id()})}"
-                 th:text="${task.assigned().name()}">Assigned</a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+    <div class="row mb-3">
+      <div class="col">
+        <div>
+          <h5 th:text="'Созданные задачи: ' + ${#lists.size(createdTask)}">Tasks</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped p-4">
+            <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Проект</th>
+              <th scope="col">Тип</th>
+              <th scope="col">Статус</th>
+              <th scope="col">Тема</th>
+              <th scope="col">Назначена</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${createdTask}">
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
+              </td>
+              <td th:text="${task.project().name()}">Project</td>
+              <td th:text="${task.type().getType()}">Type</td>
+              <td th:text="${task.status().getStatus()}">Status</td>
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+              </td>
+              <td>
+                <a th:href="@{/{type}/{id}(type=${task.assigned()?.type()?.getPath()}, id=${task.assigned()?.id()})}"
+                   th:text="${task.assigned()?.name()}">Assigned</a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div th:if="${createdTask eq null} or ${createdTask.size() == 0}"
+             th:insert="~{fragments/insert :: nocontent}">
+        </div>
       </div>
     </div>
   </div>
 </section>
 
+
+<!-- Модальное окно: Родительская задача - поиск-->
+<div class="modal fade" id="findParentTaskModal" tabindex="-1"
+     aria-labelledby="findParentTaskLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="findParentTaskLabel">Поиск родительской задачи</h1>
+        <button type="button" class="btn-close"
+                data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fs-5"
+                 for="findParentInputModal">Поиск по заголовку</label>
+          <input class="form-control" aria-describedby="findParentHelp"
+                 id="findParentInputModal" name="findPattern">
+          <span id="searchParentResult"></span>
+        </div>
+        <div class="mb-3 findParentTaskResult">
+          <label><input id="parentIdModal" hidden></label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                onclick="setParentId()">Применить
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/script.js}"></script>
 </body>
 
 </html>

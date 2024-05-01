@@ -6,13 +6,13 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import su.itpro.tasktracker.integration.IntegrationTestBase;
 import su.itpro.tasktracker.model.dto.TaskFilter;
 import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Group;
 import su.itpro.tasktracker.model.entity.GroupAccount;
-import su.itpro.tasktracker.model.entity.Profile;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
 import su.itpro.tasktracker.model.enums.Role;
@@ -28,12 +28,31 @@ import su.itpro.tasktracker.repository.TaskRepository;
 @RequiredArgsConstructor
 public class TaskIT extends IntegrationTestBase {
 
+  private static final String EMAIL = "user@email.com";
+  private static final String USERNAME = "user";
+  private static final String PASSWORD = "password";
+
   private final AccountRepository accountRepository;
   private final GroupRepository groupRepository;
   private final GroupAccountRepository groupAccountRepository;
   private final ProjectRepository projectRepository;
   private final TaskRepository taskRepository;
   private final EntityManager entityManager;
+
+  private Account account;
+
+  @BeforeEach
+  void prepare() {
+    account = Account.builder()
+        .email(EMAIL)
+        .username(USERNAME)
+        .password("{noop}" + PASSWORD)
+        .role(Role.USER)
+        .build();
+    accountRepository.save(account);
+    entityManager.flush();
+    entityManager.clear();
+  }
 
   @Test
   void createTask() {
@@ -44,6 +63,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-create")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
@@ -67,6 +87,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task1 = Task.builder()
         .title("title-exist-1")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
@@ -74,6 +95,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task2 = Task.builder()
         .title("title-exist-2")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
@@ -98,6 +120,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-not-exist")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
@@ -120,6 +143,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-update")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
@@ -147,6 +171,7 @@ public class TaskIT extends IntegrationTestBase {
     Task task = Task.builder()
         .title("title-delete")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.NORMAL)
@@ -183,14 +208,10 @@ public class TaskIT extends IntegrationTestBase {
         .group(group)
         .build();
     groupAccountRepository.save(groupAccount);
-    Profile profile = Profile.builder()
-        .firstname("Firstname")
-        .lastname("Lastname")
-        .build();
-    profile.setAccount(accountWithTwoTasks);
     Task parentTask = Task.builder()
         .title("parent-1")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.ASSIGNED)
         .priority(TaskPriority.HIGH)
@@ -200,6 +221,7 @@ public class TaskIT extends IntegrationTestBase {
     Task childTask1 = Task.builder()
         .title("child-1")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .parent(parentTask)
         .status(TaskStatus.ASSIGNED)
@@ -210,6 +232,7 @@ public class TaskIT extends IntegrationTestBase {
     Task childTask2 = Task.builder()
         .title("child-2")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .parent(parentTask)
         .status(TaskStatus.CLOSED)
@@ -220,6 +243,7 @@ public class TaskIT extends IntegrationTestBase {
     Task freeTask = Task.builder()
         .title("freeTask")
         .project(project)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.NEW)
         .priority(TaskPriority.HIGH)

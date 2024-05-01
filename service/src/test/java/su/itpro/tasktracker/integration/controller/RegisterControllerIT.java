@@ -32,7 +32,7 @@ import su.itpro.tasktracker.repository.AccountRepository;
 @RequiredArgsConstructor
 public class RegisterControllerIT extends IntegrationTestBase {
 
-  private static final String SUCCESS_URL = "/login";
+  private static final String SUCCESS_URL = "/login?register=true";
   private static final String CONTROLLER_URL = "/registration";
   private static final String ATTRIBUTE_NAME = "register";
   private static final String EMAIL = "use@email.com";

@@ -16,7 +16,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import su.itpro.tasktracker.integration.IntegrationTestAdminSecurity;
 import su.itpro.tasktracker.model.entity.Account;
-import su.itpro.tasktracker.model.entity.Profile;
 import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.repository.AccountRepository;
 
@@ -27,8 +26,6 @@ public class AdminProjectControllerIT extends IntegrationTestAdminSecurity {
   private static final String EMAIL = "admin@email.com";
   private static final String USERNAME = "admin";
   private static final String PASSWORD = "password";
-  private static final String LASTNAME = "Lastname";
-  private static final String FIRSTNAME = "Firstname";
 
   private final AccountRepository accountRepository;
   private final EntityManager entityManager;
@@ -42,31 +39,21 @@ public class AdminProjectControllerIT extends IntegrationTestAdminSecurity {
         .password("{noop}" + PASSWORD)
         .role(Role.USER)
         .build();
-    Profile userProfile = Profile.builder()
-        .lastname(LASTNAME)
-        .firstname(FIRSTNAME)
-        .build();
     accountRepository.save(userAccount);
-    userProfile.setAccount(userAccount);
     Account adminAccount = Account.builder()
         .email(EMAIL)
         .username(USERNAME)
         .password("{noop}" + PASSWORD)
         .role(Role.ADMIN)
         .build();
-    Profile adminProfile = Profile.builder()
-        .lastname(LASTNAME)
-        .firstname(FIRSTNAME)
-        .build();
     accountRepository.save(adminAccount);
-    adminProfile.setAccount(adminAccount);
     entityManager.flush();
     entityManager.clear();
   }
 
   @Test
   void getProjectPage() throws Exception {
-    mockMvc.perform(get("/admin/project"))
+    mockMvc.perform(get("/admin/project/find"))
         .andExpectAll(
             status().isOk(),
             view().name("admin/project"),
@@ -91,7 +78,7 @@ public class AdminProjectControllerIT extends IntegrationTestAdminSecurity {
                         .with(csrf()))
         .andExpectAll(
             status().is3xxRedirection(),
-            view().name("redirect:/admin/project"),
+            view().name("redirect:/admin/project/find"),
             model().hasNoErrors()
         );
   }
