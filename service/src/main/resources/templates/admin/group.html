@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/icons.all.min.css}" rel="stylesheet">
   <title>Groups</title>
 </head>
 
@@ -15,7 +16,7 @@
 </section>
 
 <section style="padding-top: 20px; padding-bottom: 10px;">
-  <div class="container-fluid">
+  <div class="container">
     <div class="row">
       <div class="col">
         <div class="mb-5">
@@ -24,8 +25,13 @@
 
         <div th:insert="~{fragments/nav :: admin}"></div>
 
+        <div class="p-4">
+          <p class="lead"
+             th:text="'Найдено групп: ' + ${#lists.size(groups)}">Groups</p>
+        </div>
+
         <!--      Группы    -->
-        <div class="mt-3">
+        <div class="p-4">
           <div class="table-responsive">
             <table class="table table-striped w-auto">
               <thead>
@@ -33,6 +39,9 @@
                 <th><p>#</p></th>
                 <th><p>Название</p></th>
                 <th><p>Дата создания</p></th>
+                <th><p>Участников</p></th>
+                <th><p>Изменить</p></th>
+                <th><p>Удалить</p></th>
               </tr>
               </thead>
 
@@ -41,21 +50,39 @@
                 <td th:text="${group.id()}">Id</td>
                 <td th:text="${group.name()}">Name</td>
                 <td th:text="${#dates.format(group.createdAt(), 'yyyy-MM-dd')}">Created</td>
+                <td th:text="${group.count()}"></td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-outline-primary"
+                          data-bs-toggle="modal" data-bs-target="#groupEditModal"
+                          th:data-bs-group-id="${group.id()}"
+                          th:data-bs-group-name="${group.name()}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                          data-bs-toggle="modal" data-bs-target="#groupDeleteModal"
+                          th:data-bs-group-id="${group.id()}"
+                          th:data-bs-group-name="${group.name()}">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                </td>
               </tr>
               <form th:action="@{/admin/group}" method="POST">
                 <tr>
-                  <td>
-                  </td>
+                  <td></td>
                   <td>
                     <input class="form-control" name="name">
                   </td>
                   <td>
-                    <button class="btn btn-outline-primary" type="submit">Создать</button>
+                    <button class="btn btn-outline-success" type="submit">Создать</button>
                   </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
               </form>
               </tbody>
-
             </table>
           </div>
         </div>
@@ -63,6 +90,113 @@
     </div>
   </div>
 </section>
+
+
+<div class="modal fade" id="groupEditModal" tabindex="-1"
+     aria-labelledby="groupEditModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="groupEditModalLabel">Новое сообщение</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/admin/group/edit}" method="POST" id="formEditGroup">
+          <div class="mb-3">
+            <label for="groupEditId" class="col-form-label">Идентификатор:</label>
+            <input type="text" class="form-control" id="groupEditId" name="id" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="groupEditName" class="col-form-label">Название:</label>
+            <input type="text" class="form-control" id="groupEditName" name="name">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+        <button type="submit" class="btn btn-primary" form="formEditGroup">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="groupDeleteModal" tabindex="-1"
+     aria-labelledby="groupDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="groupDeleteModalLabel">Новое сообщение</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/admin/group/delete}" method="POST" id="formDeleteGroup">
+          <div class="mb-3">
+            <label for="groupDeleteId" class="col-form-label">Идентификатор:</label>
+            <input type="text" class="form-control" id="groupDeleteId" name="id" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="groupDeleteName" class="col-form-label">Название:</label>
+            <input type="text" class="form-control" id="groupDeleteName" name="name" readonly>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+        <button type="submit" class="btn btn-danger" form="formDeleteGroup">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const groupEditModal = document.getElementById('groupEditModal')
+  if (groupEditModal) {
+    groupEditModal.addEventListener('show.bs.modal', event => {
+      // Button that triggered the modal
+      const button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      const groupId = button.getAttribute('data-bs-group-id')
+      const groupName = button.getAttribute('data-bs-group-name')
+      // If necessary, you could initiate an Ajax request here
+      // and then do the updating in a callback.
+
+      // Update the modal's content.
+      const modalTitle = groupEditModal.querySelector('.modal-title')
+      const modalBodyInputId = groupEditModal.querySelector(".modal-body input[name='id']")
+      const modalBodyInputName = groupEditModal.querySelector(".modal-body input[name='name']")
+
+      modalTitle.textContent = `Изменить группу`
+      modalBodyInputId.value = groupId
+      modalBodyInputName.value = groupName
+    })
+  }
+</script>
+
+<script>
+  const groupDeleteModal = document.getElementById('groupDeleteModal')
+  if (groupDeleteModal) {
+    groupDeleteModal.addEventListener('show.bs.modal', event => {
+      // Button that triggered the modal
+      const button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      const groupId = button.getAttribute('data-bs-group-id')
+      const groupName = button.getAttribute('data-bs-group-name')
+      // If necessary, you could initiate an Ajax request here
+      // and then do the updating in a callback.
+
+      // Update the modal's content.
+      const modalTitle = groupDeleteModal.querySelector('.modal-title')
+      const modalBodyInputId = groupDeleteModal.querySelector(".modal-body input[name='id']")
+      const modalBodyInputName = groupDeleteModal.querySelector(".modal-body input[name='name']")
+
+      modalTitle.textContent = `Удалить группу`
+      modalBodyInputId.value = groupId
+      modalBodyInputName.value = groupName
+    })
+  }
+</script>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>

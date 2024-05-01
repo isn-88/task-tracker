@@ -65,37 +65,68 @@ VALUES ('task-tracker', 'Разработка сервиса по постано
        ('subscription', 'Сервис подписок'),
        ('auth-service', 'Сервис аутентификации');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, assigned_group_id, description)
-VALUES (null, (SELECT id FROM project where name = 'task-tracker'), 'FEATURE', 'Разработка сервиса TaskTracker','NEW', 'NORMAL',
-        (SELECT id FROM category WHERE name = 'general'), (SELECT id FROM groups WHERE name = 'developers'),
+INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_group_id, type, title, status, priority, description)
+VALUES (null, (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM groups WHERE name = 'developers'),
+        'FEATURE', 'Разработка сервиса TaskTracker','NEW', 'NORMAL',
         'Корневая задача по разработке сервиса отслеживания задач');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, assigned_account_id, description)
-VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
-        'FEATURE', 'Создание проекта', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
-        (SELECT id FROM account WHERE username = 'dev'), 'Создать SpringBoot приложение');
+INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_account_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM account WHERE username = 'dev'),
+        'FEATURE', 'Создание проекта', 'NEW', 'NORMAL',
+        'Создать SpringBoot приложение');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, description)
-VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
-        'FEATURE', 'Добавить репозиторий', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Добавить репозиторий', 'NEW', 'NORMAL',
         'Добавить AccountRepository');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, description)
-VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
-        'FEATURE', 'Добавить сервис', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Добавить сервис', 'NEW', 'NORMAL',
         'Добавить AccountService');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, description)
-VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
-        'FEATURE', 'Добавить контроллер', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Добавить контроллер', 'NEW', 'NORMAL',
         'Добавить AccountController');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, description)
-VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
-        'FEATURE', 'Добавить безопасность', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Добавить безопасность', 'NEW', 'NORMAL',
         'Добавить и сконфигурировать Spring Security');
 
-INSERT INTO task (parent_id, project_id, type, title, status, priority, category_id, description)
-VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'), (SELECT id FROM project where name = 'task-tracker'),
-        'FEATURE', 'Добавить тесты', 'NEW', 'NORMAL', (SELECT id FROM category WHERE name = 'general'),
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Добавить тесты', 'NEW', 'NORMAL',
         'Написать модульные и интеграционные тесты');
+
+INSERT INTO task (project_id, owner_id, category_id, assigned_account_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM account WHERE username = 'admin'),
+        'SUPPORT', 'Регистрация новой учётной записи', 'NEW', 'NORMAL',
+        'Необходимо зарегистрировать учётную запись для нового сотрудника\nФИО: Иванов Иван Иванович\n' ||
+        'Имя пользователя: i.ivanov\nEmail: i.ivanov@tracker.ru\n\nДобавить в группу: tester');

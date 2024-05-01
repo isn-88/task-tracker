@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/icons.all.min.css}" rel="stylesheet">
+  <title>Group</title>
+</head>
+
+<body>
+<section>
+  <div th:insert="~{fragments/nav :: account}"></div>
+  <div th:insert="~{fragments/nav :: tab}"></div>
+</section>
+
+<section style="padding-top: 20px; padding-bottom: 10px;">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="mb-5"><h5>Страница администратора</h5></div>
+
+        <div th:insert="~{fragments/nav :: admin}"></div>
+
+        <div class="p-4">
+          <p class="lead"
+             th:text="'Найдено групп: ' + ${#lists.size(groups)}">Groups</p>
+        </div>
+
+
+        <div class="p-4">
+          <form th:action="@{/admin/team}" method="GET">
+            <div class="row">
+              <div class="col-12">
+                <select class="form-select w-auto" name="groupId"
+                        aria-label="" onchange="this.form.submit()">
+                  <option value="0">Выберите группу</option>
+                  <option th:each="group : ${groups}"
+                          th:selected="${group.id() eq selectedGroup?.id()}"
+                          th:value="${group.id()}" th:text="${group.name()}">Group
+                  </option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+
+
+        <!--      Состав групп    -->
+        <div class="p-4">
+          <div class="table-responsive">
+            <table class="table table-striped w-auto">
+              <thead>
+              <tr>
+                <th><p>#</p></th>
+                <th><p>Имя пользователя</p></th>
+                <th><p>ФИО</p></th>
+                <th><p>Эл. адрес</p></th>
+                <th><p>Исключить</p></th>
+              </tr>
+              </thead>
+
+              <tbody>
+              <tr th:each="account : ${accounts}">
+                <td th:text="${account.id()}">Id</td>
+                <td th:text="${account.username()}">Username</td>
+                <td>
+                  <a th:href="@{/accounts/{id}(id=${account.id()})}"
+                     th:text="${account.fullName()}">Name</a>
+                </td>
+                <td th:text="${account.email()}">Name</td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                          data-bs-toggle="modal" data-bs-target="#accountExitGroupModal"
+                          th:data-bs-group-id="${selectedGroup?.id()}"
+                          th:data-bs-group-name="${selectedGroup?.name()}"
+                          th:data-bs-account-id="${account.id()}"
+                          th:data-bs-account-username="${account.username()}">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="w-50"
+             th:if="${accounts eq null} or ${accounts.size() eq 0}">
+          <div th:insert="~{fragments/insert :: nocontent}"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="modal fade" id="accountExitGroupModal" tabindex="-1"
+     aria-labelledby="accountExitGroupModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="accountExitGroupModalLabel">Новое сообщение</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/admin/team/exit}" method="POST" id="formAccountExitGroup">
+          <div class="mb-3">
+            <label for="accountExitId" class="col-form-label">Пользователь:</label>
+            <input type="text" class="form-control" id="accountExitId" name="accountId" hidden>
+            <input type="text" class="form-control" id="accountExitName" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="groupExitId" class="col-form-label">Группа:</label>
+            <input type="text" class="form-control" id="groupExitId" name="groupId" hidden>
+            <input type="text" class="form-control" id="groupExitName" readonly>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отменить</button>
+        <button type="submit" class="btn btn-danger" form="formAccountExitGroup">Исключить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const accountExitGroupModal = document.getElementById('accountExitGroupModal')
+  if (accountExitGroupModal) {
+    accountExitGroupModal.addEventListener('show.bs.modal', event => {
+      // Button that triggered the modal
+      const button = event.relatedTarget
+      // Extract info from data-bs-* attributes
+      const accountId = button.getAttribute('data-bs-account-id')
+      const accountName = button.getAttribute('data-bs-account-username')
+      const groupId = button.getAttribute('data-bs-group-id')
+      const groupName = button.getAttribute('data-bs-group-name')
+      // If necessary, you could initiate an Ajax request here
+      // and then do the updating in a callback.
+
+      // Update the modal's content.
+      const modalTitle = accountExitGroupModal.querySelector('.modal-title')
+      const modalBodyInputAccountId =
+        accountExitGroupModal.querySelector('.modal-body input[id=\'accountExitId\']')
+      const modalBodyInputAccountName =
+        accountExitGroupModal.querySelector('.modal-body input[id=\'accountExitName\']')
+      const modalBodyInputGroupId =
+        accountExitGroupModal.querySelector('.modal-body input[id=\'groupExitId\']')
+      const modalBodyInputGroupName =
+        accountExitGroupModal.querySelector('.modal-body input[id=\'groupExitName\']')
+
+      modalTitle.textContent = `Выйти из группы`
+      modalBodyInputAccountId.value = accountId
+      modalBodyInputAccountName.value = accountName
+      modalBodyInputGroupId.value = groupId
+      modalBodyInputGroupName.value = groupName
+    })
+  }
+</script>
+
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

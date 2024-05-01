@@ -23,6 +23,7 @@ public class TaskFilterRepositoryImpl implements TaskFilterRepository {
     Predicate predicate = QPredicate.builder()
         .add(filter.findPattern(), task.title::containsIgnoreCase)
         .add(filter.parentId(), task.parent.id::eq)
+        .add(filter.ownerId(), task.owner.id::eq)
         .add(filter.priorities(), task.priority::in)
         .add(filter.statuses(), task.status::in)
         .add(filter.types(), task.type::in)

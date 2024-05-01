@@ -19,8 +19,8 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "groupAccounts")
-@ToString(exclude = "groupAccounts")
+@EqualsAndHashCode(exclude = {"groupAccounts", "projectGroup"})
+@ToString(exclude = {"groupAccounts", "projectGroup"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -38,5 +38,9 @@ public class Group extends AuditingCreatedAtEntity<Integer> {
   @Builder.Default
   @OneToMany(mappedBy = "group")
   List<GroupAccount> groupAccounts = new ArrayList<>();
+
+  @Builder.Default
+  @OneToMany(mappedBy = "group")
+  List<ProjectGroup> projectGroup = new ArrayList<>();
 
 }

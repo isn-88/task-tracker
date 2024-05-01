@@ -12,6 +12,7 @@
 
 <section>
   <div th:insert="~{fragments/nav :: account}"></div>
+  <div th:insert="~{fragments/nav :: tab}"></div>
 </section>
 
 <section style="padding-top: 80px; padding-bottom: 10px;">
@@ -41,28 +42,28 @@
     </div>
     <div class="row">
       <div class="col">
-        <div class="row row-cols-2">
+        <div class="row">
           <div class="col-2">
             <p>Статус:</p>
           </div>
-          <div class="col-4">
+          <div class="col">
             <span class="badge text-bg-primary"
                   th:text="${task.status().name()}">Status</span>
           </div>
         </div>
-        <div class="row row-cols-2">
+        <div class="row">
           <div class="col-2">
             <p>Приоритет:</p>
           </div>
-          <div class="col-4">
+          <div class="col">
             <span th:text="${task.priority().getPriority()}">Priority</span>
           </div>
         </div>
-        <div class="row row-cols-2">
+        <div class="row">
           <div class="col-2">
             <p>Назначена:</p>
           </div>
-          <div class="col-4">
+          <div class="col">
             <a th:href="@{'/' + ${task.assigned()?.type()?.getPath()} + '/' + ${task.assigned?.id()}}"
                th:text="${task.assigned()?.name()}">Assigned</a>
             <p th:if="not ${task.assigned()}">-</p>
@@ -70,7 +71,7 @@
         </div>
       </div>
       <div class="col">
-        <div class="row row-cols-2">
+        <div class="row">
           <div class="col-3">
             <p>Дата начала:</p>
           </div>
@@ -78,7 +79,7 @@
             <p th:text="${task.startDate()} ?: _">-</p>
           </div>
         </div>
-        <div class="row row-cols-2">
+        <div class="row">
           <div class="col-3">
             <p>Срок завершения:</p>
           </div>
@@ -86,7 +87,7 @@
             <p th:text="${task.endDate()} ?: _">-</p>
           </div>
         </div>
-        <div class="row row-cols-2">
+        <div class="row">
           <div class="col-3">
             <p>Прогресс:</p>
           </div>
@@ -100,85 +101,98 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<section>
-  <div class="container">
-    <div class="row">
-      <div class="col"></div>
+      <div class="mt-4"><hr></div>
+
     </div>
   </div>
 </section>
 
 <section style="padding-top: 20px; padding-bottom: 10px;">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <div th:class="'collapse' + ${errors ne null ? ' show' : ''}" id="collapseEdit">
+          <div class="card card-footer">
+            <form th:action="@{/tasks/{taskId}/update(taskId=${task.id()})}" method="POST"
+                  th:object="${task}" id="formTaskEdit">
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col">
-          <div th:class="'collapse' + ${errors ne null ? ' show' : ''}" id="collapseEdit">
-            <div class="card card-footer">
-              <form th:action="@{/tasks/{taskId}/update(taskId=${task.id()})}" method="POST"
-                    th:object="${task}" id="formTaskEdit">
+              <div th:insert="~{fragments/task :: edit}"></div>
 
-                <div th:insert="~{task/task-edit :: task-edit}"></div>
-
-              </form>
-              <form th:action="@{/tasks/{taskId}(taskId=${task.id()})}" id="formTaskReset">
-              </form>
-              <div class="mb-3">
-                <button type="submit" class="btn btn-primary me-3"
-                        form="formTaskEdit">Отправить
-                </button>
-                <button class="btn btn-secondary me-3" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#collapseEdit"
-                        aria-expanded="false" aria-controls="collapseEdit">Отмена
-                </button>
-                <button type="submit" class="btn btn-outline-danger"
-                        form="formTaskReset">Сброс
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Модальное окно: Родительская задача - поиск-->
-    <div class="modal fade" id="findParentTaskModal" tabindex="-1"
-         aria-labelledby="findParentTaskLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="findParentTaskLabel">Поиск родительской задачи</h1>
-            <button type="button" class="btn-close"
-                    data-bs-dismiss="modal" aria-label="Закрыть"></button>
-          </div>
-          <div class="modal-body">
+            </form>
+            <form th:action="@{/tasks/{taskId}(taskId=${task.id()})}" id="formTaskReset">
+            </form>
             <div class="mb-3">
-              <label class="form-label fs-5"
-                     for="findParentInputModal">Поиск по заголовку</label>
-              <input class="form-control" aria-describedby="findParentHelp"
-                     id="findParentInputModal" name="findPattern">
-              <span id="searchParentResult"></span>
+              <button type="submit" class="btn btn-primary me-3"
+                      form="formTaskEdit">Сохранить
+              </button>
+              <button class="btn btn-secondary me-3" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#collapseEdit"
+                      aria-expanded="false" aria-controls="collapseEdit">Отмена
+              </button>
+              <button type="submit" class="btn btn-outline-danger"
+                      form="formTaskReset">Сброс
+              </button>
             </div>
-            <div class="mb-3 findParentTaskResult">
-              <label><input id="parentIdModal" hidden></label>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                    onclick="setParentId()">Применить
-            </button>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
+
+  <!-- Модальное окно: Родительская задача - поиск-->
+  <div class="modal fade" id="findParentTaskModal" tabindex="-1"
+       aria-labelledby="findParentTaskLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="findParentTaskLabel">Поиск родительской задачи</h1>
+          <button type="button" class="btn-close"
+                  data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fs-5"
+                   for="findParentInputModal">Поиск по заголовку</label>
+            <input class="form-control" aria-describedby="findParentHelp"
+                   id="findParentInputModal" name="findPattern">
+            <span id="searchParentResult"></span>
+          </div>
+          <div class="mb-3 findParentTaskResult">
+            <label><input id="parentIdModal" hidden></label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                  onclick="setParentId()">Применить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+
+<section style="padding-top: 20px; padding-bottom: 10px;">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col">
+        <h4>Описание</h4>
+        <div>
+          <p th:utext="${task.getDescriptionHtml()}">Description</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div th:insert="~{fragments/nav :: task}"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/script.js}"></script>

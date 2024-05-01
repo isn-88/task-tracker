@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<div th:fragment="task-edit">
+<div th:fragment="edit">
   <div class="mb-3 text-danger" th:if="${errors}">
     <p th:each="error : ${errors}"
        th:text="|${error.field}: ${error.defaultMessage}|"></p>
@@ -27,7 +27,7 @@
     <div class="col-12 col-lg-4">
       <select class="form-select" name="projectId" id="editProject">
         <option th:each="project : ${projects}" th:value="${project.id()}"
-                th:selected="${project.id eq task.project().id()}"
+                th:selected="${project.id eq task.project()?.id()}"
                 th:text="${project.name()}">Project name
         </option>
       </select>
@@ -116,8 +116,8 @@
     <label class="col-12 col-lg-2 col-form-label text-lg-end fs-6"
            for="editDescription">Описание</label>
     <div class="col-12 col-lg-10">
-                  <textarea class="form-control" id="editDescription" name="description" rows="5"
-                            th:text="${task.description()}"></textarea>
+      <textarea class="form-control" id="editDescription" name="description" rows="5"
+                th:text="${task.description()}"></textarea>
     </div>
   </div>
 </div>

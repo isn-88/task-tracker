@@ -42,6 +42,11 @@ public class TaskUpdateMapper implements Mapper<TaskUpdateDto, Task> {
   }
 
   private Task copy(TaskUpdateDto dto, Task task) {
+    if (task.getOwner() == null && dto.ownerId() != null) {
+      task.setOwner(Optional.ofNullable(getAccount(dto.ownerId()))
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                            "Account with id: " + dto.ownerId() + " not found")));
+    }
     task.setParent(getParentTask(dto.parentId()));
     task.setProject(getProject(dto.projectId()));
     task.setType(TaskType.valueOf(dto.type()));

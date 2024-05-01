@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import su.itpro.tasktracker.model.dto.TaskFilter;
@@ -38,12 +39,15 @@ public class TaskController {
   }
 
   @GetMapping("/{id}")
-  public String findById(@PathVariable Long id, Model model) {
+  public String findById(@PathVariable Long id,
+                         @RequestParam(defaultValue = "comment") String tab,
+                         Model model) {
     TaskReadDto taskReadDto = taskService.findById(id)
         .orElseThrow(() -> new ResponseStatusException(NOT_FOUND));
     model.addAttribute("task", taskReadDto);
     model.addAttribute("projects", projectService.findAll());
     model.addAttribute("allAssigned", accountService.findAllAssigned());
+    model.addAttribute("tab", tab);
     return "task/task";
   }
 

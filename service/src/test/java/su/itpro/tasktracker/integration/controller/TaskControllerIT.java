@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static su.itpro.tasktracker.model.dto.TaskFilter.Fields.ownerId;
 import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.priority;
 import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.projectId;
 import static su.itpro.tasktracker.model.dto.TaskUpdateDto.Fields.status;
@@ -21,24 +22,40 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import su.itpro.tasktracker.integration.IntegrationTestUserSecurity;
+import su.itpro.tasktracker.model.entity.Account;
 import su.itpro.tasktracker.model.entity.Project;
 import su.itpro.tasktracker.model.entity.Task;
+import su.itpro.tasktracker.model.enums.Role;
 import su.itpro.tasktracker.model.enums.TaskPriority;
 import su.itpro.tasktracker.model.enums.TaskStatus;
 import su.itpro.tasktracker.model.enums.TaskType;
+import su.itpro.tasktracker.repository.AccountRepository;
 
 @AutoConfigureMockMvc
 @RequiredArgsConstructor
 class TaskControllerIT extends IntegrationTestUserSecurity {
 
+  private static final String EMAIL = "user@email.com";
+  private static final String USERNAME = "user";
+  private static final String PASSWORD = "password";
+
+  private final AccountRepository accountRepository;
   private final EntityManager entityManager;
   private final MockMvc mockMvc;
 
+  private Account account;
   private Task savedTask;
   private Project savedProject;
 
   @BeforeEach
   void prepare() {
+    account = Account.builder()
+        .email(EMAIL)
+        .username(USERNAME)
+        .password("{noop}" + PASSWORD)
+        .role(Role.USER)
+        .build();
+    accountRepository.save(account);
     savedProject = Project.builder()
         .name("Test project")
         .build();
@@ -46,6 +63,7 @@ class TaskControllerIT extends IntegrationTestUserSecurity {
     savedTask = Task.builder()
         .title("Test task")
         .project(savedProject)
+        .owner(account)
         .type(TaskType.FEATURE)
         .status(TaskStatus.ASSIGNED)
         .priority(TaskPriority.HIGH)
@@ -80,6 +98,7 @@ class TaskControllerIT extends IntegrationTestUserSecurity {
   void create() throws Exception {
     mockMvc.perform(post("/tasks")
                         .param(projectId, savedProject.getId().toString())
+                        .param(ownerId, account.getId().toString())
                         .param(type, "FEATURE")
                         .param(title, "Title create")
                         .param(status, "NEW")

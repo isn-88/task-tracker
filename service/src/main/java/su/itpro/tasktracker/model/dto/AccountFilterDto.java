@@ -5,7 +5,8 @@ import lombok.Builder;
 import su.itpro.tasktracker.model.enums.Role;
 
 @Builder
-public record AccountFilterDto(String username,
+public record AccountFilterDto(Long id,
+                               String username,
                                String email,
                                Role role,
                                Boolean isEnabled,
