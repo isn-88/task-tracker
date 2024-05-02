@@ -47,8 +47,7 @@
             <p>Статус:</p>
           </div>
           <div class="col">
-            <span class="badge text-bg-primary"
-                  th:text="${task.status().name()}">Status</span>
+            <p th:text="${task.status().getStatus()}">Status</p>
           </div>
         </div>
         <div class="row">
@@ -56,7 +55,13 @@
             <p>Приоритет:</p>
           </div>
           <div class="col">
-            <span th:text="${task.priority().getPriority()}">Priority</span>
+            <span class="badge"
+                  th:classappend="${
+                        (task.priority().name() eq 'LOW' ? 'text-bg-secondary' : '') +
+                        (task.priority().name() eq 'NORMAL' ? 'text-bg-success': '') +
+                        (task.priority().name() eq 'HIGH' ? 'text-bg-warning' : '') +
+                        (task.priority().name() eq 'URGENT' ? 'text-bg-danger' : '')}"
+                  th:text="${task.priority().name()}">Priority</span>
           </div>
         </div>
         <div class="row">

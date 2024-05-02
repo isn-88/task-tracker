@@ -85,7 +85,7 @@ public class AccountControllerIT extends IntegrationTestUserSecurity {
                         .with(csrf()))
         .andExpectAll(
             status().is3xxRedirection(),
-            redirectedUrl("/logout")
+            redirectedUrl("/login?change=true")
         );
 
     Optional<Account> actualResult = accountRepository.findByUsername(updatedUsername);
@@ -184,7 +184,7 @@ public class AccountControllerIT extends IntegrationTestUserSecurity {
                         .with(csrf()))
         .andExpectAll(
             status().is3xxRedirection(),
-            redirectedUrl("/login")
+            redirectedUrl("/login?change=true")
         );
 
     Optional<Account> actualResult = accountRepository.findByUsername(USERNAME);

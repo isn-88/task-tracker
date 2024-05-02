@@ -48,7 +48,8 @@ public class AccountController {
   public String updateAccount(Principal principal,
                               @Validated @ModelAttribute AccountUpdateDto updateDto,
                               BindingResult bindingResult,
-                              RedirectAttributes redirectAttributes) {
+                              RedirectAttributes redirectAttributes,
+                              HttpSession session) {
     if (bindingResult.hasErrors()) {
       redirectAttributes.addFlashAttribute("binding", bindingResult);
       redirectAttributes.addFlashAttribute("tab", "account");
@@ -56,7 +57,12 @@ public class AccountController {
     }
 
     accountService.update(updateDto, principal.getName());
-    return "redirect:/logout";
+
+    SecurityContextHolder.clearContext();
+    if (session != null) {
+      session.invalidate();
+    }
+    return "redirect:/login?change=true";
   }
 
   @PostMapping("/profile")
@@ -102,8 +108,7 @@ public class AccountController {
     if (session != null) {
       session.invalidate();
     }
-
-    return "redirect:/login";
+    return "redirect:/login?change=true";
   }
 
   private BindingResult clearFieldsValue(BindingResult bindingSource) {

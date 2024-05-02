@@ -74,10 +74,11 @@
             <thead>
             <tr>
               <th scope="col">#</th>
+              <th scope="col">Тема</th>
               <th scope="col">Проект</th>
               <th scope="col">Тип</th>
               <th scope="col">Статус</th>
-              <th scope="col">Тема</th>
+              <th scope="col">Приоритет</th>
               <th scope="col">Назначена</th>
             </tr>
             </thead>
@@ -86,11 +87,21 @@
               <td>
                 <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
               </td>
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+              </td>
               <td th:text="${task.project().name()}">Project</td>
               <td th:text="${task.type().getType()}">Type</td>
               <td th:text="${task.status().getStatus()}">Status</td>
+
               <td>
-                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+                <span class="badge"
+                      th:classappend="${
+                        (task.priority().name() eq 'LOW' ? 'text-bg-secondary' : '') +
+                        (task.priority().name() eq 'NORMAL' ? 'text-bg-success': '') +
+                        (task.priority().name() eq 'HIGH' ? 'text-bg-warning' : '') +
+                        (task.priority().name() eq 'URGENT' ? 'text-bg-danger' : '')}"
+                      th:text="${task.priority().name()}">Priority</span>
               </td>
               <td>
                 <a th:href="@{/{type}/{id}(type=${task.assigned().type().getPath()}, id=${task.assigned().id()})}"
@@ -106,34 +117,46 @@
       </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-5">
       <div class="col">
         <div>
-          <h5 th:text="'Созданные задачи: ' + ${#lists.size(createdTask)}">Tasks</h5>
+          <h5 th:text="'Задачи групп: ' + ${#lists.size(groupTasks)}">Tasks</h5>
         </div>
         <div class="table-responsive">
           <table class="table table-striped p-4">
             <thead>
             <tr>
               <th scope="col">#</th>
+              <th scope="col">Тема</th>
               <th scope="col">Проект</th>
               <th scope="col">Тип</th>
               <th scope="col">Статус</th>
-              <th scope="col">Тема</th>
+              <th scope="col">Приоритет</th>
               <th scope="col">Назначена</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="task : ${createdTask}">
+            <tr th:each="task : ${groupTasks}">
               <td>
                 <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
+              </td>
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
               </td>
               <td th:text="${task.project().name()}">Project</td>
               <td th:text="${task.type().getType()}">Type</td>
               <td th:text="${task.status().getStatus()}">Status</td>
+
               <td>
-                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+                <span class="badge"
+                      th:classappend="${
+                        (task.priority().name() eq 'LOW' ? 'text-bg-secondary' : '') +
+                        (task.priority().name() eq 'NORMAL' ? 'text-bg-success': '') +
+                        (task.priority().name() eq 'HIGH' ? 'text-bg-warning' : '') +
+                        (task.priority().name() eq 'URGENT' ? 'text-bg-danger' : '')}"
+                      th:text="${task.priority().name()}">Priority</span>
               </td>
+
               <td>
                 <a th:href="@{/{type}/{id}(type=${task.assigned()?.type()?.getPath()}, id=${task.assigned()?.id()})}"
                    th:text="${task.assigned()?.name()}">Assigned</a>
@@ -142,11 +165,66 @@
             </tbody>
           </table>
         </div>
-        <div th:if="${createdTask eq null} or ${createdTask.size() == 0}"
+        <div th:if="${groupTasks eq null} or ${groupTasks.size() == 0}"
              th:insert="~{fragments/insert :: nocontent}">
         </div>
       </div>
     </div>
+
+    <div class="row mb-5">
+      <div class="col">
+        <div>
+          <h5 th:text="'Созданные задачи: ' + ${#lists.size(createdTasks)}">Tasks</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped p-4">
+            <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Тема</th>
+              <th scope="col">Проект</th>
+              <th scope="col">Тип</th>
+              <th scope="col">Статус</th>
+              <th scope="col">Приоритет</th>
+              <th scope="col">Назначена</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${createdTasks}">
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.id()}">Id</a>
+              </td>
+              <td>
+                <a th:href="@{/tasks/{id}(id=${task.id()})}" th:text="${task.title()}">Title</a>
+              </td>
+              <td th:text="${task.project().name()}">Project</td>
+              <td th:text="${task.type().getType()}">Type</td>
+              <td th:text="${task.status().getStatus()}">Status</td>
+
+              <td>
+                <span class="badge"
+                      th:classappend="${
+                        (task.priority().name() eq 'LOW' ? 'text-bg-secondary' : '') +
+                        (task.priority().name() eq 'NORMAL' ? 'text-bg-success': '') +
+                        (task.priority().name() eq 'HIGH' ? 'text-bg-warning' : '') +
+                        (task.priority().name() eq 'URGENT' ? 'text-bg-danger' : '')}"
+                      th:text="${task.priority().name()}">Priority</span>
+              </td>
+
+              <td>
+                <a th:href="@{/{type}/{id}(type=${task.assigned()?.type()?.getPath()}, id=${task.assigned()?.id()})}"
+                   th:text="${task.assigned()?.name()}">Assigned</a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div th:if="${createdTasks eq null} or ${createdTasks.size() == 0}"
+             th:insert="~{fragments/insert :: nocontent}">
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -182,7 +260,6 @@
     </div>
   </div>
 </div>
-</section>
 
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/js/script.js}"></script>

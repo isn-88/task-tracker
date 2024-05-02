@@ -6,49 +6,49 @@ VALUES ('administrator'),
        ('tester');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('admin@email.com', 'admin', '{noop}pass', 'ADMIN');
+VALUES ('admin@tracker.com', 'admin', '{noop}pass', 'ADMIN');
 INSERT INTO profile (account_id, lastname, firstname, gender)
 VALUES ((SELECT id FROM account WHERE username = 'admin'), 'Петров', 'Сергей', null);
 
 INSERT INTO account (email, username, password, role)
-VALUES ('dev@email.com', 'dev', '{noop}pass', 'USER');
+VALUES ('dev@tracker.com', 'dev', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, surname, gender)
 VALUES ((SELECT id FROM account WHERE username = 'dev'), 'Иванов', 'Михаил', 'Николаевич', 'MALE');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('eng@email.com', 'engineer', '{noop}pass', 'USER');
+VALUES ('eng@tracker.com', 'engineer', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, surname, gender)
-VALUES ((SELECT id FROM account WHERE username = 'engineer'), 'Смирнов', 'Иван', 'Иванович', 'MALE');
+VALUES ((SELECT id FROM account WHERE username = 'engineer'), 'Смирнов', 'Иван', 'Петрович', 'MALE');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('test@email.com', 'test', '{noop}pass', 'USER');
+VALUES ('test@tracker.com', 'test', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, gender)
 VALUES ((SELECT id FROM account WHERE username = 'test'), 'Иванова', 'Марина', 'FEMALE');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('user@email.com', 'user', '{noop}pass', 'USER');
+VALUES ('user@tracker.com', 'user', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, surname)
 VALUES ((SELECT id FROM account WHERE username = 'user'), 'Сидоров', 'Семён', 'Валерьевич');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('user2@email.com', 'user2', '{noop}pass', 'USER');
+VALUES ('block@tracker.com', 'block', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, surname)
-VALUES ((SELECT id FROM account WHERE username = 'user2'), 'Ветров', 'Георгий', 'Петрович');
+VALUES ((SELECT id FROM account WHERE username = 'block'), 'Ветров', 'Георгий', 'Петрович');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('mngr@email.com', 'manager', '{noop}pass', 'USER');
+VALUES ('mngr@tracker.com', 'manager', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, gender)
 VALUES ((SELECT id FROM account WHERE username = 'manager'), 'Васильева', 'Наталья', 'FEMALE');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('dev2@email.com', 'dev2', '{noop}pass', 'USER');
+VALUES ('dev-lead@tracker.com', 'dev-lead', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, surname, gender)
-VALUES ((SELECT id FROM account WHERE username = 'dev2'), 'Синицын', 'Максим', 'Эдуардович', 'MALE');
+VALUES ((SELECT id FROM account WHERE username = 'dev-lead'), 'Синицын', 'Максим', 'Эдуардович', 'MALE');
 
 INSERT INTO account (email, username, password, role)
-VALUES ('dev3@email.com', 'dev3', '{noop}pass', 'USER');
+VALUES ('dev-java@tracker.com', 'dev-java', '{noop}pass', 'USER');
 INSERT INTO profile (account_id, lastname, firstname, surname, gender)
-VALUES ((SELECT id FROM account WHERE username = 'dev3'), 'Борисова', 'Ольга', 'Евгеньевна', 'FEMALE');
+VALUES ((SELECT id FROM account WHERE username = 'dev-java'), 'Борисова', 'Ольга', 'Евгеньевна', 'FEMALE');
 
 INSERT INTO groups_account (group_id, account_id)
 VALUES ((SELECT id FROM groups WHERE name = 'administrator'), (SELECT id FROM account WHERE username = 'admin')),
@@ -65,11 +65,18 @@ VALUES ('task-tracker', 'Разработка сервиса по постано
        ('subscription', 'Сервис подписок'),
        ('auth-service', 'Сервис аутентификации');
 
-INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_group_id, type, title, status, priority, description)
+INSERT INTO project_groups(project_id, group_id)
+VALUES ((SELECT id FROM project WHERE name = 'task-tracker'), (SELECT id FROM groups WHERE name = 'administrator')),
+       ((SELECT id FROM project WHERE name = 'task-tracker'), (SELECT id FROM groups WHERE name = 'manager')),
+       ((SELECT id FROM project WHERE name = 'task-tracker'), (SELECT id FROM groups WHERE name = 'developer')),
+       ((SELECT id FROM project WHERE name = 'task-tracker'), (SELECT id FROM groups WHERE name = 'engineer')),
+       ((SELECT id FROM project WHERE name = 'task-tracker'), (SELECT id FROM groups WHERE name = 'tester'));
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_account_id, type, title, status, priority, description)
 VALUES (null, (SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
-        (SELECT id FROM groups WHERE name = 'developers'),
+        (SELECT id FROM account WHERE username = 'manager'),
         'FEATURE', 'Разработка сервиса TaskTracker','NEW', 'NORMAL',
         'Корневая задача по разработке сервиса отслеживания задач');
 
@@ -79,48 +86,107 @@ VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса 
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
         (SELECT id FROM account WHERE username = 'dev'),
-        'FEATURE', 'Создание проекта', 'NEW', 'NORMAL',
-        'Создать SpringBoot приложение');
+        'FEATURE', 'Создание maven проекта', 'NEW', 'NORMAL',
+        'Реализовать двухмодульную структуру проекта: common и service, который зависит от common');
 
 INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
 VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
         (SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
-        'FEATURE', 'Добавить репозиторий', 'NEW', 'NORMAL',
-        'Добавить AccountRepository');
+        'FEATURE', 'Схема БД', 'NEW', 'NORMAL',
+        'Создать схему базы данных и основные сущности (без ассоциаций)');
 
 INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
 VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
         (SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
-        'FEATURE', 'Добавить сервис', 'NEW', 'NORMAL',
-        'Добавить AccountService');
+        'FEATURE', 'Маппинг ассоциаций', 'NEW', 'NORMAL',
+        'Добавить маппинг ассоциаций. Написать тесты на каждую сущность (H2 или Docker)');
 
 INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
 VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
         (SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
-        'FEATURE', 'Добавить контроллер', 'NEW', 'NORMAL',
-        'Добавить AccountController');
+        'FEATURE', 'Querydsl и Criteria', 'NEW', 'NORMAL',
+        'Написать запрос filter через Querydsl и Criteria. Оптимизировать его с помощью EntityGraph');
 
 INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
 VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
         (SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
-        'FEATURE', 'Добавить безопасность', 'NEW', 'NORMAL',
-        'Добавить и сконфигурировать Spring Security');
+        'FEATURE', 'Реализовать DAO', 'NEW', 'NORMAL',
+        'Реализовать DAO для всех сущностей	');
 
 INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
 VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
         (SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM account WHERE username = 'manager'),
         (SELECT id FROM category WHERE name = 'general'),
-        'FEATURE', 'Добавить тесты', 'NEW', 'NORMAL',
-        'Написать модульные и интеграционные тесты');
+        'FEATURE', 'Spring Beans', 'NEW', 'NORMAL',
+        'Все объекты DAO должны быть Spring Beans. Никаких xml в коде. В тестах использовать Spring Context для получения DAO');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Spring Boot', 'NEW', 'NORMAL',
+        'Создать Spring Boot приложение, настроить IT, добавить JPA Starter и удалить ненужные зависимости и бины (SessionFactory)');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Spring Repository', 'NEW', 'NORMAL',
+        'Переписать DAO на Spring Repository. Добавить Liquibase');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Написать CRUD', 'NEW', 'NORMAL',
+        'Spring Web. Написать CRUD операции для одной сущности Controller -> Service -> Repository + Thymeleaf');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_group_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM groups WHERE name = 'developer'),
+        'FEATURE', 'REST Controller', 'NEW', 'NORMAL',
+        'Добавить REST Controller на одну сущность. Протестировать через Swagger. Добавлять функционал для других сущностей (Controller)');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_account_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM account WHERE username = 'dev-lead'),
+        'FEATURE', 'Spring Security', 'NEW', 'NORMAL',
+        'Spring Security. Добавить аутентификацию и авторизацию');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, assigned_account_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM account WHERE username = 'dev-java'),
+        'FEATURE', 'Интернационализация', 'NEW', 'NORMAL',
+        'Добавить интернационализацию (как минимум для 1 страницы). Дополнить функционал проекта');
+
+INSERT INTO task (parent_id, project_id, owner_id, category_id, type, title, status, priority, description)
+VALUES ((SELECT id FROM task WHERE title = 'Разработка сервиса TaskTracker'),
+        (SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        'FEATURE', 'Логирование', 'NEW', 'NORMAL',
+        'Добавить логирование входных параметров и возвращаемого значения всех методов уровня service. Реализовать оставшийся функционал.');
 
 INSERT INTO task (project_id, owner_id, category_id, assigned_account_id, type, title, status, priority, description)
 VALUES ((SELECT id FROM project where name = 'task-tracker'),
@@ -128,5 +194,18 @@ VALUES ((SELECT id FROM project where name = 'task-tracker'),
         (SELECT id FROM category WHERE name = 'general'),
         (SELECT id FROM account WHERE username = 'admin'),
         'SUPPORT', 'Регистрация новой учётной записи', 'NEW', 'NORMAL',
-        'Необходимо зарегистрировать учётную запись для нового сотрудника\nФИО: Иванов Иван Иванович\n' ||
-        'Имя пользователя: i.ivanov\nEmail: i.ivanov@tracker.ru\n\nДобавить в группу: tester');
+        'Необходимо зарегистрировать учётную запись для нового сотрудника' ||E'\n'||
+        'ФИО: Иванов Иван Иванович' ||E'\n'||
+        'Имя пользователя: i.ivanov' ||E'\n'||
+        'Email: i.ivanov@tracker.ru' ||E'\n'||E'\n'||
+        'Добавить в группу: tester');
+
+INSERT INTO task (project_id, owner_id, category_id, assigned_group_id, start_date, end_date, type, title, status, priority, description)
+VALUES ((SELECT id FROM project where name = 'task-tracker'),
+        (SELECT id FROM account WHERE username = 'manager'),
+        (SELECT id FROM category WHERE name = 'general'),
+        (SELECT id FROM groups WHERE name= 'administrator'),
+        now(), now(),
+        'SUPPORT', 'Заблокировать учётную запись', 'NEW', 'URGENT',
+        'В связи с увольнением сотрудника необходимо заблокировать его учётную запись.'||E'\n'||
+        'Имя пользователя: block');

@@ -1,5 +1,6 @@
 package su.itpro.tasktracker.model.dto;
 
+import java.time.Instant;
 import lombok.Builder;
 import su.itpro.tasktracker.model.enums.Gender;
 import su.itpro.tasktracker.model.enums.Role;
@@ -10,6 +11,7 @@ public record AccountReadDto(Long id,
                              String username,
                              Role role,
                              Boolean isEnabled,
+                             Instant createdAt,
                              String lastname,
                              String firstname,
                              String surname,

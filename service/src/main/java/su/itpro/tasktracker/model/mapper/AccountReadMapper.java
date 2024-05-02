@@ -16,6 +16,7 @@ public class AccountReadMapper implements Mapper<Account, AccountReadDto> {
         .username(account.getUsername())
         .role(account.getRole())
         .isEnabled(account.getEnabled())
+        .createdAt(account.getCreatedAt())
         .lastname(account.getProfile().getLastname())
         .firstname(account.getProfile().getFirstname())
         .surname(account.getProfile().getSurname())

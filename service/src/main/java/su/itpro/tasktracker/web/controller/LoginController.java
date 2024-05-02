@@ -12,8 +12,10 @@ public class LoginController {
 
   @GetMapping
   public String login(@RequestParam(name = "register", defaultValue = "false") Boolean isRegister,
+                      @RequestParam(name = "change", defaultValue = "false") Boolean isChanged,
                       Model model) {
     model.addAttribute("register", isRegister);
+    model.addAttribute("change", isChanged);
     return "login/login";
   }
 
