@@ -35,6 +35,11 @@
                 <span th:text="#{page.register.success.message}"></span>
               </div>
             </div>
+            <div th:if="${change}">
+              <div class="alert alert-success">
+                <span th:text="#{page.login.change.message}"></span>
+              </div>
+            </div>
             <form th:action="@{/login}" method="POST">
               <div class="row gy-4">
                 <div class="col-12">

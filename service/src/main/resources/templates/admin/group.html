@@ -39,7 +39,7 @@
                 <th><p>#</p></th>
                 <th><p>Название</p></th>
                 <th><p>Дата создания</p></th>
-                <th><p>Участников</p></th>
+                <th><p>Кол-во участников</p></th>
                 <th><p>Изменить</p></th>
                 <th><p>Удалить</p></th>
               </tr>
@@ -68,20 +68,21 @@
                   </button>
                 </td>
               </tr>
-              <form th:action="@{/admin/group}" method="POST">
                 <tr>
-                  <td></td>
                   <td>
-                    <input class="form-control" name="name">
+                    <form th:action="@{/admin/group}" method="POST" id="formCreateGroup"></form>
                   </td>
                   <td>
-                    <button class="btn btn-outline-success" type="submit">Создать</button>
+                    <input class="form-control" name="name" form="formCreateGroup">
+                  </td>
+                  <td>
+                    <button class="btn btn-outline-success" form="formCreateGroup"
+                            type="submit">Создать</button>
                   </td>
                   <td></td>
                   <td></td>
                   <td></td>
                 </tr>
-              </form>
               </tbody>
             </table>
           </div>

@@ -27,6 +27,7 @@ public class SecurityConfiguration {
                 "/", "/login", "/logout", "/registration", "/error",
                 "/css/**", "/js/**", "/webfonts/**", "/image/**", "/favicon.ico"
             ).permitAll()
+            .requestMatchers("/api/**").authenticated()
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
             .anyRequest().authenticated())
         .httpBasic(withDefaults())
